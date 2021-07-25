@@ -4,6 +4,8 @@
 #include "scene-marbles.h"
 #include "logger.h"
 
+#include "rigidBody.h"
+
 #include "material.h"
 #include "primitives.h"
 
@@ -31,6 +33,10 @@ namespace marbles
 
 	Material *matWood = NULL;
 
+	World world;
+	Marble marbles[4];
+	Wall walls[4];
+
 	bool Init(void)
 	{
 		// matrix
@@ -53,8 +59,41 @@ namespace marbles
 		ps->size = 32.0f;
 		ps->color = vec4(1.0f, 0.5f, 0.1f, 1.0f);
 
-		matWood = loadMaterial("res\\materials\\wood");
+		//matWood = loadMaterial("res\\materials\\wood");
 		//matWood = loadMaterial("res\\materials\\rusted_iron");
+		matWood = loadMaterial("res\\materials\\plastic");
+
+		marbles[0].Position = vec3(0.0f, 6.0f, 0.0f);
+		marbles[0].Radius = 1.0f;
+		marbles[0].Mass = 1.0f;
+		marbles[0].Velocity = vec3(0.0f);
+
+		marbles[1].Position = vec3(6.0f, 6.0f, 0.0f);
+		marbles[1].Radius = 1.0f;
+		marbles[1].Mass = 2.0f;
+		marbles[1].Velocity = vec3(0.0f);
+
+		marbles[2].Position = vec3(6.0f, 6.0f, 6.0f);
+		marbles[2].Radius = 1.0f;
+		marbles[2].Mass = 4.0f;
+		marbles[2].Velocity = vec3(0.0f);
+
+		AddMarble(world, &marbles[0]);
+		AddMarble(world, &marbles[1]);
+		AddMarble(world, &marbles[2]);
+
+		walls[0].Normal = vec3(0.0f, 1.0f, 0.0f);
+		walls[0].D = -0.5f;
+
+		walls[1].Normal = normalize(vec3(0.0f, 1.0f, 1.0f));
+		walls[1].D = 5.0f;
+
+		walls[2].Normal = normalize(vec3(0.0f, 1.0f, -1.0f));
+		walls[2].D = 10.0f;
+
+		//AddWall(world, &walls[0]);
+		AddWall(world, &walls[1]);
+		AddWall(world, &walls[2]);
 
 		return true;
 	}
@@ -93,7 +132,7 @@ namespace marbles
 		modelMatrix = mat4::identity();
 
 		// transformations
-		modelMatrix = scale(10.0f, 1.0f, 10.0f);
+		modelMatrix = scale(6.0f, 0.5f, 6.0f);
 
 		// send necessary matrices to shader in respective uniforms
 		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMatrix);
@@ -108,14 +147,16 @@ namespace marbles
 		useMaterial(matWood);
 		DrawCube();
 
-		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, translate(0.0f, 6.0f, 0.0f) * scale(2.0f, 2.0f, 2.0f) * rotate(angleTriangle, 0.0f, 1.0f, 0.0f));
+		/*glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, translate(0.0f, 6.0f, 0.0f) * rotate(angleTriangle, 0.0f, 1.0f, 0.0f));
 		DrawSphere();
 
-		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, translate(6.0f, 6.0f, 0.0f) * scale(2.0f, 2.0f, 2.0f) * rotate(angleTriangle, 0.0f, 1.0f, 0.0f));
+		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, translate(6.0f, 6.0f, 0.0f) * rotate(angleTriangle, 0.0f, 1.0f, 0.0f));
 		DrawSphere();
 
-		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, translate(6.0f, 6.0f, 6.0f) * scale(2.0f, 2.0f, 2.0f) * rotate(angleTriangle, 0.0f, 1.0f, 0.0f));
-		DrawSphere();
+		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, translate(6.0f, 6.0f, 6.0f) * rotate(angleTriangle, 0.0f, 1.0f, 0.0f));
+		DrawSphere();*/
+
+		DrawWorld(world);
 
 		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, translate(lightPos));
 		DrawSphere();
@@ -130,7 +171,10 @@ namespace marbles
 		angleTriangle += 0.000002f * delta;
 		//if (angleTriangle > 90.0f) return true;
 
-		updateParticleSystem(ps);
+		//updateParticleSystem(ps);
+
+		UpdateWorld(world, 0.000002f * delta);
+
 
 		return false;
 	}

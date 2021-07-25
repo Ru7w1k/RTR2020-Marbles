@@ -158,6 +158,7 @@
     <ClCompile Include="src\ParticleSystem.cpp" />
     <ClCompile Include="src\PBRShader.cpp" />
     <ClCompile Include="src\primitives.cpp" />
+    <ClCompile Include="src\rigidBody.cpp" />
     <ClCompile Include="src\scene-marbles.cpp" />
     <ClCompile Include="src\scene.cpp" />
     <ClCompile Include="src\shader.cpp" />
@@ -177,6 +178,7 @@
     <ClInclude Include="inc\ParticleShader.h" />
     <ClInclude Include="inc\ParticleSystem.h" />
     <ClInclude Include="inc\primitives.h" />
+    <ClInclude Include="inc\rigidBody.h" />
     <ClInclude Include="inc\scene-marbles.h" />
     <ClInclude Include="inc\scene.h" />
     <ClInclude Include="inc\shader.h" />
