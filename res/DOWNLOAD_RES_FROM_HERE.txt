@@ -1,0 +1,9 @@
+https://drive.google.com/drive/folders/1WaiZVsAhQAzp4UzIMRFe1vN1AeGinUji?usp=sharing
+
+^ download the above folder from google drive
+  and extract here
+
+res
+ \_ materials
+ \_ textures
+ \_ ...
