@@ -56,8 +56,8 @@ bool InitPBRShader()
 		"uniform sampler2D roughnessMap; \n" \
 		"uniform sampler2D aoMap; \n" \
 
-		"uniform vec3 lightPosition[4]; \n" \
-		"uniform vec3 lightColor[4]; \n" \
+		"uniform vec3 lightPosition[10]; \n" \
+		"uniform vec3 lightColor[10]; \n" \
 
 		"uniform vec3 cameraPos; \n" \
 
@@ -134,7 +134,7 @@ bool InitPBRShader()
 
 		"	vec3 Lo = vec3(0.0); \n" \
 
-		"	for(int i = 0; i < 1; i++) \n" \
+		"	for(int i = 0; i < 6; i++) \n" \
 		"	{ \n" \
 		"		vec3 L = normalize(lightPosition[i] - out_WorldPos); \n" \
 		"		vec3 H = normalize(V + L); \n" \

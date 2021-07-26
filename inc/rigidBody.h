@@ -4,6 +4,7 @@
 #include <vector>
 using namespace std;
 
+#include "material.h"
 
 typedef struct _Sphere
 {
@@ -13,6 +14,8 @@ typedef struct _Sphere
 	float Mass;
 	vec3 Velocity;
 
+	vec3 Color;
+	Material* mat;
 
 } Marble;
 
@@ -48,6 +51,7 @@ void DrawWorld(World& world);
 void UpdateWorld(World& world, float time);
 
 void DeleteWorld(World& world);
+void ResetWorld(World& world);
 
 // helper functions
 float distance(vec3& point, Wall* wall);

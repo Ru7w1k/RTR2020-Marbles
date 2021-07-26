@@ -34,8 +34,8 @@ namespace marbles
 	Material *matWood = NULL;
 
 	World world;
-	Marble marbles[4];
-	Wall walls[4];
+	Marble marbles[10];
+	Wall walls[10];
 
 	bool Init(void)
 	{
@@ -62,39 +62,7 @@ namespace marbles
 		//matWood = loadMaterial("res\\materials\\wood");
 		//matWood = loadMaterial("res\\materials\\rusted_iron");
 		matWood = loadMaterial("res\\materials\\plastic");
-
-		marbles[0].Position = vec3(0.0f, 6.0f, 0.0f);
-		marbles[0].Radius = 1.0f;
-		marbles[0].Mass = 1.0f;
-		marbles[0].Velocity = vec3(0.0f);
-
-		marbles[1].Position = vec3(6.0f, 6.0f, 0.0f);
-		marbles[1].Radius = 1.0f;
-		marbles[1].Mass = 2.0f;
-		marbles[1].Velocity = vec3(0.0f);
-
-		marbles[2].Position = vec3(6.0f, 6.0f, 6.0f);
-		marbles[2].Radius = 1.0f;
-		marbles[2].Mass = 4.0f;
-		marbles[2].Velocity = vec3(0.0f);
-
-		AddMarble(world, &marbles[0]);
-		AddMarble(world, &marbles[1]);
-		AddMarble(world, &marbles[2]);
-
-		walls[0].Normal = vec3(0.0f, 1.0f, 0.0f);
-		walls[0].D = -0.5f;
-
-		walls[1].Normal = normalize(vec3(0.0f, 1.0f, 1.0f));
-		walls[1].D = 5.0f;
-
-		walls[2].Normal = normalize(vec3(0.0f, 1.0f, -1.0f));
-		walls[2].D = 10.0f;
-
-		//AddWall(world, &walls[0]);
-		AddWall(world, &walls[1]);
-		AddWall(world, &walls[2]);
-
+				
 		return true;
 	}
 
@@ -132,7 +100,7 @@ namespace marbles
 		modelMatrix = mat4::identity();
 
 		// transformations
-		modelMatrix = scale(6.0f, 0.5f, 6.0f);
+		modelMatrix = scale(20.0f, 0.5f, 20.0f);
 
 		// send necessary matrices to shader in respective uniforms
 		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMatrix);
@@ -140,8 +108,6 @@ namespace marbles
 		glUniformMatrix4fv(u->pMatrixUniform, 1, GL_FALSE, projMatrix);
 
 		vec3 lightPos = vec3(0.0f, 10.0f, 0.0f);
-		glUniform3fv(u->lightPosUniform, 1, lightPos);
-		glUniform3f(u->lightColUniform, 200.0f, 200.0f, 200.0f);
 		glUniform3fv(u->cameraPosUniform, 1, SceneMarbles->Camera->Position);
 
 		useMaterial(matWood);
@@ -157,9 +123,6 @@ namespace marbles
 		DrawSphere();*/
 
 		DrawWorld(world);
-
-		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, translate(lightPos));
-		DrawSphere();
 
 		// stop using OpenGL program object
 		glUseProgram(0);
@@ -212,7 +175,63 @@ namespace marbles
 
 	void Reset(void)
 	{
+		ResetWorld(world);
 
+		marbles[0].Position = vec3(0.0f, 6.0f, 0.0f);
+		marbles[0].Radius = 1.0f;
+		marbles[0].Mass = 1.0f;
+		marbles[0].Velocity = vec3(0.02f, 0.0f, 0.0f);
+		marbles[0].Color = vec3(200.0f, 200.0f, 200.0f);
+
+		marbles[1].Position = vec3(6.0f, 6.0f, 0.0f);
+		marbles[1].Radius = 1.0f;
+		marbles[1].Mass = 2.0f;
+		marbles[1].Velocity = vec3(0.02f, 0.02f, 0.0f);
+		marbles[1].Color = vec3(200.0f, 0.0f, 200.0f);
+
+		marbles[2].Position = vec3(6.0f, 6.0f, 6.0f);
+		marbles[2].Radius = 1.0f;
+		marbles[2].Mass = 4.0f;
+		marbles[2].Velocity = vec3(0.02f, 0.02f, 0.002f);
+		marbles[2].Color = vec3(0.0f, 200.0f, 200.0f);
+
+		marbles[3].Position = vec3(6.0f, 7.0f, 6.0f);
+		marbles[3].Radius = 1.0f;
+		marbles[3].Mass = 10.0f;
+		marbles[3].Velocity = vec3(0.02f, 0.02f, 0.002f);
+		marbles[3].Color = vec3(200.0f, 200.0f, 0.0f);
+
+		marbles[4].Position = vec3(6.0f, 4.0f, 6.0f);
+		marbles[4].Radius = 1.0f;
+		marbles[4].Mass = 6.0f;
+		marbles[4].Velocity = vec3(0.02f, 0.02f, 0.002f);
+		marbles[4].Color = vec3(200.0f, 0.0f, 0.0f);
+
+		marbles[5].Position = vec3(4.0f, 6.0f, 6.0f);
+		marbles[5].Radius = 1.0f;
+		marbles[5].Mass = 5.0f;
+		marbles[5].Velocity = vec3(0.02f, 0.02f, 0.002f);
+		marbles[5].Color = vec3(0.0f, 200.0f, 0.0f);
+
+		AddMarble(world, &marbles[0]);
+		AddMarble(world, &marbles[1]);
+		AddMarble(world, &marbles[2]);
+		AddMarble(world, &marbles[3]);
+		AddMarble(world, &marbles[4]);
+		AddMarble(world, &marbles[5]);
+
+		walls[0].Normal = vec3(0.0f, 1.0f, 0.0f);
+		walls[0].D = -0.5f;
+
+		walls[1].Normal = normalize(vec3(0.0f, 1.0f, 1.0f));
+		walls[1].D = -2.0f;
+
+		walls[2].Normal = normalize(vec3(0.0f, 1.0f, -1.0f));
+		walls[2].D = -2.0f;
+
+		AddWall(world, &walls[0]);
+		//AddWall(world, &walls[1]);
+		//AddWall(world, &walls[2]);
 	}
 }
 

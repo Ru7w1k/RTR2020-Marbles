@@ -252,6 +252,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				ProcessKeyboard(scene.Camera, CAM_BACKWARD);
 			break;
 
+		case 'r':
+		case 'R':
+			if (GetScene(scene) && scene.ResetFunc != NULL)
+				scene.ResetFunc();
+			break;
+
 		default:
 			break;
 		}
@@ -463,6 +469,10 @@ void initialize(void)
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 
+	// blend test
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	// textures
 	glEnable(GL_TEXTURE_2D);
 
@@ -483,6 +493,9 @@ void initialize(void)
 			// warm-up resize
 			scene.ResizeFunc(WIN_WIDTH, WIN_HEIGHT);
 			LogD("Scene %s Resize() done..", scene.Name);
+
+			scene.ResetFunc();
+			LogD("Scene %s Reset() done..", scene.Name);
 		}
 	}
 
