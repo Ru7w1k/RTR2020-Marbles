@@ -1,6 +1,7 @@
 #include "main.h"
 #include "helper.h"
 #include "logger.h"
+#include "audio.h"
 
 #include "rigidBody.h"
 
@@ -49,6 +50,9 @@ void AddBox(World& world, Box* box)
 
 void DrawWorld(World& world)
 {
+	static float t = 0.0f;
+	t += 1.0f;
+
 	vector<vec3> lightPos;
 	vector<vec3> lightCol;
 
@@ -67,7 +71,11 @@ void DrawWorld(World& world)
 	for (int i = 0; i < world.Marbles.size(); i++)
 	{
 		mat4 modelMat = translate(world.Marbles[i]->Position);
+		modelMat *= rotate(t, 1.0f, 0.0f, 0.0f);
+		modelMat *= rotate(t+2.0f, 0.0f, 1.0f, 0.0f);
+		modelMat *= rotate(t-1.5f, 0.0f, 0.0f, 1.0f);
 		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMat);
+		useMaterial(world.Marbles[i]->mat);
 		DrawSphere();
 	}
 
@@ -104,10 +112,11 @@ void UpdateWorld(World& world, float time)
 			for (int j = 0; j < world.Walls.size(); j++)
 			{
 				float d = distance(world.Marbles[i]->Position, world.Walls[j]);
-				if (d <= world.Marbles[i]->Radius)
+				if (d < world.Marbles[i]->Radius)
 				{
+					world.Marbles[i]->Position -= (world.Marbles[i]->Radius - d) * normalize(world.Marbles[i]->Velocity);
 					world.Marbles[i]->Velocity = 0.8f * reflect(world.Marbles[i]->Velocity, world.Walls[j]->Normal);
-					world.Marbles[i]->Position += (world.Marbles[i]->Radius - d) * world.Walls[j]->Normal;
+					PlayAudio(world.Marbles[i]->Audio);
 				}
 			}
 
@@ -121,16 +130,19 @@ void UpdateWorld(World& world, float time)
 				float a =  dot(2.0f * k, (world.Marbles[i]->Velocity - world.Marbles[j]->Velocity)) /
 					((1.0f / world.Marbles[i]->Mass) + (1.0f / world.Marbles[j]->Mass));*/
 
-				if (d <= world.Marbles[i]->Radius + world.Marbles[j]->Radius)
+				if (d < world.Marbles[i]->Radius + world.Marbles[j]->Radius)
 				{
 					//world.Marbles[i]->Velocity = world.Marbles[i]->Velocity - ((a / world.Marbles[i]->Mass) * k);
 					//world.Marbles[j]->Velocity = world.Marbles[j]->Velocity - ((a / world.Marbles[j]->Mass) * k);
 
-					world.Marbles[i]->Velocity = 0.8f * reflect(world.Marbles[i]->Velocity, N);
-					world.Marbles[j]->Velocity = 0.8f * reflect(world.Marbles[j]->Velocity, N);
+					vec3 vA = 0.8f * reflect(world.Marbles[i]->Velocity,  N) + 0.1f * world.Marbles[j]->Velocity ;
+					vec3 vB = 0.8f * reflect(world.Marbles[j]->Velocity, -N) + 0.1f * world.Marbles[i]->Velocity ;
 
-					world.Marbles[i]->Position += (world.Marbles[i]->Radius - (0.5f * d)) * -N;
-					world.Marbles[j]->Position += (world.Marbles[j]->Radius - (0.5f * d)) * N;
+					world.Marbles[i]->Velocity = vA;
+					world.Marbles[j]->Velocity = vB;
+
+					world.Marbles[i]->Position += 0.5f * (world.Marbles[i]->Radius + world.Marbles[j]->Radius - d) * -N;
+					world.Marbles[j]->Position += 0.5f * (world.Marbles[i]->Radius + world.Marbles[j]->Radius - d) * N;
 				}
 			}
 		}

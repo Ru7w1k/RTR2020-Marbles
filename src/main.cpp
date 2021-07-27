@@ -2,6 +2,7 @@
 #include "main.h"
 #include "helper.h"
 #include "logger.h"
+#include "audio.h"
 
 // shaders
 #include "shader.h"
@@ -12,6 +13,7 @@
 
 #pragma comment(lib, "glew32.lib")
 #pragma comment(lib, "opengl32.lib")
+#pragma comment(lib, "openal32.lib")
 #pragma comment(lib, "assimp-vc142-mtd.lib")
 
 // macros

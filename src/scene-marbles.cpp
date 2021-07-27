@@ -32,6 +32,7 @@ namespace marbles
 	ParticleSystemParams params;
 
 	Material *matWood = NULL;
+	Material* mat[5];
 
 	World world;
 	Marble marbles[10];
@@ -62,6 +63,12 @@ namespace marbles
 		//matWood = loadMaterial("res\\materials\\wood");
 		//matWood = loadMaterial("res\\materials\\rusted_iron");
 		matWood = loadMaterial("res\\materials\\plastic");
+
+		mat[0] = loadMaterial("res\\materials\\plastic");
+		mat[1] = loadMaterial("res\\materials\\wood");
+		mat[2] = loadMaterial("res\\materials\\gold");
+		mat[3] = loadMaterial("res\\materials\\rusted_iron");
+		mat[4] = loadMaterial("res\\materials\\grass");
 				
 		return true;
 	}
@@ -100,7 +107,7 @@ namespace marbles
 		modelMatrix = mat4::identity();
 
 		// transformations
-		modelMatrix = scale(20.0f, 0.5f, 20.0f);
+		modelMatrix = scale(50.0f, 0.5f, 50.0f);
 
 		// send necessary matrices to shader in respective uniforms
 		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMatrix);
@@ -180,31 +187,31 @@ namespace marbles
 		marbles[0].Position = vec3(0.0f, 6.0f, 0.0f);
 		marbles[0].Radius = 1.0f;
 		marbles[0].Mass = 1.0f;
-		marbles[0].Velocity = vec3(0.02f, 0.0f, 0.0f);
+		marbles[0].Velocity = vec3(0.04f, 0.0f, 0.0f);
 		marbles[0].Color = vec3(200.0f, 200.0f, 200.0f);
 
 		marbles[1].Position = vec3(6.0f, 6.0f, 0.0f);
 		marbles[1].Radius = 1.0f;
 		marbles[1].Mass = 2.0f;
-		marbles[1].Velocity = vec3(0.02f, 0.02f, 0.0f);
+		marbles[1].Velocity = vec3(0.04f, 0.04f, 0.0f);
 		marbles[1].Color = vec3(200.0f, 0.0f, 200.0f);
 
 		marbles[2].Position = vec3(6.0f, 6.0f, 6.0f);
 		marbles[2].Radius = 1.0f;
 		marbles[2].Mass = 4.0f;
-		marbles[2].Velocity = vec3(0.02f, 0.02f, 0.002f);
+		marbles[2].Velocity = vec3(0.04f, 0.04f, 0.04f);
 		marbles[2].Color = vec3(0.0f, 200.0f, 200.0f);
 
 		marbles[3].Position = vec3(6.0f, 7.0f, 6.0f);
 		marbles[3].Radius = 1.0f;
 		marbles[3].Mass = 10.0f;
-		marbles[3].Velocity = vec3(0.02f, 0.02f, 0.002f);
+		marbles[3].Velocity = vec3(0.04f, 0.02f, 0.002f);
 		marbles[3].Color = vec3(200.0f, 200.0f, 0.0f);
 
 		marbles[4].Position = vec3(6.0f, 4.0f, 6.0f);
 		marbles[4].Radius = 1.0f;
 		marbles[4].Mass = 6.0f;
-		marbles[4].Velocity = vec3(0.02f, 0.02f, 0.002f);
+		marbles[4].Velocity = vec3(0.02f, 0.04f, 0.002f);
 		marbles[4].Color = vec3(200.0f, 0.0f, 0.0f);
 
 		marbles[5].Position = vec3(4.0f, 6.0f, 6.0f);
@@ -213,25 +220,62 @@ namespace marbles
 		marbles[5].Velocity = vec3(0.02f, 0.02f, 0.002f);
 		marbles[5].Color = vec3(0.0f, 200.0f, 0.0f);
 
+		marbles[6].Position = vec3(4.0f, 6.0f, 3.0f);
+		marbles[6].Radius = 1.0f;
+		marbles[6].Mass = 3.0f;
+		marbles[6].Velocity = vec3(0.02f, 0.02f, 0.002f);
+		marbles[6].Color = vec3(0.0f, 200.0f, 200.0f);
+
+		marbles[7].Position = vec3(4.0f, 12.0f, 6.0f);
+		marbles[7].Radius = 1.0f;
+		marbles[7].Mass = 15.0f;
+		marbles[7].Velocity = vec3(0.02f, 0.32f, 0.012f);
+		marbles[7].Color = vec3(100.0f, 200.0f, 0.0f);
+
+		marbles[8].Position = vec3(2.0f, 15.0f, 4.0f);
+		marbles[8].Radius = 1.0f;
+		marbles[8].Mass = 1.0f;
+		marbles[8].Velocity = vec3(0.04f, 0.02f, 0.042f);
+		marbles[8].Color = vec3(0.0f, 200.0f, 100.0f);
+
+		for (int i = 0; i < 9; i++)
+		{
+			//marbles[i].Position = vec3(0.0f, i * 2.50f, 0.0f);
+			//marbles[i].Velocity = vec3(0.0002f * i, 0.00015f * i, 0.0001f * i);
+			//marbles[i].Mass = 1.0f;
+			marbles[i].mat = mat[i % 5];
+		}
+
 		AddMarble(world, &marbles[0]);
 		AddMarble(world, &marbles[1]);
 		AddMarble(world, &marbles[2]);
 		AddMarble(world, &marbles[3]);
 		AddMarble(world, &marbles[4]);
 		AddMarble(world, &marbles[5]);
+		AddMarble(world, &marbles[6]);
+		AddMarble(world, &marbles[7]);
+		AddMarble(world, &marbles[8]);
 
 		walls[0].Normal = vec3(0.0f, 1.0f, 0.0f);
 		walls[0].D = -0.5f;
 
-		walls[1].Normal = normalize(vec3(0.0f, 1.0f, 1.0f));
-		walls[1].D = -2.0f;
+		walls[1].Normal = vec3(1.0f, 0.0f, 0.0f);
+		walls[1].D = -10.0f;
 
-		walls[2].Normal = normalize(vec3(0.0f, 1.0f, -1.0f));
-		walls[2].D = -2.0f;
+		walls[2].Normal = vec3(-1.0f, 0.0f, 0.0f);
+		walls[2].D = -10.0f;
+
+		walls[3].Normal = vec3(0.0f, 0.0f, 1.0f);
+		walls[3].D = -10.0f;
+
+		walls[4].Normal = vec3(0.0f, 0.0f, -1.0f);
+		walls[4].D = -10.0f;
 
 		AddWall(world, &walls[0]);
-		//AddWall(world, &walls[1]);
-		//AddWall(world, &walls[2]);
+		/*AddWall(world, &walls[1]);
+		AddWall(world, &walls[2]);
+		AddWall(world, &walls[3]);
+		AddWall(world, &walls[4]);*/
 	}
 }
 

@@ -6,6 +6,9 @@
 #include "gl/glew.h"
 #include <gl/GL.h>
 
+#include "AL/al.h"
+#include "AL/alc.h"
+
 #include "vmath.h"
 using namespace vmath;
 

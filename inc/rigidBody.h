@@ -17,6 +17,8 @@ typedef struct _Sphere
 	vec3 Color;
 	Material* mat;
 
+	ALuint Audio;
+
 } Marble;
 
 typedef struct _Plane
