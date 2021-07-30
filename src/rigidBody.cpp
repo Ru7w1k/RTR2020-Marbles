@@ -8,6 +8,7 @@
 #include "primitives.h"
 #include "PBRShader.h"
 
+#include <set>
 
 // helper functions
 float distance(vec3& point, Wall* wall)
@@ -89,6 +90,8 @@ void DrawWorld(World& world)
 
 void UpdateWorld(World& world, float time)
 {
+	set<ALuint>collided;
+
 	// delta steps per frame
 	for (int t = 0; t < 20; t++)
 	{
@@ -116,7 +119,11 @@ void UpdateWorld(World& world, float time)
 				{
 					world.Marbles[i]->Position -= (world.Marbles[i]->Radius - d) * normalize(world.Marbles[i]->Velocity);
 					world.Marbles[i]->Velocity = 0.8f * reflect(world.Marbles[i]->Velocity, world.Walls[j]->Normal);
-					PlayAudio(world.Marbles[i]->Audio);
+					
+					if ((world.Marbles[i]->Radius - d) >= 0.01f)
+					{
+						collided.insert(world.Marbles[i]->Audio);
+					}
 				}
 			}
 
@@ -126,15 +133,8 @@ void UpdateWorld(World& world, float time)
 				float d = distance(world.Marbles[i]->Position, world.Marbles[j]->Position);
 				vec3 N = normalize(world.Marbles[j]->Position - world.Marbles[i]->Position);
 
-				/*vec3 k = normalize(world.Marbles[i]->Position - world.Marbles[j]->Position);
-				float a =  dot(2.0f * k, (world.Marbles[i]->Velocity - world.Marbles[j]->Velocity)) /
-					((1.0f / world.Marbles[i]->Mass) + (1.0f / world.Marbles[j]->Mass));*/
-
 				if (d < world.Marbles[i]->Radius + world.Marbles[j]->Radius)
 				{
-					//world.Marbles[i]->Velocity = world.Marbles[i]->Velocity - ((a / world.Marbles[i]->Mass) * k);
-					//world.Marbles[j]->Velocity = world.Marbles[j]->Velocity - ((a / world.Marbles[j]->Mass) * k);
-
 					vec3 vA = 0.8f * reflect(world.Marbles[i]->Velocity,  N) + 0.1f * world.Marbles[j]->Velocity ;
 					vec3 vB = 0.8f * reflect(world.Marbles[j]->Velocity, -N) + 0.1f * world.Marbles[i]->Velocity ;
 
@@ -143,10 +143,22 @@ void UpdateWorld(World& world, float time)
 
 					world.Marbles[i]->Position += 0.5f * (world.Marbles[i]->Radius + world.Marbles[j]->Radius - d) * -N;
 					world.Marbles[j]->Position += 0.5f * (world.Marbles[i]->Radius + world.Marbles[j]->Radius - d) * N;
+
+					if (d >= 0.01f)
+					{
+						collided.insert(world.Marbles[i]->Audio);
+						collided.insert(world.Marbles[j]->Audio);
+					}
 				}
 			}
 		}
 	}
+
+	for (ALuint id : collided)
+	{
+		PlayAudio(id);
+	}
+
 }
 
 void DeleteWorld(World& world)

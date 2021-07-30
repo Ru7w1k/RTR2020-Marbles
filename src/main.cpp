@@ -431,6 +431,14 @@ void initialize(void)
 
 	// init logger
 	InitLogger();
+	
+	// init audio
+	if (!InitOpenAL())
+	{
+		LogE("InitOpenAL() failed..");
+		DestroyWindow(ghwnd);
+		return;
+	}
 
 	// fetch OpenGL related details
 	LogI("OpenGL Vendor:   %s", glGetString(GL_VENDOR));
@@ -582,6 +590,9 @@ void uninitialize(void)
 
 		ShowCursor(TRUE);
 	}
+
+	// uninit audio
+	UninitOpenAL();
 
 	// uninit all shaders
 	UninitAllShaders();

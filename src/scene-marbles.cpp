@@ -1,10 +1,10 @@
 // headers
 #include "main.h"
 #include "helper.h"
-#include "scene-marbles.h"
 #include "logger.h"
+#include "audio.h"
 
-#include "rigidBody.h"
+#include "scene-marbles.h"
 
 #include "material.h"
 #include "primitives.h"
@@ -13,6 +13,7 @@
 #include "PBRShader.h"
 
 // effects
+#include "rigidBody.h"
 #include "ParticleSystem.h"
 #include "camera.h"
 
@@ -37,6 +38,8 @@ namespace marbles
 	World world;
 	Marble marbles[10];
 	Wall walls[10];
+	ALuint audio[8];
+
 
 	bool Init(void)
 	{
@@ -69,12 +72,30 @@ namespace marbles
 		mat[2] = loadMaterial("res\\materials\\gold");
 		mat[3] = loadMaterial("res\\materials\\rusted_iron");
 		mat[4] = loadMaterial("res\\materials\\grass");
-				
+
+		audio[0] = LoadAudio("res\\audio\\01.wav");
+		audio[1] = LoadAudio("res\\audio\\02.wav");
+		audio[2] = LoadAudio("res\\audio\\03.wav");
+		audio[3] = LoadAudio("res\\audio\\04.wav");
+		audio[4] = LoadAudio("res\\audio\\05.wav");
+		audio[5] = LoadAudio("res\\audio\\06.wav");
+		audio[6] = LoadAudio("res\\audio\\07.wav");
+
 		return true;
 	}
 
 	void Uninit(void)
 	{
+		for(int i = 0; i < 5; i++)
+		{
+			deleteMaterial(mat[i]);
+		}
+
+		for(int i = 0; i < 7; i++)
+		{
+			UnloadAudio(audio[i]);
+		}
+
 		if (ps)
 		{
 			deleteParticleSystem(ps);
@@ -144,7 +165,6 @@ namespace marbles
 		//updateParticleSystem(ps);
 
 		UpdateWorld(world, 0.000002f * delta);
-
 
 		return false;
 	}
@@ -244,6 +264,7 @@ namespace marbles
 			//marbles[i].Velocity = vec3(0.0002f * i, 0.00015f * i, 0.0001f * i);
 			//marbles[i].Mass = 1.0f;
 			marbles[i].mat = mat[i % 5];
+			marbles[i].Audio = audio[i % 7];
 		}
 
 		AddMarble(world, &marbles[0]);

@@ -10,9 +10,8 @@
 
 //// OpenAL state ////////////////////////
 
-ALCdevice* device = NULL;
-ALCcontext* context = NULL;
-ALuint source;
+static ALCdevice* device = NULL;
+static ALCcontext* context = NULL;
 
 //////////////////////////////////////////
 
@@ -108,17 +107,16 @@ bool InitOpenAL(void)
 	}
 	LogD("OpenAL: Context set");
 
-	alGenSources(1, &source); 
-	LogD("OpenAL: Sourec generated");
-
-	alGetError(); // clear the error
+	ALenum err = alGetError(); // clear the error
 
 	return true;
 }
 
-ALuint LoadAudio(char* path)
+ALuint LoadAudio(const char* path)
 {
 	ALuint buffer;
+	ALuint source;
+	
 	ALenum alformat;
 	ALvoid* aldata;
 	int chan, samplerate, bps, size;
@@ -142,18 +140,21 @@ ALuint LoadAudio(char* path)
 	}
 
 	alBufferData(buffer, alformat, aldata, size, samplerate);
-	return buffer;
+
+	alGenSources(1, &source);
+	alSourcei(source, AL_BUFFER, buffer);
+
+	return source;
 }
 
-void PlayAudio(ALuint buffer)
+void PlayAudio(ALuint source)
 {
-	alSourcei(source, AL_BUFFER, buffer);
 	alSourcePlay(source);
 }
 
 void UnloadAudio(ALuint buffer)
 {
-	alDeleteBuffers(1, &buffer);
+	// alDeleteBuffers(1, &buffer);
 }
 
 void UninitOpenAL(void)
