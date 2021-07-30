@@ -90,7 +90,7 @@ void DrawWorld(World& world)
 
 void UpdateWorld(World& world, float time)
 {
-	set<ALuint>collided;
+	set<int>collided;
 
 	// delta steps per frame
 	for (int t = 0; t < 20; t++)
@@ -120,9 +120,9 @@ void UpdateWorld(World& world, float time)
 					world.Marbles[i]->Position -= (world.Marbles[i]->Radius - d) * normalize(world.Marbles[i]->Velocity);
 					world.Marbles[i]->Velocity = 0.8f * reflect(world.Marbles[i]->Velocity, world.Walls[j]->Normal);
 					
-					if ((world.Marbles[i]->Radius - d) >= 0.01f)
+					if (length(world.Marbles[i]->Velocity) > 0.001f)
 					{
-						collided.insert(world.Marbles[i]->Audio);
+						collided.insert(i);
 					}
 				}
 			}
@@ -135,6 +135,17 @@ void UpdateWorld(World& world, float time)
 
 				if (d < world.Marbles[i]->Radius + world.Marbles[j]->Radius)
 				{
+					if (length(world.Marbles[i]->Velocity) > 0.001f)
+					{
+						collided.insert(i);
+					}
+
+					if (length(world.Marbles[j]->Velocity) > 0.001f)
+					{
+						collided.insert(j);
+					}
+
+
 					vec3 vA = 0.8f * reflect(world.Marbles[i]->Velocity,  N) + 0.1f * world.Marbles[j]->Velocity ;
 					vec3 vB = 0.8f * reflect(world.Marbles[j]->Velocity, -N) + 0.1f * world.Marbles[i]->Velocity ;
 
@@ -143,22 +154,16 @@ void UpdateWorld(World& world, float time)
 
 					world.Marbles[i]->Position += 0.5f * (world.Marbles[i]->Radius + world.Marbles[j]->Radius - d) * -N;
 					world.Marbles[j]->Position += 0.5f * (world.Marbles[i]->Radius + world.Marbles[j]->Radius - d) * N;
-
-					if (d >= 0.01f)
-					{
-						collided.insert(world.Marbles[i]->Audio);
-						collided.insert(world.Marbles[j]->Audio);
-					}
 				}
 			}
 		}
 	}
 
-	for (ALuint id : collided)
+	for (int id : collided)
 	{
-		PlayAudio(id);
+		alSource3f(world.Marbles[id]->Audio, AL_POSITION, world.Marbles[id]->Position[0], world.Marbles[id]->Position[1], world.Marbles[id]->Position[2]);
+		PlayAudio(world.Marbles[id]->Audio);
 	}
-
 }
 
 void DeleteWorld(World& world)

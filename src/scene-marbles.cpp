@@ -68,10 +68,10 @@ namespace marbles
 		matWood = loadMaterial("res\\materials\\plastic");
 
 		mat[0] = loadMaterial("res\\materials\\plastic");
-		mat[1] = loadMaterial("res\\materials\\wood");
+		/*mat[1] = loadMaterial("res\\materials\\wood");
 		mat[2] = loadMaterial("res\\materials\\gold");
 		mat[3] = loadMaterial("res\\materials\\rusted_iron");
-		mat[4] = loadMaterial("res\\materials\\grass");
+		mat[4] = loadMaterial("res\\materials\\grass");*/
 
 		audio[0] = LoadAudio("res\\audio\\01.wav");
 		audio[1] = LoadAudio("res\\audio\\02.wav");
@@ -112,6 +112,8 @@ namespace marbles
 	void Display(void)
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		alListenerfv(AL_POSITION, SceneMarbles->Camera->Position);
 
 		// Particle system!
 		/*ps->mvpMatrix = projMatrix * GetViewMatrix(SceneMarbles->Camera);
@@ -260,10 +262,10 @@ namespace marbles
 
 		for (int i = 0; i < 9; i++)
 		{
-			//marbles[i].Position = vec3(0.0f, i * 2.50f, 0.0f);
+			marbles[i].Position = vec3(2.0f * (float)rand() / (float)RAND_MAX, i * 2.50f, 2.0f * (float)rand() / (float)RAND_MAX);
 			//marbles[i].Velocity = vec3(0.0002f * i, 0.00015f * i, 0.0001f * i);
 			//marbles[i].Mass = 1.0f;
-			marbles[i].mat = mat[i % 5];
+			marbles[i].mat = mat[0];
 			marbles[i].Audio = audio[i % 7];
 		}
 
