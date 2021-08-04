@@ -63,9 +63,9 @@ namespace marbles
 		ps->size = 32.0f;
 		ps->color = vec4(1.0f, 0.5f, 0.1f, 1.0f);
 
-		//matWood = loadMaterial("res\\materials\\wood");
+		matWood = loadMaterial("res\\materials\\wood");
 		//matWood = loadMaterial("res\\materials\\rusted_iron");
-		matWood = loadMaterial("res\\materials\\plastic");
+		//matWood = loadMaterial("res\\materials\\plastic");
 
 		mat[0] = loadMaterial("res\\materials\\plastic");
 		/*mat[1] = loadMaterial("res\\materials\\wood");
@@ -113,7 +113,7 @@ namespace marbles
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		alListenerfv(AL_POSITION, SceneMarbles->Camera->Position);
+		alListenerfv(AL_POSITION, normalize(SceneMarbles->Camera->Position));
 
 		// Particle system!
 		/*ps->mvpMatrix = projMatrix * GetViewMatrix(SceneMarbles->Camera);
@@ -130,7 +130,7 @@ namespace marbles
 		modelMatrix = mat4::identity();
 
 		// transformations
-		modelMatrix = scale(50.0f, 0.5f, 50.0f);
+		modelMatrix = scale(10.0f, 0.5f, 10.0f);
 
 		// send necessary matrices to shader in respective uniforms
 		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMatrix);
@@ -262,7 +262,7 @@ namespace marbles
 
 		for (int i = 0; i < 9; i++)
 		{
-			marbles[i].Position = vec3(2.0f * (float)rand() / (float)RAND_MAX, i * 2.50f, 2.0f * (float)rand() / (float)RAND_MAX);
+			marbles[i].Position = vec3(2.0f * (float)rand() / (float)RAND_MAX, (i+1) * 3.50f, 2.0f * (float)rand() / (float)RAND_MAX);
 			//marbles[i].Velocity = vec3(0.0002f * i, 0.00015f * i, 0.0001f * i);
 			//marbles[i].Mass = 1.0f;
 			marbles[i].mat = mat[0];
@@ -276,29 +276,35 @@ namespace marbles
 		AddMarble(world, &marbles[4]);
 		AddMarble(world, &marbles[5]);
 		AddMarble(world, &marbles[6]);
-		AddMarble(world, &marbles[7]);
-		AddMarble(world, &marbles[8]);
+		//AddMarble(world, &marbles[7]);
+		//AddMarble(world, &marbles[8]);
 
 		walls[0].Normal = vec3(0.0f, 1.0f, 0.0f);
 		walls[0].D = -0.5f;
 
 		walls[1].Normal = vec3(1.0f, 0.0f, 0.0f);
-		walls[1].D = -10.0f;
+		walls[1].D = -15.0f;
 
 		walls[2].Normal = vec3(-1.0f, 0.0f, 0.0f);
-		walls[2].D = -10.0f;
+		walls[2].D = -15.0f;
 
 		walls[3].Normal = vec3(0.0f, 0.0f, 1.0f);
-		walls[3].D = -10.0f;
+		walls[3].D = -15.0f;
 
 		walls[4].Normal = vec3(0.0f, 0.0f, -1.0f);
-		walls[4].D = -10.0f;
+		walls[4].D = -15.0f;
+
+		walls[5].Normal = vec3(0.0f, 1.0f, 0.0f);
+		walls[5].D = -1.0f;
+		walls[5].MinPoint = vec3(-2.0f, 1.0f, -2.0f);
+		walls[5].MaxPoint = vec3(2.0f, 1.0f, 2.0f);
 
 		AddWall(world, &walls[0]);
-		/*AddWall(world, &walls[1]);
+		AddWall(world, &walls[1]);
 		AddWall(world, &walls[2]);
 		AddWall(world, &walls[3]);
-		AddWall(world, &walls[4]);*/
+		AddWall(world, &walls[4]);
+		AddWall(world, &walls[5]);
 	}
 }
 

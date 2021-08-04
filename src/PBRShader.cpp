@@ -134,13 +134,13 @@ bool InitPBRShader()
 
 		"	vec3 Lo = vec3(0.0); \n" \
 
-		"	for(int i = 0; i < 6; i++) \n" \
+		"	for(int i = 0; i < 9; i++) \n" \
 		"	{ \n" \
 		"		vec3 L = normalize(lightPosition[i] - out_WorldPos); \n" \
 		"		vec3 H = normalize(V + L); \n" \
 		"		float distance = length(lightPosition[i] - out_WorldPos); \n" \
 		"		float attenuation = 1.0 / (distance * distance); \n" \
-		"		vec3 radiance = lightColor[i] * attenuation; \n" \
+		"		vec3 radiance = 7.0f * lightColor[i] * attenuation; \n" \
 
 		"		float NDF = DistributionGGX(N, H, roughness); \n" \
 		"		float G   = GeometrySmith(N, V, L, roughness); \n" \

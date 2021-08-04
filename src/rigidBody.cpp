@@ -19,6 +19,16 @@ float distance(vec3& point, Wall* wall)
 		+ wall->D);
 }
 
+bool withinRange(Marble* marble, Wall* wall)
+{
+	return marble->Position[0] >= wall->MinPoint[0] + marble->Radius
+		//&& marble->Position[1] >= wall->MinPoint[1] + marble->Radius
+		&& marble->Position[2] >= wall->MinPoint[2] + marble->Radius
+		&& marble->Position[0] <= wall->MaxPoint[0] + marble->Radius
+		//&& marble->Position[1] <= wall->MaxPoint[1] + marble->Radius
+		&& marble->Position[2] <= wall->MaxPoint[2] + marble->Radius;
+}
+
 
 // constructor functions
 Marble* NewMarble()
@@ -111,7 +121,7 @@ void UpdateWorld(World& world, float time)
 		// for each marble resolve collisions
 		for (int i = 0; i < world.Marbles.size(); i++)
 		{
-			// collision check with all walls
+			// collision check with all infinite large walls
 			for (int j = 0; j < world.Walls.size(); j++)
 			{
 				float d = distance(world.Marbles[i]->Position, world.Walls[j]);
@@ -126,6 +136,22 @@ void UpdateWorld(World& world, float time)
 					}
 				}
 			}
+
+			// collision check with all finite walls
+			/*for (int j = 5; j < world.Walls.size(); j++)
+			{
+				float d = distance(world.Marbles[i]->Position, world.Walls[j]);
+				if (d < world.Marbles[i]->Radius && withinRange(world.Marbles[i], world.Walls[j]))
+				{
+					world.Marbles[i]->Position -= (world.Marbles[i]->Radius - d) * normalize(world.Marbles[i]->Velocity);
+					world.Marbles[i]->Velocity = 0.8f * reflect(world.Marbles[i]->Velocity, world.Walls[j]->Normal);
+
+					if (length(world.Marbles[i]->Velocity) > 0.001f)
+					{
+						collided.insert(i);
+					}
+				}
+			}*/
 
 			// collision with other marbles
 			for (int j = i+1; j < world.Marbles.size(); j++)
@@ -161,7 +187,7 @@ void UpdateWorld(World& world, float time)
 
 	for (int id : collided)
 	{
-		alSource3f(world.Marbles[id]->Audio, AL_POSITION, world.Marbles[id]->Position[0], world.Marbles[id]->Position[1], world.Marbles[id]->Position[2]);
+		alSourcefv(world.Marbles[id]->Audio, AL_POSITION, -normalize(world.Marbles[id]->Position));
 		PlayAudio(world.Marbles[id]->Audio);
 	}
 }
