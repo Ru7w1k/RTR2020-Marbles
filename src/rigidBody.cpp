@@ -122,7 +122,7 @@ void UpdateWorld(World& world, float time)
 		for (int i = 0; i < world.Marbles.size(); i++)
 		{
 			// collision check with all infinite large walls
-			for (int j = 0; j < world.Walls.size(); j++)
+			for (int j = 0; j < 5; j++)
 			{
 				float d = distance(world.Marbles[i]->Position, world.Walls[j]);
 				if (d < world.Marbles[i]->Radius)
@@ -138,7 +138,7 @@ void UpdateWorld(World& world, float time)
 			}
 
 			// collision check with all finite walls
-			/*for (int j = 5; j < world.Walls.size(); j++)
+			for (int j = 5; j < world.Walls.size(); j++)
 			{
 				float d = distance(world.Marbles[i]->Position, world.Walls[j]);
 				if (d < world.Marbles[i]->Radius && withinRange(world.Marbles[i], world.Walls[j]))
@@ -151,7 +151,7 @@ void UpdateWorld(World& world, float time)
 						collided.insert(i);
 					}
 				}
-			}*/
+			}
 
 			// collision with other marbles
 			for (int j = i+1; j < world.Marbles.size(); j++)

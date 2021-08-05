@@ -8,9 +8,11 @@
 
 #include "material.h"
 #include "primitives.h"
+#include "framebuffer.h"
 
 // shaders
 #include "PBRShader.h"
+#include "TextureShader.h"
 
 // effects
 #include "rigidBody.h"
@@ -40,6 +42,7 @@ namespace marbles
 	Wall walls[10];
 	ALuint audio[8];
 
+	Framebuffer *fboMain = NULL;
 
 	bool Init(void)
 	{
@@ -81,6 +84,13 @@ namespace marbles
 		audio[5] = LoadAudio("res\\audio\\06.wav");
 		audio[6] = LoadAudio("res\\audio\\07.wav");
 
+		FramebufferParams params;
+		params.width = 800;
+		params.height = 600;
+		params.nColors = 2;
+
+		fboMain = CreateFramebuffer(&params);
+
 		return true;
 	}
 
@@ -101,6 +111,11 @@ namespace marbles
 			deleteParticleSystem(ps);
 		}
 
+		if (fboMain)
+		{
+			DeleteFramebuffer(fboMain);
+		}
+
 		// free the scene
 		if (SceneMarbles)
 		{
@@ -111,6 +126,9 @@ namespace marbles
 
 	void Display(void)
 	{
+		glBindFramebuffer(GL_FRAMEBUFFER, fboMain->fbo);
+		
+		glViewport(0, 0, gWidth, gHeight);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		alListenerfv(AL_POSITION, normalize(SceneMarbles->Camera->Position));
@@ -143,19 +161,17 @@ namespace marbles
 		useMaterial(matWood);
 		DrawCube();
 
-		/*glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, translate(0.0f, 6.0f, 0.0f) * rotate(angleTriangle, 0.0f, 1.0f, 0.0f));
-		DrawSphere();
-
-		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, translate(6.0f, 6.0f, 0.0f) * rotate(angleTriangle, 0.0f, 1.0f, 0.0f));
-		DrawSphere();
-
-		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, translate(6.0f, 6.0f, 6.0f) * rotate(angleTriangle, 0.0f, 1.0f, 0.0f));
-		DrawSphere();*/
 
 		DrawWorld(world);
 
 		// stop using OpenGL program object
 		glUseProgram(0);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, gWidth, gHeight);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		DrawFramebuffer(fboMain);
 
 	}
 
@@ -199,6 +215,7 @@ namespace marbles
 			-dim, dim);*/
 
 		projMatrix = vmath::perspective(45.0f + SceneMarbles->Camera->Zoom, (float)width / (float)height, 0.1f, 100.0f);
+		ResizeFramebuffer(fboMain, width, height);
 
 	}
 

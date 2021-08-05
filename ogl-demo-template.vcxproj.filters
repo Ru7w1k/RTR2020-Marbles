@@ -90,6 +90,9 @@
     <ClCompile Include="src\audio.cpp">
       <Filter>Source Files\helper</Filter>
     </ClCompile>
+    <ClCompile Include="src\framebuffer.cpp">
+      <Filter>Source Files\helper</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="res\main.rc">
@@ -161,6 +164,9 @@
       <Filter>Header Files\helper</Filter>
     </ClInclude>
     <ClInclude Include="inc\audio.h">
+      <Filter>Header Files\helper</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\framebuffer.h">
       <Filter>Header Files\helper</Filter>
     </ClInclude>
   </ItemGroup>
