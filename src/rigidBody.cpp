@@ -124,10 +124,16 @@ void UpdateWorld(World& world, float time)
 			for (int j = 0; j < 5; j++)
 			{
 				float d = distance(world.Marbles[i]->Position, world.Walls[j]);
-				if (d < world.Marbles[i]->Radius)
+				if (d <= world.Marbles[i]->Radius)
 				{
 					world.Marbles[i]->Position -= (world.Marbles[i]->Radius - d) * normalize(world.Marbles[i]->Velocity);
 					world.Marbles[i]->Velocity = 0.8f * reflect(world.Marbles[i]->Velocity, world.Walls[j]->Normal);
+
+					float dt = dot(world.Walls[j]->Normal, normalize(world.Marbles[i]->Velocity));
+					if (-0.001 < dt && dt < 0.001)
+					{
+						LogD("Flat motion! rotate sphere");
+					}
 					
 					if (length(world.Marbles[i]->Velocity) > 0.001f)
 					{
@@ -140,7 +146,7 @@ void UpdateWorld(World& world, float time)
 			for (int j = 5; j < world.Walls.size(); j++)
 			{
 				float d = distance(world.Marbles[i]->Position, world.Walls[j]);
-				if (d < world.Marbles[i]->Radius && withinRange(world.Marbles[i], world.Walls[j]))
+				if (d <= world.Marbles[i]->Radius && withinRange(world.Marbles[i], world.Walls[j]))
 				{
 					world.Marbles[i]->Position -= (world.Marbles[i]->Radius - d) * normalize(world.Marbles[i]->Velocity);
 					world.Marbles[i]->Velocity = 0.8f * reflect(world.Marbles[i]->Velocity, world.Walls[j]->Normal);
@@ -158,7 +164,7 @@ void UpdateWorld(World& world, float time)
 				float d = distance(world.Marbles[i]->Position, world.Marbles[j]->Position);
 				vec3 N = normalize(world.Marbles[j]->Position - world.Marbles[i]->Position);
 
-				if (d < world.Marbles[i]->Radius + world.Marbles[j]->Radius)
+				if (d <= world.Marbles[i]->Radius + world.Marbles[j]->Radius)
 				{
 					if (length(world.Marbles[i]->Velocity) > 0.001f)
 					{
@@ -171,8 +177,8 @@ void UpdateWorld(World& world, float time)
 					}
 
 
-					vec3 vA = 0.8f * reflect(world.Marbles[i]->Velocity,  N) + 0.1f * world.Marbles[j]->Velocity ;
-					vec3 vB = 0.8f * reflect(world.Marbles[j]->Velocity, -N) + 0.1f * world.Marbles[i]->Velocity ;
+					vec3 vA = 0.7f * reflect(world.Marbles[i]->Velocity,  N) + 0.3f * world.Marbles[j]->Velocity ;
+					vec3 vB = 0.7f * reflect(world.Marbles[j]->Velocity, -N) + 0.3f * world.Marbles[i]->Velocity ;
 
 					world.Marbles[i]->Velocity = vA;
 					world.Marbles[j]->Velocity = vB;

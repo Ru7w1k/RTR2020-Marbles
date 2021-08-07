@@ -34,7 +34,7 @@ namespace marbles
 	ParticleSystem* ps = NULL;
 	ParticleSystemParams params;
 
-	Material *matWood = NULL;
+	Material *matPlastic = NULL;
 	Material* mat[5];
 
 	World world;
@@ -66,9 +66,9 @@ namespace marbles
 		ps->size = 32.0f;
 		ps->color = vec4(1.0f, 0.5f, 0.1f, 1.0f);
 
-		matWood = loadMaterial("res\\materials\\wood");
+		//matPlastic = loadMaterial("res\\materials\\wood");
 		//matWood = loadMaterial("res\\materials\\rusted_iron");
-		//matWood = loadMaterial("res\\materials\\plastic");
+		matPlastic = loadMaterial("res\\materials\\plastic");
 
 		mat[0] = loadMaterial("res\\materials\\plastic");
 		/*mat[1] = loadMaterial("res\\materials\\wood");
@@ -159,7 +159,7 @@ namespace marbles
 		glUniform3fv(u->cameraPosUniform, 1, SceneMarbles->Camera->Position);
 		
 		glUniform1f(u->alpha, 1.0f);
-		useMaterial(matWood);
+		useMaterial(matPlastic);
 		DrawCube();
 
 
@@ -280,9 +280,9 @@ namespace marbles
 
 		for (int i = 0; i < 9; i++)
 		{
-			marbles[i].Position = vec3(2.0f * (float)rand() / (float)RAND_MAX, (i+1) * 3.50f, 2.0f * (float)rand() / (float)RAND_MAX);
-			//marbles[i].Velocity = vec3(0.0002f * i, 0.00015f * i, 0.0001f * i);
-			//marbles[i].Mass = 1.0f;
+			marbles[i].Position = vec3((i-3)*2.5, (i+1) * 5.50f, 2.0f * (float)rand() / (float)RAND_MAX);
+			//marbles[i].Velocity = vec3(0.0f);
+			marbles[i].Mass = 10.0f;
 			marbles[i].mat = mat[0];
 			marbles[i].Audio = audio[i % 7];
 		}
@@ -322,7 +322,7 @@ namespace marbles
 		AddWall(world, &walls[2]);
 		AddWall(world, &walls[3]);
 		AddWall(world, &walls[4]);
-		AddWall(world, &walls[5]);
+		//AddWall(world, &walls[5]);
 	}
 }
 

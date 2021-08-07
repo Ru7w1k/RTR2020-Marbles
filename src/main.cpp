@@ -483,6 +483,10 @@ void initialize(void)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	// cull back face
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+
 	// textures
 	glEnable(GL_TEXTURE_2D);
 
