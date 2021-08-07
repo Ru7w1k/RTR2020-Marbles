@@ -157,7 +157,8 @@ namespace marbles
 
 		vec3 lightPos = vec3(0.0f, 10.0f, 0.0f);
 		glUniform3fv(u->cameraPosUniform, 1, SceneMarbles->Camera->Position);
-
+		
+		glUniform1f(u->alpha, 1.0f);
 		useMaterial(matWood);
 		DrawCube();
 

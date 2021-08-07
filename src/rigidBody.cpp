@@ -74,10 +74,9 @@ void DrawWorld(World& world)
 		lightCol.push_back(world.Marbles[i]->Color);
 	}
 
-
 	glUniform3fv(u->lightPosUniform, (GLsizei)world.Marbles.size(), (GLfloat *)lightPos.data());
 	glUniform3fv(u->lightColUniform, (GLsizei)world.Marbles.size(), (GLfloat *)lightCol.data());
-
+	glUniform1f(u->alpha, 0.7f);
 
 	for (int i = 0; i < world.Marbles.size(); i++)
 	{

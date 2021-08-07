@@ -61,6 +61,8 @@ bool InitPBRShader()
 
 		"uniform vec3 cameraPos; \n" \
 
+		"uniform float alpha = 1.0; \n" \
+
 		"vec3 getNormalFromMap() \n" \
 		"{ \n" \
 		"	vec3 tangentNormal = texture(normalMap, out_Texcoord).xyz * 2.0 - 1.0; \n" \
@@ -167,7 +169,7 @@ bool InitPBRShader()
 		"	color = color / (color + vec3(1.0)); \n" \
 		"	color = pow(color, vec3(1.0 / 2.2)); \n" \
 
-		"	FragColor = vec4(color, 1.0); \n" \
+		"	FragColor = vec4(color, alpha); \n" \
 		"} \n";
 
 	// compile shaders
@@ -208,6 +210,8 @@ bool InitPBRShader()
 	PBRUniforms->lightPosUniform = glGetUniformLocation(PBRShader, "lightPosition");
 	PBRUniforms->lightColUniform = glGetUniformLocation(PBRShader, "lightColor");
 	PBRUniforms->cameraPosUniform = glGetUniformLocation(PBRShader, "cameraPos");
+
+	PBRUniforms->alpha = glGetUniformLocation(PBRShader, "alpha");
 
 	GLint albedoMapUniform = glGetUniformLocation(PBRShader, "albedoMap");
 	GLint normalMapUniform = glGetUniformLocation(PBRShader, "normalMap");
