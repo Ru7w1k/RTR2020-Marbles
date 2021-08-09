@@ -91,6 +91,8 @@ namespace marbles
 
 		fboMain = CreateFramebuffer(&params);
 
+		world.cam = SceneMarbles->Camera;
+
 		return true;
 	}
 
@@ -280,11 +282,13 @@ namespace marbles
 
 		for (int i = 0; i < 9; i++)
 		{
-			marbles[i].Position = vec3((i-3)*2.5, (i+1) * 5.50f, 2.0f * (float)rand() / (float)RAND_MAX);
-			//marbles[i].Velocity = vec3(0.0f);
+			marbles[i].Position = vec3((i-3)*2.5f, (i+1) * 5.50f, 2.0f * (float)rand() / (float)RAND_MAX);
+			marbles[i].Velocity = vec3(0.1f, 0.0f, 0.0f);
 			marbles[i].Mass = 10.0f;
 			marbles[i].mat = mat[0];
 			marbles[i].Audio = audio[i % 7];
+			marbles[i].Angle = 0.0f;
+			marbles[i].Axis = vec3();
 		}
 
 		AddMarble(world, &marbles[0]);
@@ -294,10 +298,11 @@ namespace marbles
 		AddMarble(world, &marbles[4]);
 		AddMarble(world, &marbles[5]);
 		AddMarble(world, &marbles[6]);
+
 		//AddMarble(world, &marbles[7]);
 		//AddMarble(world, &marbles[8]);
 
-		walls[0].Normal = vec3(0.0f, 1.0f, 0.0f);
+		walls[0].Normal = normalize(vec3(0.0f, 1.0f, 0.0f));
 		walls[0].D = -0.5f;
 
 		walls[1].Normal = vec3(1.0f, 0.0f, 0.0f);

@@ -1,5 +1,6 @@
 #pragma once
 #include "main.h"
+#include "Camera.h"
 
 #include <vector>
 using namespace std;
@@ -13,6 +14,10 @@ typedef struct _Sphere
 
 	float Mass;
 	vec3 Velocity;
+
+	bool Roll;
+	float Angle;
+	vec3 Axis;
 
 	vec3 Color;
 	Material* mat;
@@ -42,6 +47,8 @@ typedef struct _World
 	vector<Marble*> Marbles;
 	vector<Wall*> Walls;
 	vector<Box*> Boxes;
+
+	Camera* cam;
 
 } World;
 

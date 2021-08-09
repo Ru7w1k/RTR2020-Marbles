@@ -9,6 +9,7 @@
 #include "PBRShader.h"
 
 #include <set>
+#include <map>
 
 // helper functions
 float distance(vec3& point, Wall* wall)
@@ -61,6 +62,7 @@ void AddBox(World& world, Box* box)
 
 void DrawWorld(World& world)
 {
+	map<float, int> sortedMarbles;
 	static float t = 0.0f;
 	t += 1.0f;
 
@@ -78,14 +80,26 @@ void DrawWorld(World& world)
 	glUniform3fv(u->lightColUniform, (GLsizei)world.Marbles.size(), (GLfloat *)lightCol.data());
 	glUniform1f(u->alpha, 0.7f);
 
+	// sort marbles wrt depth for bleding
 	for (int i = 0; i < world.Marbles.size(); i++)
 	{
-		mat4 modelMat = translate(world.Marbles[i]->Position);
-		modelMat *= rotate(t, 1.0f, 0.0f, 0.0f);
-		modelMat *= rotate(t+2.0f, 0.0f, 1.0f, 0.0f);
-		modelMat *= rotate(t-1.5f, 0.0f, 0.0f, 1.0f);
+		float d = distance(world.cam->Position, world.Marbles[i]->Position);
+		sortedMarbles[d] = i;
+	}
+
+	// draw
+	for (map<float, int>::reverse_iterator it = sortedMarbles.rbegin(); it != sortedMarbles.rend(); it++)
+	{
+		mat4 modelMat = translate(world.Marbles[it->second]->Position);
+		if (world.Marbles[it->second]->Roll)
+		{
+			//modelMat *= rotate(world.Marbles[i]->Angle * 57.2957f, 0.0f, 1.0f, 0.0f);
+			modelMat *= rotate(world.Marbles[it->second]->Angle * 57.2957f, world.Marbles[it->second]->Axis);
+		}
+
 		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMat);
-		useMaterial(world.Marbles[i]->mat);
+		useMaterial(world.Marbles[it->second]->mat);
+		DrawCube();
 		DrawSphere();
 	}
 
@@ -115,6 +129,12 @@ void UpdateWorld(World& world, float time)
 
 			world.Marbles[i]->Velocity = v;
 			world.Marbles[i]->Position = world.Marbles[i]->Position + s;
+
+			if (world.Marbles[i]->Roll)
+			{
+				world.Marbles[i]->Angle += length(s); // / world.Marbles[i]->Radius;
+				LogD("Angle: %f", world.Marbles[i]->Angle);
+			}
 		}
 
 		// for each marble resolve collisions
@@ -129,14 +149,11 @@ void UpdateWorld(World& world, float time)
 					world.Marbles[i]->Position -= (world.Marbles[i]->Radius - d) * normalize(world.Marbles[i]->Velocity);
 					world.Marbles[i]->Velocity = 0.8f * reflect(world.Marbles[i]->Velocity, world.Walls[j]->Normal);
 
-					float dt = dot(world.Walls[j]->Normal, normalize(world.Marbles[i]->Velocity));
-					if (-0.001 < dt && dt < 0.001)
-					{
-						LogD("Flat motion! rotate sphere");
-					}
-					
 					if (length(world.Marbles[i]->Velocity) > 0.001f)
 					{
+						world.Marbles[i]->Roll = true;
+						world.Marbles[i]->Axis = normalize(cross(world.Walls[j]->Normal, normalize(world.Marbles[i]->Velocity)));
+						LogD("Axis: %f %f %f", world.Marbles[i]->Axis[0], world.Marbles[i]->Axis[1], world.Marbles[i]->Axis[2]);
 						collided.insert(i);
 					}
 				}
