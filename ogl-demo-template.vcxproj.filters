@@ -93,6 +93,9 @@
     <ClCompile Include="src\framebuffer.cpp">
       <Filter>Source Files\helper</Filter>
     </ClCompile>
+    <ClCompile Include="src\BlurShader.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="res\main.rc">
@@ -168,6 +171,9 @@
     </ClInclude>
     <ClInclude Include="inc\framebuffer.h">
       <Filter>Header Files\helper</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\BlurShader.h">
+      <Filter>Header Files\shaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

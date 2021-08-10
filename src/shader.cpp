@@ -7,6 +7,7 @@
 #include "TextureShader.h"
 #include "ParticleShader.h"
 #include "PBRShader.h"
+#include "BlurShader.h"
 
 bool InitAllShaders()
 {
@@ -15,6 +16,7 @@ bool InitAllShaders()
 	if (!InitTextureShader())  return false;
 	if (!InitParticleShader()) return false;
 	if (!InitPBRShader())      return false;
+	if (!InitBlurShader())     return false;
 
 	return true;
 }
@@ -25,5 +27,6 @@ void UninitAllShaders()
 	UninitTextureShader();
 	UninitParticleShader();
 	UninitPBRShader();
+	UninitBlurShader();
 	return;
 }

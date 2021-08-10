@@ -5,6 +5,8 @@
 #include <vector>
 using namespace std;
 
+#define M_PI_F (float)M_PI
+
 // code
 void DrawSphere(void)
 {
@@ -19,8 +21,6 @@ void DrawSphere(void)
 	const GLfloat r = 1.0f;
 	const int n = 60;
 	int i, j;
-	GLfloat phi1, phi2, theta, s, t;
-	GLfloat ex, ey, ez, px, py, pz;
 
 	// code
 	if (!vao)
@@ -35,9 +35,9 @@ void DrawSphere(void)
 				float xSeg = (float)i / (float)n;
 				float ySeg = (float)j / (float)n;
 
-				float xPos = cosf(xSeg * 2.0f * M_PI) * sinf(ySeg * M_PI);
-				float yPos = cosf(ySeg * M_PI);
-				float zPos = sinf(xSeg * 2.0f * M_PI) * sinf(ySeg * M_PI);
+				float xPos = cosf(xSeg * 2.0f * M_PI_F) * sinf(ySeg * M_PI_F);
+				float yPos = cosf(ySeg * M_PI_F);
+				float zPos = sinf(xSeg * 2.0f * M_PI_F) * sinf(ySeg * M_PI_F);
 
 				positions.push_back(r * vec3(xPos, yPos, zPos));
 				normals.push_back(vec3(xPos, yPos, zPos));
@@ -66,7 +66,7 @@ void DrawSphere(void)
 			}
 			bOddRow = !bOddRow;
 		}
-		iNoOfElements = indices.size();
+		iNoOfElements = (int)indices.size();
 
 		vector<float> vertData;
 		for (int i = 0; i < positions.size(); i++)
@@ -132,35 +132,35 @@ void DrawCube(void)
 		-0.4f,  0.4f,  0.4f,	0.0f, 1.0f, 0.0f,	0.0f, 1.0f,
 		 0.4f,  0.4f,  0.4f,	0.0f, 1.0f, 0.0f,	1.0f, 1.0f,
 
-		 /* Bottom */
-		  0.4f, -0.4f,  0.4f,	0.0f, -1.0f, 0.0f,	1.0f, 1.0f,
-		 -0.4f, -0.4f,  0.4f,	0.0f, -1.0f, 0.0f,	0.0f, 1.0f,
-		 -0.4f, -0.4f, -0.4f,	0.0f, -1.0f, 0.0f,	0.0f, 0.0f,
-		  0.4f, -0.4f, -0.4f,	0.0f, -1.0f, 0.0f,	1.0f, 0.0f,
+		/* Bottom */
+		 0.4f, -0.4f,  0.4f,	0.0f, -1.0f, 0.0f,	1.0f, 1.0f,
+		-0.4f, -0.4f,  0.4f,	0.0f, -1.0f, 0.0f,	0.0f, 1.0f,
+		-0.4f, -0.4f, -0.4f,	0.0f, -1.0f, 0.0f,	0.0f, 0.0f,
+		 0.4f, -0.4f, -0.4f,	0.0f, -1.0f, 0.0f,	1.0f, 0.0f,
 
-		  /* Front */
-		   0.4f,  0.4f,  0.4f,	0.0f, 0.0f, 1.0f,	1.0f, 1.0f,
-		  -0.4f,  0.4f,  0.4f,	0.0f, 0.0f, 1.0f,	0.0f, 1.0f,
-		  -0.4f, -0.4f,  0.4f,	0.0f, 0.0f, 1.0f,	0.0f, 0.0f,
-		   0.4f, -0.4f,  0.4f,	0.0f, 0.0f, 1.0f,	1.0f, 0.0f,
+		/* Front */
+		 0.4f,  0.4f,  0.4f,	0.0f, 0.0f, 1.0f,	1.0f, 1.0f,
+		-0.4f,  0.4f,  0.4f,	0.0f, 0.0f, 1.0f,	0.0f, 1.0f,
+		-0.4f, -0.4f,  0.4f,	0.0f, 0.0f, 1.0f,	0.0f, 0.0f,
+		 0.4f, -0.4f,  0.4f,	0.0f, 0.0f, 1.0f,	1.0f, 0.0f,
 
-		   /* Back */
-			0.4f, -0.4f, -0.4f,	0.0f, 0.0f, -1.0f,	1.0f, 0.0f,
-		   -0.4f, -0.4f, -0.4f,	0.0f, 0.0f, -1.0f,	0.0f, 0.0f,
-		   -0.4f,  0.4f, -0.4f,	0.0f, 0.0f, -1.0f,	0.0f, 1.0f,
-			0.4f,  0.4f, -0.4f,	0.0f, 0.0f, -1.0f,	1.0f, 1.0f,
+		/* Back */
+		 0.4f, -0.4f, -0.4f,	0.0f, 0.0f, -1.0f,	1.0f, 0.0f,
+		-0.4f, -0.4f, -0.4f,	0.0f, 0.0f, -1.0f,	0.0f, 0.0f,
+		-0.4f,  0.4f, -0.4f,	0.0f, 0.0f, -1.0f,	0.0f, 1.0f,
+		 0.4f,  0.4f, -0.4f,	0.0f, 0.0f, -1.0f,	1.0f, 1.0f,
 
-			/* Right */
-			0.4f,  0.4f, -0.4f,		1.0f, 0.0f, 0.0f,	1.0f, 0.0f,
-			0.4f,  0.4f,  0.4f,		1.0f, 0.0f, 0.0f,	1.0f, 1.0f,
-			0.4f, -0.4f,  0.4f,		1.0f, 0.0f, 0.0f,	0.0f, 1.0f,
-			0.4f, -0.4f, -0.4f,		1.0f, 0.0f, 0.0f,	0.0f, 0.0f,
+		/* Right */
+		 0.4f,  0.4f, -0.4f,	1.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+		 0.4f,  0.4f,  0.4f,	1.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+		 0.4f, -0.4f,  0.4f,	1.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+		 0.4f, -0.4f, -0.4f,	1.0f, 0.0f, 0.0f,	0.0f, 0.0f,
 
-			/* Left */
-			-0.4f,  0.4f,  0.4f,	-1.0f, 0.0f, 0.0f,	1.0f, 1.0f,
-			-0.4f,  0.4f, -0.4f,	-1.0f, 0.0f, 0.0f,	1.0f, 0.0f,
-			-0.4f, -0.4f, -0.4f,	-1.0f, 0.0f, 0.0f,	0.0f, 0.0f,
-			-0.4f, -0.4f,  0.4f,	-1.0f, 0.0f, 0.0f,	0.0f, 1.0f
+		/* Left */
+		-0.4f,  0.4f,  0.4f,	-1.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+		-0.4f,  0.4f, -0.4f,	-1.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+		-0.4f, -0.4f, -0.4f,	-1.0f, 0.0f, 0.0f,	0.0f, 0.0f,
+		-0.4f, -0.4f,  0.4f,	-1.0f, 0.0f, 0.0f,	0.0f, 1.0f
 	};
 
 	if (!vao || !vbo)

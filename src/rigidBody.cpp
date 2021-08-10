@@ -78,7 +78,7 @@ void DrawWorld(World& world)
 
 	glUniform3fv(u->lightPosUniform, (GLsizei)world.Marbles.size(), (GLfloat *)lightPos.data());
 	glUniform3fv(u->lightColUniform, (GLsizei)world.Marbles.size(), (GLfloat *)lightCol.data());
-	glUniform1f(u->alpha, 0.7f);
+	
 
 	// sort marbles wrt depth for bleding
 	for (int i = 0; i < world.Marbles.size(); i++)
@@ -99,7 +99,9 @@ void DrawWorld(World& world)
 
 		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMat);
 		useMaterial(world.Marbles[it->second]->mat);
+		glUniform1f(u->alpha, 1.0f);
 		DrawCube();
+		glUniform1f(u->alpha, 0.7f);
 		DrawSphere();
 	}
 

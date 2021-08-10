@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\audio.cpp" />
+    <ClCompile Include="src\BlurShader.cpp" />
     <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\ColorShader.cpp" />
     <ClCompile Include="src\framebuffer.cpp" />
@@ -171,6 +172,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\audio.h" />
+    <ClInclude Include="inc\BlurShader.h" />
     <ClInclude Include="inc\camera.h" />
     <ClInclude Include="inc\ColorShader.h" />
     <ClInclude Include="inc\framebuffer.h" />
