@@ -1092,9 +1092,36 @@ static inline Tmat4<T> rotate(T angle, T x, T y, T z)
 }
 
 template <typename T>
+static inline Tmat4<T> rotateR(T angle, T x, T y, T z)
+{
+    Tmat4<T> result;
+
+    const T x2 = x * x;
+    const T y2 = y * y;
+    const T z2 = z * z;
+    float rads = float(angle);
+    const float c = cosf(rads);
+    const float s = sinf(rads);
+    const float omc = 1.0f - c;
+
+    result[0] = Tvec4<T>(T(x2 * omc + c), T(y * x * omc + z * s), T(x * z * omc - y * s), T(0));
+    result[1] = Tvec4<T>(T(x * y * omc - z * s), T(y2 * omc + c), T(y * z * omc + x * s), T(0));
+    result[2] = Tvec4<T>(T(x * z * omc + y * s), T(y * z * omc - x * s), T(z2 * omc + c), T(0));
+    result[3] = Tvec4<T>(T(0), T(0), T(0), T(1));
+
+    return result;
+}
+
+template <typename T>
 static inline Tmat4<T> rotate(T angle, const vecN<T,3>& v)
 {
     return rotate<T>(angle, v[0], v[1], v[2]);
+}
+
+template <typename T>
+static inline Tmat4<T> rotateR(T angle, const vecN<T, 3>& v)
+{
+    return rotateR<T>(angle, v[0], v[1], v[2]);
 }
 
 template <typename T>
@@ -1103,6 +1130,14 @@ static inline Tmat4<T> rotate(T angle_x, T angle_y, T angle_z)
     return rotate(angle_z, 0.0f, 0.0f, 1.0f) *
            rotate(angle_y, 0.0f, 1.0f, 0.0f) *
            rotate(angle_x, 1.0f, 0.0f, 0.0f);
+}
+
+template <typename T>
+static inline Tmat4<T> rotateR(T angle_x, T angle_y, T angle_z)
+{
+    return rotateR(angle_z, 0.0f, 0.0f, 1.0f) *
+        rotateR(angle_y, 0.0f, 1.0f, 0.0f) *
+        rotateR(angle_x, 1.0f, 0.0f, 0.0f);
 }
 
 #ifdef min

@@ -22,16 +22,19 @@ Framebuffer* CreateFramebuffer(FramebufferParams* params)
 
 	// color textures
 	f->nColorTex = params->nColors;
+	glGenTextures(f->nColorTex, f->colorTex);
+
 	for (int i = 0; i < f->nColorTex; i++)
 	{
-		glGenTextures(1, &(f->colorTex[i]));
 		glBindTexture(GL_TEXTURE_2D, f->colorTex[i]);
-		glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, params->width, params->height);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, params->width, params->height, 0, GL_RGB, GL_FLOAT, NULL);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, f->colorTex[i], 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, f->colorTex[i], 0);
 		drawBuffers.push_back(GL_COLOR_ATTACHMENT0 + i);
 	}
 
@@ -81,10 +84,10 @@ void DeleteFramebuffer(Framebuffer* fb)
 	}
 }
 
-void DrawFramebuffer(Framebuffer* fb)
+void DrawFramebuffer(Framebuffer* fb, int colorIndex)
 {
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, fb->colorTex[0]);
+	glBindTexture(GL_TEXTURE_2D, fb->colorTex[colorIndex]);
 
 	TextureShaderUniforms *u = UseTextureShader();
 	glUniformMatrix4fv(u->mvpMatrixUniform, 1, GL_FALSE, mat4::identity());

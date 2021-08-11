@@ -93,14 +93,33 @@ void DrawWorld(World& world)
 		mat4 modelMat = translate(world.Marbles[it->second]->Position);
 		if (world.Marbles[it->second]->Roll)
 		{
-			//modelMat *= rotate(world.Marbles[i]->Angle * 57.2957f, 0.0f, 1.0f, 0.0f);
-			modelMat *= rotate(world.Marbles[it->second]->Angle * 57.2957f, world.Marbles[it->second]->Axis);
+			//mat4 r = rotateR(world.Marbles[it->second]->Angle, world.Marbles[it->second]->Axis);
+			//world.Marbles[it->second]->Angle = 0.0f;
+
+			//float sy = sqrtf(r[1][2] * r[1][2] + r[2][2] * r[2][2]);
+			//// not singular
+			//if (sy >= 1e-6)
+			//{
+			//	world.Marbles[it->second]->xAngle += atan2f(r[1][2], r[2][2]);
+			//	world.Marbles[it->second]->yAngle += atan2f(-r[0][2], sy);
+			//	world.Marbles[it->second]->zAngle += atan2f(r[0][1], r[0][0]);
+			//}
+			//// singular
+			//else
+			//{
+			//	world.Marbles[it->second]->xAngle += atan2f(-r[2][1], r[1][1]);
+			//	world.Marbles[it->second]->yAngle += atan2f(-r[0][2], sy);
+			//	// world.Marbles[it->second]->zAngle += 0.0f;
+			//}
+
+			modelMat *= vmath::rotateR(world.Marbles[it->second]->xAngle, world.Marbles[it->second]->yAngle, world.Marbles[it->second]->zAngle);
 		}
 
 		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMat);
 		useMaterial(world.Marbles[it->second]->mat);
 		glUniform1f(u->alpha, 1.0f);
-		DrawCube();
+		DrawModel(world.Marbles[it->second]->mLetter);
+
 		glUniform1f(u->alpha, 0.7f);
 		DrawSphere();
 	}
@@ -134,8 +153,26 @@ void UpdateWorld(World& world, float time)
 
 			if (world.Marbles[i]->Roll)
 			{
-				world.Marbles[i]->Angle += length(s); // / world.Marbles[i]->Radius;
-				LogD("Angle: %f", world.Marbles[i]->Angle);
+				world.Marbles[i]->Angle = length(s);
+
+				mat4 r = rotateR(world.Marbles[i]->Angle, world.Marbles[i]->Axis);
+				world.Marbles[i]->Angle = 0.0f;
+
+				float sy = sqrtf(r[1][2] * r[1][2] + r[2][2] * r[2][2]);
+				// not singular
+				if (sy >= 1e-6)
+				{
+					world.Marbles[i]->xAngle += atan2f(r[1][2], r[2][2]);
+					world.Marbles[i]->yAngle += atan2f(-r[0][2], sy);
+					world.Marbles[i]->zAngle += atan2f(r[0][1], r[0][0]);
+				}
+				// singular
+				else
+				{
+					world.Marbles[i]->xAngle += atan2f(-r[2][1], r[1][1]);
+					world.Marbles[i]->yAngle += atan2f(-r[0][2], sy);
+					// world.Marbles[it->second]->zAngle += 0.0f;
+				}
 			}
 		}
 
@@ -153,9 +190,11 @@ void UpdateWorld(World& world, float time)
 
 					if (length(world.Marbles[i]->Velocity) > 0.001f)
 					{
+						//world.Marbles[i]->rotate = rotate(world.Marbles[i]->Angle * 57.2957f, world.Marbles[i]->Axis);
+
 						world.Marbles[i]->Roll = true;
 						world.Marbles[i]->Axis = normalize(cross(world.Walls[j]->Normal, normalize(world.Marbles[i]->Velocity)));
-						LogD("Axis: %f %f %f", world.Marbles[i]->Axis[0], world.Marbles[i]->Axis[1], world.Marbles[i]->Axis[2]);
+						// LogD("Axis: %f %f %f", world.Marbles[i]->Axis[0], world.Marbles[i]->Axis[1], world.Marbles[i]->Axis[2]);
 						collided.insert(i);
 					}
 				}

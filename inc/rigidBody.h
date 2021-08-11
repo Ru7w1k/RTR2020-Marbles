@@ -6,6 +6,7 @@
 using namespace std;
 
 #include "material.h"
+#include "model.h"
 
 typedef struct _Sphere
 {
@@ -18,9 +19,16 @@ typedef struct _Sphere
 	bool Roll;
 	float Angle;
 	vec3 Axis;
+	float xAngle;
+	float yAngle;
+	float zAngle;
 
 	vec3 Color;
 	Material* mat;
+
+	Model* mLetter;
+
+	mat4 rotate;
 
 	ALuint Audio;
 

@@ -9,10 +9,12 @@
 #include "material.h"
 #include "primitives.h"
 #include "framebuffer.h"
+#include "model.h"
 
 // shaders
 #include "PBRShader.h"
 #include "TextureShader.h"
+#include "BlurShader.h"
 
 // effects
 #include "rigidBody.h"
@@ -43,6 +45,7 @@ namespace marbles
 	ALuint audio[8];
 
 	Framebuffer *fboMain = NULL;
+	Model* R = NULL;
 
 	bool Init(void)
 	{
@@ -83,6 +86,8 @@ namespace marbles
 		audio[4] = LoadAudio("res\\audio\\05.wav");
 		audio[5] = LoadAudio("res\\audio\\06.wav");
 		audio[6] = LoadAudio("res\\audio\\07.wav");
+
+		R = LoadModel("res\\models\\R.obj", false);
 
 		FramebufferParams params;
 		params.width = 800;
@@ -164,6 +169,9 @@ namespace marbles
 		useMaterial(matPlastic);
 		DrawCube();
 
+		modelMatrix = translate(0.0f, 2.0f, 0.0f);
+		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMatrix);
+		DrawModel(R);
 
 		DrawWorld(world);
 
@@ -174,7 +182,15 @@ namespace marbles
 		glViewport(0, 0, gWidth, gHeight);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		DrawFramebuffer(fboMain);
+		BlurShaderUniforms *u1 = UseBlurShader();
+		glUniform1i(u1->horizontal, 1);
+		glUniform1i(u1->image, 0);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, fboMain->colorTex[1]);
+		DrawPlane();
+
+		//DrawFramebuffer(fboMain, 0);
 
 	}
 
@@ -289,6 +305,11 @@ namespace marbles
 			marbles[i].Audio = audio[i % 7];
 			marbles[i].Angle = 0.0f;
 			marbles[i].Axis = vec3();
+			marbles[i].mLetter = R;
+			marbles[i].rotate = mat4::identity();
+			marbles[i].xAngle = 0.0f;
+			marbles[i].yAngle = 0.0f;
+			marbles[i].zAngle = 0.0f;
 		}
 
 		AddMarble(world, &marbles[0]);

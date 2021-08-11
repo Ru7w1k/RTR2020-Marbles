@@ -415,7 +415,7 @@ void getPose(Animation& animation, Bone& skeleton, float dt, vector<mat4>& outpu
 Model* LoadModel(const char* path, bool animate)
 {
 	LogI("loading model: %s [%s]", path, animate ? "with animation" : "without animation");
-	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals);
+	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_GenUVCoords);
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
 		LogE("assimp: %s", importer.GetErrorString());

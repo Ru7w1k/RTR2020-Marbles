@@ -44,7 +44,8 @@ bool InitPBRShader()
 
 		"const float PI = 3.14159265359; \n" \
 
-		"out vec4 FragColor; \n" \
+		"layout (location = 0) out vec4 FragColor; \n" \
+		"layout (location = 1) out vec4 BrightColor; \n" \
 
 		"in vec3 out_WorldPos; \n" \
 		"in vec3 out_Normal; \n" \
@@ -162,33 +163,6 @@ bool InitPBRShader()
 
 		"	} \n" \
 
-		"	if (alpha < -1.0f) { N *= -1.0f; \n" \
-		"	for(int i = 0; i < 9; i++) \n" \
-		"	{ \n" \
-		"		vec3 L = normalize(lightPosition[i] - out_WorldPos); \n" \
-		"		vec3 H = normalize(V + L); \n" \
-		"		float distance = length(lightPosition[i] - out_WorldPos); \n" \
-		"		float attenuation = 1.0 / (distance * distance); \n" \
-		"		vec3 radiance = 7.0f * lightColor[i] * attenuation; \n" \
-
-		"		float NDF = DistributionGGX(N, H, roughness); \n" \
-		"		float G   = GeometrySmith(N, V, L, roughness); \n" \
-		"		vec3 F    = fresnelSchlick(max(dot(H, V), 0.0), F0); \n" \
-
-		"		vec3 nominator   = NDF * G * F; \n" \
-		"		float denominator = 4 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.001; \n" \
-		"		vec3 specular = nominator / denominator; \n" \
-
-		"		vec3 kS = F; \n" \
-		"		vec3 kD = vec3(1.0) - kS; \n" \
-		"		kD *= 1.0 - metallic; \n" \
-
-		"		float NdotL = max(dot(N, L), 0.0); \n" \
-
-		"		Lo += (kD * albedo / PI + specular) * radiance * NdotL; \n" \
-
-		"	} } \n" \
-
 		"	vec3 ambient = vec3(0.01) * albedo * ao; \n" \
 
 		"	vec3 color = ambient + Lo; \n" \
@@ -197,6 +171,8 @@ bool InitPBRShader()
 		"	color = pow(color, vec3(1.0 / 2.2)); \n" \
 
 		"	FragColor = vec4(color, alpha); \n" \
+
+		"	BrightColor = vec4(1.0); \n" \
 		"} \n";
 
 	// compile shaders
