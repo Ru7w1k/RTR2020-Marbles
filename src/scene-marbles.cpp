@@ -15,6 +15,7 @@
 #include "PBRShader.h"
 #include "TextureShader.h"
 #include "BlurShader.h"
+#include "BloomShader.h"
 
 // effects
 #include "rigidBody.h"
@@ -44,8 +45,14 @@ namespace marbles
 	Wall walls[10];
 	ALuint audio[8];
 
+
 	Framebuffer *fboMain = NULL;
+	Framebuffer *fboPingpong[2] = {NULL, NULL};
+	
 	Model* R = NULL;
+	Model* T = NULL;
+	Model* _2 = NULL;
+	Model* _0 = NULL;
 
 	bool Init(void)
 	{
@@ -88,16 +95,23 @@ namespace marbles
 		audio[6] = LoadAudio("res\\audio\\07.wav");
 
 		R = LoadModel("res\\models\\R.obj", false);
+		T = LoadModel("res\\models\\T.obj", false);
+		_2 = LoadModel("res\\models\\2.obj", false);
+		_0 = LoadModel("res\\models\\0.obj", false);
 
 		FramebufferParams params;
 		params.width = 800;
 		params.height = 600;
 		params.nColors = 2;
+		params.bDepth = false;
 
+		fboPingpong[0] = CreateFramebuffer(&params);
+		fboPingpong[1] = CreateFramebuffer(&params);
+
+		params.bDepth = true;
 		fboMain = CreateFramebuffer(&params);
 
 		world.cam = SceneMarbles->Camera;
-
 		return true;
 	}
 
@@ -121,6 +135,16 @@ namespace marbles
 		if (fboMain)
 		{
 			DeleteFramebuffer(fboMain);
+		}
+
+		if (fboPingpong[0])
+		{
+			DeleteFramebuffer(fboPingpong[0]);
+		}
+
+		if (fboPingpong[1])
+		{
+			DeleteFramebuffer(fboPingpong[1]);
 		}
 
 		// free the scene
@@ -169,10 +193,6 @@ namespace marbles
 		useMaterial(matPlastic);
 		DrawCube();
 
-		modelMatrix = translate(0.0f, 2.0f, 0.0f);
-		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMatrix);
-		DrawModel(R);
-
 		DrawWorld(world);
 
 		// stop using OpenGL program object
@@ -186,11 +206,41 @@ namespace marbles
 		glUniform1i(u1->horizontal, 1);
 		glUniform1i(u1->image, 0);
 
+		unsigned int amount = 2;
+		bool horizontal = true, first_iter = true;
+		for (unsigned int i = 0; i < amount; i++)
+		{
+			glBindFramebuffer(GL_FRAMEBUFFER, fboPingpong[horizontal]->fbo);
+			glUniform1i(u1->horizontal, horizontal?1:0);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, first_iter ? fboMain->colorTex[1] : fboPingpong[!horizontal]->colorTex[0]);
+
+			DrawPlane();
+
+			horizontal = !horizontal;
+			if (first_iter) first_iter = false;
+		}
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+		/*TextureShaderUniforms *u2 = UseTextureShader();
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, fboMain->colorTex[1]);
+		glBindTexture(GL_TEXTURE_2D, pingpongColorBuffers[!horizontal]);
+		glUniform1i(u2->samplerUniform, 0);
+		glUniformMatrix4fv(u2->mvpMatrixUniform, 1, GL_FALSE, mat4::identity());
+		DrawPlane();*/
+
+		BloomShaderUniforms* u2 = UseBloomShader();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, fboMain->colorTex[0]);
+		glUniform1i(u2->tex1, 0);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, fboPingpong[!horizontal]->colorTex[0]);
+		glUniform1i(u2->tex2, 1);
 		DrawPlane();
 
-		//DrawFramebuffer(fboMain, 0);
+		// DrawFramebuffer(fboMain, 0);
 
 	}
 
@@ -228,13 +278,10 @@ namespace marbles
 				-dim, dim);
 		}
 
-		/*projMatrix = vmath::ortho(
-			-dim, dim,
-			-dim, dim,
-			-dim, dim);*/
-
 		projMatrix = vmath::perspective(45.0f + SceneMarbles->Camera->Zoom, (float)width / (float)height, 0.1f, 100.0f);
 		ResizeFramebuffer(fboMain, width, height);
+		ResizeFramebuffer(fboPingpong[0], width, height);
+		ResizeFramebuffer(fboPingpong[1], width, height);
 
 	}
 
@@ -298,19 +345,29 @@ namespace marbles
 
 		for (int i = 0; i < 9; i++)
 		{
-			marbles[i].Position = vec3((i-3)*2.5f, (i+1) * 5.50f, 2.0f * (float)rand() / (float)RAND_MAX);
+			marbles[i].Position = vec3((i-3)*2.5f, (i+1) * 2.50f, 2.0f * (float)rand() / (float)RAND_MAX);
+			marbles[i].Position = vec3(0.0f, (i+1) * 2.50f, 0.0f);
+			marbles[i].Velocity = vec3(0.0f, 0.0f, 0.0f);
 			marbles[i].Velocity = vec3(0.1f, 0.0f, 0.0f);
 			marbles[i].Mass = 10.0f;
 			marbles[i].mat = mat[0];
 			marbles[i].Audio = audio[i % 7];
 			marbles[i].Angle = 0.0f;
 			marbles[i].Axis = vec3();
-			marbles[i].mLetter = R;
 			marbles[i].rotate = mat4::identity();
 			marbles[i].xAngle = 0.0f;
 			marbles[i].yAngle = 0.0f;
 			marbles[i].zAngle = 0.0f;
+			marbles[i].Color = vec3(100.0f, 100.0f, 0.0f);
 		}
+
+		marbles[0].mLetter = R;
+		marbles[1].mLetter = T;
+		marbles[2].mLetter = R;
+		marbles[3].mLetter = _2;
+		marbles[4].mLetter = _0;
+		marbles[5].mLetter = _2;
+		marbles[6].mLetter = _0;
 
 		AddMarble(world, &marbles[0]);
 		AddMarble(world, &marbles[1]);

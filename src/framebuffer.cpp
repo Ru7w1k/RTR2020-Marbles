@@ -39,10 +39,14 @@ Framebuffer* CreateFramebuffer(FramebufferParams* params)
 	}
 
 	// depth texture
-	glGenRenderbuffers(1, &(f->depthTex));
-	glBindRenderbuffer(GL_RENDERBUFFER, f->depthTex);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, params->width, params->height);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, f->depthTex);
+	f->bDepth = params->bDepth;
+	if (params->bDepth)
+	{
+		glGenRenderbuffers(1, &(f->depthTex));
+		glBindRenderbuffer(GL_RENDERBUFFER, f->depthTex);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, params->width, params->height);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, f->depthTex);
+	}
 
 	glDrawBuffers((GLsizei)drawBuffers.size(), drawBuffers.data());
 
@@ -50,7 +54,7 @@ Framebuffer* CreateFramebuffer(FramebufferParams* params)
 	{
 		LogE("Framebuffer incomplete!");
 		
-		glDeleteTextures(1, &(f->depthTex));
+		if (params->bDepth) glDeleteTextures(1, &(f->depthTex));
 		glDeleteTextures(params->nColors, f->colorTex);
 		glDeleteFramebuffers(1, &(f->fbo));
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -71,6 +75,7 @@ void ResizeFramebuffer(Framebuffer* f, int width, int height)
 	params.width = width;
 	params.height = height;
 	params.nColors = f->nColorTex;
+	params.bDepth = f->bDepth;
 	f = CreateFramebuffer(&params);
 }
 

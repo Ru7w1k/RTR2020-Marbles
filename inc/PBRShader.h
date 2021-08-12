@@ -15,6 +15,8 @@ typedef struct _PBRShaderUniforms
 	GLint cameraPosUniform;
 
 	GLuint alpha;
+	GLuint bright;
+	GLuint brightColor;
 
 } PBRShaderUniforms;
 

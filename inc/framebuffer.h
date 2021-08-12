@@ -9,6 +9,8 @@ typedef struct _framebufferParams
 	int height;
 	int nColors;
 
+	bool bDepth;
+
 } FramebufferParams;
 
 
@@ -16,9 +18,10 @@ typedef struct _framebuffer
 {
 	GLuint fbo;
 	
-	GLuint colorTex[8];
 	int nColorTex;
+	GLuint colorTex[8];
 
+	bool bDepth;
 	GLuint depthTex;
 
 } Framebuffer;

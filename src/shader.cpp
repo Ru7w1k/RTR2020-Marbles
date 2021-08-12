@@ -8,6 +8,7 @@
 #include "ParticleShader.h"
 #include "PBRShader.h"
 #include "BlurShader.h"
+#include "BloomShader.h"
 
 bool InitAllShaders()
 {
@@ -17,6 +18,7 @@ bool InitAllShaders()
 	if (!InitParticleShader()) return false;
 	if (!InitPBRShader())      return false;
 	if (!InitBlurShader())     return false;
+	if (!InitBloomShader())    return false;
 
 	return true;
 }
@@ -28,5 +30,6 @@ void UninitAllShaders()
 	UninitParticleShader();
 	UninitPBRShader();
 	UninitBlurShader();
+	UninitBloomShader();
 	return;
 }

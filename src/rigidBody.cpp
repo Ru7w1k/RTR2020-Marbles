@@ -91,37 +91,43 @@ void DrawWorld(World& world)
 	for (map<float, int>::reverse_iterator it = sortedMarbles.rbegin(); it != sortedMarbles.rend(); it++)
 	{
 		mat4 modelMat = translate(world.Marbles[it->second]->Position);
-		if (world.Marbles[it->second]->Roll)
-		{
-			//mat4 r = rotateR(world.Marbles[it->second]->Angle, world.Marbles[it->second]->Axis);
-			//world.Marbles[it->second]->Angle = 0.0f;
+		//if (world.Marbles[it->second]->Roll)
+		//{
+		//	//mat4 r = rotateR(world.Marbles[it->second]->Angle, world.Marbles[it->second]->Axis);
+		//	//world.Marbles[it->second]->Angle = 0.0f;
 
-			//float sy = sqrtf(r[1][2] * r[1][2] + r[2][2] * r[2][2]);
-			//// not singular
-			//if (sy >= 1e-6)
-			//{
-			//	world.Marbles[it->second]->xAngle += atan2f(r[1][2], r[2][2]);
-			//	world.Marbles[it->second]->yAngle += atan2f(-r[0][2], sy);
-			//	world.Marbles[it->second]->zAngle += atan2f(r[0][1], r[0][0]);
-			//}
-			//// singular
-			//else
-			//{
-			//	world.Marbles[it->second]->xAngle += atan2f(-r[2][1], r[1][1]);
-			//	world.Marbles[it->second]->yAngle += atan2f(-r[0][2], sy);
-			//	// world.Marbles[it->second]->zAngle += 0.0f;
-			//}
+		//	//float sy = sqrtf(r[1][2] * r[1][2] + r[2][2] * r[2][2]);
+		//	//// not singular
+		//	//if (sy >= 1e-6)
+		//	//{
+		//	//	world.Marbles[it->second]->xAngle += atan2f(r[1][2], r[2][2]);
+		//	//	world.Marbles[it->second]->yAngle += atan2f(-r[0][2], sy);
+		//	//	world.Marbles[it->second]->zAngle += atan2f(r[0][1], r[0][0]);
+		//	//}
+		//	//// singular
+		//	//else
+		//	//{
+		//	//	world.Marbles[it->second]->xAngle += atan2f(-r[2][1], r[1][1]);
+		//	//	world.Marbles[it->second]->yAngle += atan2f(-r[0][2], sy);
+		//	//	// world.Marbles[it->second]->zAngle += 0.0f;
+		//	//}
+		//}
 
-			modelMat *= vmath::rotateR(world.Marbles[it->second]->xAngle, world.Marbles[it->second]->yAngle, world.Marbles[it->second]->zAngle);
-		}
-
+		modelMat *= vmath::rotateR(world.Marbles[it->second]->xAngle, world.Marbles[it->second]->yAngle, world.Marbles[it->second]->zAngle);
 		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMat);
 		useMaterial(world.Marbles[it->second]->mat);
+		
 		glUniform1f(u->alpha, 1.0f);
+		glUniform1i(u->bright, 1);
+		glUniform4fv(u->brightColor, 1, vec4(0.01f * world.Marbles[it->second]->Color, 1.0f));
 		DrawModel(world.Marbles[it->second]->mLetter);
 
 		glUniform1f(u->alpha, 0.7f);
+		glUniform4fv(u->brightColor, 1, vec4(0.3f));
 		DrawSphere();
+
+		glUniform1i(u->bright, 0);
+
 	}
 
 	/*for (int i = 0; i < world.Walls.size(); i++)
@@ -191,10 +197,17 @@ void UpdateWorld(World& world, float time)
 					if (length(world.Marbles[i]->Velocity) > 0.001f)
 					{
 						//world.Marbles[i]->rotate = rotate(world.Marbles[i]->Angle * 57.2957f, world.Marbles[i]->Axis);
-
-						world.Marbles[i]->Roll = true;
-						world.Marbles[i]->Axis = normalize(cross(world.Walls[j]->Normal, normalize(world.Marbles[i]->Velocity)));
-						// LogD("Axis: %f %f %f", world.Marbles[i]->Axis[0], world.Marbles[i]->Axis[1], world.Marbles[i]->Axis[2]);
+						vec3 c = cross(world.Walls[j]->Normal, normalize(world.Marbles[i]->Velocity));
+						if (c[0] == c[1] == c[2] == 0.0f)
+						{
+							world.Marbles[i]->Roll |= false;
+						}
+						else
+						{
+							world.Marbles[i]->Roll = true;
+							world.Marbles[i]->Axis = normalize(c);
+						}
+						
 						collided.insert(i);
 					}
 				}
@@ -243,6 +256,29 @@ void UpdateWorld(World& world, float time)
 
 					world.Marbles[i]->Position += 0.5f * (world.Marbles[i]->Radius + world.Marbles[j]->Radius - d) * -N;
 					world.Marbles[j]->Position += 0.5f * (world.Marbles[i]->Radius + world.Marbles[j]->Radius - d) * N;
+
+					vec3 c = cross(N, normalize(world.Marbles[i]->Velocity));
+					if (c[0] == c[1] == c[2] == 0.0f)
+					{
+						world.Marbles[i]->Roll |= false;
+					}
+					else
+					{
+						world.Marbles[i]->Roll = true;
+						world.Marbles[i]->Axis = normalize(c);
+					}
+
+					c = cross(-N, normalize(world.Marbles[j]->Velocity));
+					if (c[0] == c[1] == c[2] == 0.0f)
+					{
+						world.Marbles[j]->Roll |= false;
+					}
+					else
+					{
+						world.Marbles[j]->Roll = true;
+						world.Marbles[j]->Axis = normalize(c);
+					}
+					
 				}
 			}
 		}
