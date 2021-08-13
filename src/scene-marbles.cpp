@@ -206,7 +206,7 @@ namespace marbles
 		glUniform1i(u1->horizontal, 1);
 		glUniform1i(u1->image, 0);
 
-		unsigned int amount = 2;
+		unsigned int amount = 4;
 		bool horizontal = true, first_iter = true;
 		for (unsigned int i = 0; i < amount; i++)
 		{
@@ -347,9 +347,9 @@ namespace marbles
 		{
 			marbles[i].Position = vec3((i-3)*2.5f, (i+1) * 2.50f, 2.0f * (float)rand() / (float)RAND_MAX);
 			marbles[i].Position = vec3(0.0f, (i+1) * 2.50f, 0.0f);
-			marbles[i].Velocity = vec3(0.0f, 0.0f, 0.0f);
-			marbles[i].Velocity = vec3(0.1f, 0.0f, 0.0f);
-			marbles[i].Mass = 10.0f;
+			//marbles[i].Velocity = vec3(0.0f, 0.0f, 0.0f);
+			//marbles[i].Velocity = vec3(0.1f, 0.0f, 0.0f);
+			marbles[i].Mass = 10000.0f;
 			marbles[i].mat = mat[0];
 			marbles[i].Audio = audio[i % 7];
 			marbles[i].Angle = 0.0f;
@@ -358,7 +358,15 @@ namespace marbles
 			marbles[i].xAngle = 0.0f;
 			marbles[i].yAngle = 0.0f;
 			marbles[i].zAngle = 0.0f;
+
 			marbles[i].Color = vec3(100.0f, 100.0f, 0.0f);
+			marbles[i].power = 0.01f;
+
+			/*if (i%4 == 0) marbles[i].Color = vec3(100.0f, 100.0f, 0.0f);
+			if (i%4 == 1) marbles[i].Color = vec3(100.0f, 100.0f, 100.0f);
+			if (i%4 == 2) marbles[i].Color = vec3(0.0f, 100.0f, 0.0f);
+			if (i%4 == 3) marbles[i].Color = vec3(100.0f, 0.0f, 0.0f);*/
+
 		}
 
 		marbles[0].mLetter = R;
@@ -369,6 +377,9 @@ namespace marbles
 		marbles[5].mLetter = _2;
 		marbles[6].mLetter = _0;
 
+		marbles[7].mLetter = R;
+		marbles[8].mLetter = _0;
+
 		AddMarble(world, &marbles[0]);
 		AddMarble(world, &marbles[1]);
 		AddMarble(world, &marbles[2]);
@@ -377,8 +388,8 @@ namespace marbles
 		AddMarble(world, &marbles[5]);
 		AddMarble(world, &marbles[6]);
 
-		//AddMarble(world, &marbles[7]);
-		//AddMarble(world, &marbles[8]);
+		AddMarble(world, &marbles[7]);
+		AddMarble(world, &marbles[8]);
 
 		walls[0].Normal = normalize(vec3(0.0f, 1.0f, 0.0f));
 		walls[0].D = -0.5f;

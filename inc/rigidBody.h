@@ -25,6 +25,7 @@ typedef struct _Sphere
 
 	vec3 Color;
 	Material* mat;
+	float power;
 
 	Model* mLetter;
 

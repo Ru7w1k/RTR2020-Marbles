@@ -39,7 +39,6 @@ bool InitBloomShader()
 		"uniform sampler2D tex2; \n" \
 
 		"uniform bool bloom = true; \n" \
-		"uniform float exposure = 1.2; \n" \
 
 		"void main(void)" \
 		"{" \
@@ -47,9 +46,6 @@ bool InitBloomShader()
 		"	vec3 hdrColor =  texture(tex1, out_Texture0).rgb; \n" \
 		"	vec3 bloomColor =  texture(tex2, out_Texture0).rgb; \n" \
 		"	if (bloom) hdrColor += bloomColor; \n" \
-
-		"	vec3 result = vec3(1.0) - exp(-hdrColor * exposure); \n" \
-		"	result = pow(result, vec3(1.0/gamma)); \n" \
 
 		"	FragColor = vec4(hdrColor, 1.0); \n" \
 		"}";

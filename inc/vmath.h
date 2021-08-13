@@ -467,6 +467,19 @@ static inline T length(const vecN<T,len>& v)
 }
 
 template <typename T, int len>
+static inline T length2(const vecN<T, len>& v)
+{
+    T result(0);
+
+    for (int i = 0; i < v.size(); ++i)
+    {
+        result += v[i] * v[i];
+    }
+
+    return (T)(result);
+}
+
+template <typename T, int len>
 static inline vecN<T,len> normalize(const vecN<T,len>& v)
 {
     return v / length(v);
