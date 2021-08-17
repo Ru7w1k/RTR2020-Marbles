@@ -48,8 +48,8 @@ bool InitBlurShader()
 		"	{ \n" \
 		"		for(int i = 0; i < 5; i++) \n" \
 		"		{ \n" \
-		"			result += texture(image, TexCoord + vec2(tex_offset.x * i, 0.0)).rgb * weight[i]; \n" \
-		"			result += texture(image, TexCoord - vec2(tex_offset.x * i, 0.0)).rgb * weight[i]; \n" \
+		"			result += texture(image, TexCoord + vec2(tex_offset.x * i*2, 0.0)).rgb * weight[i]; \n" \
+		"			result += texture(image, TexCoord - vec2(tex_offset.x * i*2, 0.0)).rgb * weight[i]; \n" \
 		"		} \n" \
 		"	} \n" \
 
@@ -57,8 +57,8 @@ bool InitBlurShader()
 		"	{ \n" \
 		"		for(int i = 0; i < 5; i++) \n" \
 		"		{ \n" \
-		"			result += texture(image, TexCoord + vec2(0.0, tex_offset.y * i)).rgb * weight[i]; \n" \
-		"			result += texture(image, TexCoord - vec2(0.0, tex_offset.y * i)).rgb * weight[i]; \n" \
+		"			result += texture(image, TexCoord + vec2(0.0, tex_offset.y * i*2)).rgb * weight[i]; \n" \
+		"			result += texture(image, TexCoord - vec2(0.0, tex_offset.y * i*2)).rgb * weight[i]; \n" \
 		"		} \n" \
 		"	} \n" \
 

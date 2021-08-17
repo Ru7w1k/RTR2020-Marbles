@@ -57,8 +57,9 @@ bool InitPBRShader()
 		"uniform sampler2D roughnessMap; \n" \
 		"uniform sampler2D aoMap; \n" \
 
-		"uniform vec3 lightPosition[10]; \n" \
-		"uniform vec3 lightColor[10]; \n" \
+		"uniform vec3 lightPosition[25]; \n" \
+		"uniform vec3 lightColor[25]; \n" \
+		"uniform int lightCount; \n" \
 
 		"uniform vec3 cameraPos; \n" \
 
@@ -135,18 +136,19 @@ bool InitPBRShader()
 		"	vec3 N = getNormalFromMap(); \n" \
 		"	vec3 V = normalize(cameraPos - out_WorldPos); \n" \
 
+		
 		"	vec3 F0 = vec3(0.04); \n" \
 		"	F0 = mix(F0, albedo, metallic); \n" \
 
 		"	vec3 Lo = vec3(0.0); \n" \
 
-		"	for(int i = 0; i < 9; i++) \n" \
+		"	for(int i = 0; i < lightCount; i++) \n" \
 		"	{ \n" \
 		"		vec3 L = normalize(lightPosition[i] - out_WorldPos); \n" \
 		"		vec3 H = normalize(V + L); \n" \
 		"		float distance = length(lightPosition[i] - out_WorldPos); \n" \
 		"		float attenuation = 1.0 / (distance * distance); \n" \
-		"		vec3 radiance = 7.0f * lightColor[i] * attenuation; \n" \
+		"		vec3 radiance = lightColor[i] * attenuation; \n" \
 
 		"		float NDF = DistributionGGX(N, H, roughness); \n" \
 		"		float G   = GeometrySmith(N, V, L, roughness); \n" \
@@ -162,11 +164,12 @@ bool InitPBRShader()
 
 		"		float NdotL = max(dot(N, L), 0.0); \n" \
 
-		"		Lo += (kD * albedo / PI + specular) * radiance * NdotL; \n" \
+		"		if (bright == 1) Lo += vec3(1.0) * NdotL; \n" \
+		"		else Lo += (kD * albedo / PI + specular) * radiance * NdotL; \n" \
 
 		"	} \n" \
 
-		"	vec3 ambient = vec3(0.01) * albedo * ao; \n" \
+		"	vec3 ambient = vec3(0.1) * albedo * ao; \n" \
 
 		"	vec3 color = ambient + Lo; \n" \
 
@@ -175,8 +178,8 @@ bool InitPBRShader()
 
 		"	FragColor = vec4(color, alpha); \n" \
 
-		"	if (bright == 1) BrightColor = FragColor * brightColor; \n" \
-		"	else BrightColor = vec4(0.0, 0.0, 0.0, 1.0); \n" \
+		"	if (bright == 1) BrightColor = (vec4(color, 1.0) * brightColor); \n" \
+		"	else BrightColor = vec4(0.0, 0.0, 0.0, 0.0); \n" \
 		"} \n";
 
 	// compile shaders
@@ -216,6 +219,7 @@ bool InitPBRShader()
 
 	PBRUniforms->lightPosUniform = glGetUniformLocation(PBRShader, "lightPosition");
 	PBRUniforms->lightColUniform = glGetUniformLocation(PBRShader, "lightColor");
+	PBRUniforms->lightCountUniform = glGetUniformLocation(PBRShader, "lightCount");
 	PBRUniforms->cameraPosUniform = glGetUniformLocation(PBRShader, "cameraPos");
 
 	PBRUniforms->alpha = glGetUniformLocation(PBRShader, "alpha");

@@ -154,6 +154,7 @@
     <ClCompile Include="src\ColorShader.cpp" />
     <ClCompile Include="src\framebuffer.cpp" />
     <ClCompile Include="src\helper.cpp" />
+    <ClCompile Include="src\letters.cpp" />
     <ClCompile Include="src\logger.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\material.cpp" />
@@ -179,6 +180,7 @@
     <ClInclude Include="inc\ColorShader.h" />
     <ClInclude Include="inc\framebuffer.h" />
     <ClInclude Include="inc\helper.h" />
+    <ClInclude Include="inc\letters.h" />
     <ClInclude Include="inc\logger.h" />
     <ClInclude Include="inc\main.h" />
     <ClInclude Include="inc\material.h" />

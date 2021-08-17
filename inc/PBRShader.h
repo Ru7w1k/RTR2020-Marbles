@@ -12,6 +12,7 @@ typedef struct _PBRShaderUniforms
 
 	GLint lightPosUniform;
 	GLint lightColUniform;
+	GLint lightCountUniform;
 	GLint cameraPosUniform;
 
 	GLuint alpha;

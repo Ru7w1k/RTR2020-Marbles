@@ -99,6 +99,9 @@
     <ClCompile Include="src\BloomShader.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
+    <ClCompile Include="src\letters.cpp">
+      <Filter>Source Files\helper</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="res\main.rc">
@@ -180,6 +183,9 @@
     </ClInclude>
     <ClInclude Include="inc\BloomShader.h">
       <Filter>Header Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\letters.h">
+      <Filter>Header Files\helper</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

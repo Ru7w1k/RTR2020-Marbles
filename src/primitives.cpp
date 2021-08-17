@@ -52,16 +52,16 @@ void DrawSphere(void)
 			{
 				for (int x = 0; x <= n; x++)
 				{
-					indices.push_back(y * (n + 1) + x);
 					indices.push_back((y + 1) * (n + 1) + x);
+					indices.push_back(y * (n + 1) + x);
 				}
 			}
 			else
 			{
 				for (int x = n; x >= 0; x--)
 				{
-					indices.push_back((y + 1) * (n + 1) + x);
 					indices.push_back(y * (n + 1) + x);
+					indices.push_back((y + 1) * (n + 1) + x);
 				}
 			}
 			bOddRow = !bOddRow;

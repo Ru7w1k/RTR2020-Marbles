@@ -73,9 +73,10 @@ void DrawWorld(World& world)
 	for (int i = 0; i < world.Marbles.size(); i++)
 	{
 		lightPos.push_back(world.Marbles[i]->Position);
-		lightCol.push_back(world.Marbles[i]->Color);
+		lightCol.push_back(70.0f * world.Marbles[i]->power * world.Marbles[i]->Color);
 	}
 
+	glUniform1i(u->lightCountUniform, world.Marbles.size());
 	glUniform3fv(u->lightPosUniform, (GLsizei)world.Marbles.size(), (GLfloat *)lightPos.data());
 	glUniform3fv(u->lightColUniform, (GLsizei)world.Marbles.size(), (GLfloat *)lightCol.data());
 	
@@ -183,6 +184,10 @@ void UpdateWorld(World& world, float time)
 						
 						collided.insert(i);
 					}
+					else
+					{
+						world.Marbles[i]->Velocity = vec3(0.0f);
+					}
 				}
 			}
 
@@ -199,6 +204,10 @@ void UpdateWorld(World& world, float time)
 					{
 						collided.insert(i);
 					}
+					else
+					{
+						world.Marbles[i]->Velocity = vec3(0.0f);
+					}
 				}
 			}
 
@@ -214,10 +223,18 @@ void UpdateWorld(World& world, float time)
 					{
 						collided.insert(i);
 					}
+					else
+					{
+						world.Marbles[i]->Velocity = vec3(0.0f);
+					}
 
 					if (length(world.Marbles[j]->Velocity) > 0.001f)
 					{
 						collided.insert(j);
+					}
+					else
+					{
+						world.Marbles[j]->Velocity = vec3(0.0f);
 					}
 
 

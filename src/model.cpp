@@ -468,5 +468,15 @@ void DrawModel(Model* pModel)
 
 void FreeModel(Model* pModel)
 {
+	if (pModel)
+	{
+		glDeleteVertexArrays(1, &(pModel->vao));
+		glDeleteBuffers(1, &(pModel->vbo));
+		glDeleteBuffers(1, &(pModel->vboIdx));
 
+		if (pModel->anim)
+		{
+			free(pModel->anim);
+		}
+	}
 }

@@ -83,4 +83,4 @@ typedef struct _Model
 Model* LoadModel(const char* path, bool animate = false);
 void GetPose(Model* pModel, float dt, vector<mat4>& outputPos);
 void DrawModel(Model* pModel);
-
+void FreeModel(Model* pModel);

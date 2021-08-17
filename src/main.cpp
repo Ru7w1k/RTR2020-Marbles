@@ -7,6 +7,8 @@
 // shaders
 #include "shader.h"
 
+#include "letters.h"
+
 // scenes
 #include "scene.h"
 #include "scene-marbles.h"
@@ -465,6 +467,9 @@ void initialize(void)
 		return;
 	}
 
+	// load all letters
+	LoadLetters();
+
 	// initialize scene queue
 	InitSceneQueue();
 
@@ -600,6 +605,9 @@ void uninitialize(void)
 
 	// uninit all shaders
 	UninitAllShaders();
+
+	// unload all letters
+	UnloadLetters();
 
 	// uninit all scenes
 	for (int i = 0; i < GetSceneCount(); i++)
