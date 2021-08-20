@@ -4,7 +4,7 @@
 #include "logger.h"
 #include "audio.h"
 
-#include "scene-marbles.h"
+#include "scene-intro.h"
 
 #include "material.h"
 #include "primitives.h"
@@ -20,25 +20,18 @@
 
 // effects
 #include "rigidBody.h"
-#include "ParticleSystem.h"
 #include "camera.h"
 
 // scene variable
-Scene *SceneMarbles = NULL;
+Scene* SceneIntro = NULL;
 
-namespace marbles
+namespace intro
 {
 	// scene state
 	int gWidth, gHeight;
 	mat4 projMatrix;
 
-	float angleTriangle = 0.0f;
-
-	GLuint texParticle;
-	ParticleSystem* ps = NULL;
-	ParticleSystemParams params;
-
-	Material *matPlastic = NULL;
+	Material* matPlastic = NULL;
 	Material* mat[5];
 
 	World world;
@@ -46,10 +39,8 @@ namespace marbles
 	Wall walls[10];
 	ALuint audio[8];
 
-
-	Framebuffer *fboMain = NULL;
-	Framebuffer *fboPingpong[2] = {NULL, NULL};
-
+	Framebuffer* fboMain = NULL;
+	Framebuffer* fboPingpong[2] = { NULL, NULL };
 
 	Model* sat = NULL;
 
@@ -58,34 +49,9 @@ namespace marbles
 		// matrix
 		projMatrix = mat4::identity();
 
-		// effects
-		params.count = 100;
-		params.lifespan = 100.0f;
-		params.emitter = vec3(0.0f, 0.0f, 0.0f);
-
-		float vel[] = { -0.2f, 0.2f, 0.5f, 1.5f, 0.1f, 0.2f };
-		for (int i = 0; i < 6; i++)
-			params.initVel[i] = vel[i];
-
-		ps = newParticleSystem(&params);
-		// texParticle = loadTexture("res\\textures\\part.png");
-		texParticle = loadTexture("res\\textures\\particle.png");
-
-		ps->tex = texParticle;
-		ps->size = 32.0f;
-		ps->color = vec4(1.0f, 0.5f, 0.1f, 1.0f);
-
-		//matPlastic = loadMaterial("res\\materials\\wood");
-		//matWood = loadMaterial("res\\materials\\rusted_iron");
 		matPlastic = loadMaterial("res\\materials\\plastic");
 
-		//mat[0] = loadMaterial("res\\materials\\marble");
 		mat[0] = loadMaterial("res\\materials\\plastic");
-
-		/*mat[1] = loadMaterial("res\\materials\\wood");
-		mat[2] = loadMaterial("res\\materials\\gold");
-		mat[3] = loadMaterial("res\\materials\\rusted_iron");
-		mat[4] = loadMaterial("res\\materials\\grass");*/
 
 		audio[0] = LoadAudio("res\\audio\\01.wav");
 		audio[1] = LoadAudio("res\\audio\\02.wav");
@@ -122,25 +88,20 @@ namespace marbles
 		params.bDepth = true;
 		fboMain = CreateFramebuffer(&params);
 
-		world.cam = SceneMarbles->Camera;
+		world.cam = SceneIntro->Camera;
 		return true;
 	}
 
 	void Uninit(void)
 	{
-		for(int i = 0; i < 5; i++)
+		for (int i = 0; i < 5; i++)
 		{
 			deleteMaterial(mat[i]);
 		}
 
-		for(int i = 0; i < 7; i++)
+		for (int i = 0; i < 7; i++)
 		{
 			UnloadAudio(audio[i]);
-		}
-
-		if (ps)
-		{
-			deleteParticleSystem(ps);
 		}
 
 		if (fboMain)
@@ -159,27 +120,23 @@ namespace marbles
 		}
 
 		// free the scene
-		if (SceneMarbles)
+		if (SceneIntro)
 		{
-			free(SceneMarbles);
-			SceneMarbles = NULL;
+			free(SceneIntro);
+			SceneIntro = NULL;
 		}
 	}
 
 	void Display(void)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, fboMain->fbo);
-		
+
 		glViewport(0, 0, gWidth, gHeight);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		alListenerfv(AL_POSITION, SceneMarbles->Camera->Position);
-		alListenerfv(AL_ORIENTATION, new ALfloat[]{ SceneMarbles->Camera->Position[0], SceneMarbles->Camera->Position[1], SceneMarbles->Camera->Position[2], 0.0f, 1.0f, 0.0f });
+		alListenerfv(AL_POSITION, normalize(SceneIntro->Camera->Position));
 
-		// Particle system!
-		/*ps->mvpMatrix = projMatrix * GetViewMatrix(SceneMarbles->Camera);
-		drawParticleSystem(ps);*/
-		projMatrix = vmath::perspective(45.0f + SceneMarbles->Camera->Zoom, (float)gWidth / (float)gHeight, 0.1f, 100.0f);
+		projMatrix = vmath::perspective(45.0f + SceneIntro->Camera->Zoom, (float)gWidth / (float)gHeight, 0.1f, 100.0f);
 
 		// start using OpenGL program object
 		PBRShaderUniforms* u = UsePBRShader();
@@ -195,12 +152,12 @@ namespace marbles
 
 		// send necessary matrices to shader in respective uniforms
 		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMatrix);
-		glUniformMatrix4fv(u->vMatrixUniform, 1, GL_FALSE, GetViewMatrix(SceneMarbles->Camera));
+		glUniformMatrix4fv(u->vMatrixUniform, 1, GL_FALSE, GetViewMatrix(SceneIntro->Camera));
 		glUniformMatrix4fv(u->pMatrixUniform, 1, GL_FALSE, projMatrix);
 
 		vec3 lightPos = vec3(0.0f, 10.0f, 0.0f);
-		glUniform3fv(u->cameraPosUniform, 1, SceneMarbles->Camera->Position);
-		
+		glUniform3fv(u->cameraPosUniform, 1, SceneIntro->Camera->Position);
+
 		glUniform1f(u->alpha, 1.0f);
 		useMaterial(matPlastic);
 		DrawCube();
@@ -214,7 +171,7 @@ namespace marbles
 		glViewport(0, 0, gWidth, gHeight);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		BlurShaderUniforms *u1 = UseBlurShader();
+		BlurShaderUniforms* u1 = UseBlurShader();
 		glUniform1i(u1->horizontal, 1);
 		glUniform1i(u1->image, 0);
 
@@ -226,7 +183,7 @@ namespace marbles
 		{
 			glBindFramebuffer(GL_FRAMEBUFFER, fboPingpong[horizontal]->fbo);
 			glClear(GL_COLOR_BUFFER_BIT);
-			glUniform1i(u1->horizontal, horizontal?1:0);
+			glUniform1i(u1->horizontal, horizontal ? 1 : 0);
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, first_iter ? fboMain->colorTex[1] : fboPingpong[!horizontal]->colorTex[0]);
 
@@ -239,7 +196,7 @@ namespace marbles
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		
+
 
 		BloomShaderUniforms* u2 = UseBloomShader();
 		glActiveTexture(GL_TEXTURE0);
@@ -252,7 +209,7 @@ namespace marbles
 		DrawPlane();
 
 
-		TextureShaderUniforms *u3 = UseTextureShader();
+		TextureShaderUniforms* u3 = UseTextureShader();
 
 		glViewport(0, 0, gWidth / 4, gHeight / 4);
 		glActiveTexture(GL_TEXTURE0);
@@ -288,7 +245,6 @@ namespace marbles
 
 	bool Update(float delta)
 	{
-		angleTriangle += 0.000002f * delta;
 		//if (angleTriangle > 90.0f) return true;
 
 		//updateParticleSystem(ps);
@@ -301,7 +257,7 @@ namespace marbles
 	void Resize(int width, int height)
 	{
 		const float dim = 50.0f;
-		
+
 		gWidth = width;
 		gHeight = height;
 
@@ -320,7 +276,7 @@ namespace marbles
 				-dim, dim);
 		}
 
-		projMatrix = vmath::perspective(45.0f + SceneMarbles->Camera->Zoom, (float)width / (float)height, 0.1f, 100.0f);
+		projMatrix = vmath::perspective(45.0f + SceneIntro->Camera->Zoom, (float)width / (float)height, 0.1f, 100.0f);
 		ResizeFramebuffer(fboMain, width, height);
 		ResizeFramebuffer(fboPingpong[0], width, height);
 		ResizeFramebuffer(fboPingpong[1], width, height);
@@ -387,9 +343,9 @@ namespace marbles
 
 		for (int i = 0; i < 13; i++)
 		{
-			marbles[i].Position = vec3((i-3)*2.5f, (i+1) * 2.50f, 2.0f * (float)rand() / (float)RAND_MAX);
+			marbles[i].Position = vec3((i - 3) * 2.5f, (i + 1) * 2.50f, 2.0f * (float)rand() / (float)RAND_MAX);
 			marbles[i].Radius = 1.0f;
-			marbles[i].Position = vec3(0.0f, (i+1) * 2.50f, 0.0f);
+			marbles[i].Position = vec3(0.0f, (i + 1) * 2.50f, 0.0f);
 			//marbles[i].Velocity = vec3(0.0f, 0.0f, 0.0f);
 			//marbles[i].Velocity = vec3(0.1f, 0.0f, 0.0f);
 			marbles[i].Mass = 10000.0f;
@@ -405,10 +361,10 @@ namespace marbles
 			marbles[i].Color = vec3(100.0f, 100.0f, 0.0f);
 			marbles[i].power = 0.01f;
 
-			if (i%4 == 0) marbles[i].Color = vec3(100.0f, 100.0f, 0.0f);
-			if (i%4 == 1) marbles[i].Color = vec3(0.0f, 0.0f, 100.0f);
-			if (i%4 == 2) marbles[i].Color = vec3(0.0f, 100.0f, 0.0f);
-			if (i%4 == 3) marbles[i].Color = vec3(100.0f, 0.0f, 0.0f);
+			if (i % 4 == 0) marbles[i].Color = vec3(100.0f, 100.0f, 0.0f);
+			if (i % 4 == 1) marbles[i].Color = vec3(0.0f, 0.0f, 100.0f);
+			if (i % 4 == 2) marbles[i].Color = vec3(0.0f, 100.0f, 0.0f);
+			if (i % 4 == 3) marbles[i].Color = vec3(100.0f, 0.0f, 0.0f);
 
 		}
 
@@ -417,13 +373,13 @@ namespace marbles
 		marbles[2].mLetter = GetModel('T');
 		marbles[3].mLetter = GetModel('R');
 		marbles[4].mLetter = GetModel('O');
-		
+
 		marbles[5].mLetter = GetModel('M');
 		marbles[6].mLetter = GetModel('E');
-		marbles[7].mLetter  = GetModel('D');
-		marbles[8].mLetter  = GetModel('I');
-		
-		marbles[9].mLetter  = GetModel('C');
+		marbles[7].mLetter = GetModel('D');
+		marbles[8].mLetter = GetModel('I');
+
+		marbles[9].mLetter = GetModel('C');
 		marbles[10].mLetter = GetModel('O');
 		marbles[11].mLetter = GetModel('M');
 		marbles[12].mLetter = GetModel('P');
@@ -435,7 +391,7 @@ namespace marbles
 		AddMarble(world, &marbles[4]);
 		AddMarble(world, &marbles[5]);
 		AddMarble(world, &marbles[6]);
-		
+
 		AddMarble(world, &marbles[7]);
 		AddMarble(world, &marbles[8]);
 		AddMarble(world, &marbles[9]);
@@ -472,28 +428,28 @@ namespace marbles
 	}
 }
 
-Scene *GetMarblesScene()
+Scene* GetIntroScene()
 {
-	if (!SceneMarbles)
+	if (!SceneIntro)
 	{
-		SceneMarbles = (Scene*)malloc(sizeof(Scene));
+		SceneIntro = (Scene*)malloc(sizeof(Scene));
 
-		strcpy_s(SceneMarbles->Name, "MarblesScene");
+		strcpy_s(SceneIntro->Name, "MarblesScene");
 
-		SceneMarbles->InitFunc   = marbles::Init;
-		SceneMarbles->UninitFunc = marbles::Uninit;
-		SceneMarbles->ResetFunc  = marbles::Reset;
+		SceneIntro->InitFunc = intro::Init;
+		SceneIntro->UninitFunc = intro::Uninit;
+		SceneIntro->ResetFunc = intro::Reset;
 
-		SceneMarbles->DisplayFunc = marbles::Display;
-		SceneMarbles->UpdateFunc  = marbles::Update;
-		SceneMarbles->ResizeFunc  = marbles::Resize;
+		SceneIntro->DisplayFunc = intro::Display;
+		SceneIntro->UpdateFunc = intro::Update;
+		SceneIntro->ResizeFunc = intro::Resize;
 
-		SceneMarbles->Camera = AddNewCamera(
-			vec3(0.0f, 0.0f, -8.0f), 
-			vec3(0.0f, 0.0f, 1.0f), 
-			vec3(0.0f, 1.0f, 0.0f), 
+		SceneIntro->Camera = AddNewCamera(
+			vec3(0.0f, 0.0f, -8.0f),
+			vec3(0.0f, 0.0f, 1.0f),
+			vec3(0.0f, 1.0f, 0.0f),
 			90.0f, 0.0f);
 	}
 
-	return SceneMarbles;
+	return SceneIntro;
 }

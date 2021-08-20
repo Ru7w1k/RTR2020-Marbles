@@ -76,7 +76,7 @@ void DrawWorld(World& world)
 		lightCol.push_back(70.0f * world.Marbles[i]->power * world.Marbles[i]->Color);
 	}
 
-	glUniform1i(u->lightCountUniform, world.Marbles.size());
+	glUniform1i(u->lightCountUniform, (GLint)world.Marbles.size());
 	glUniform3fv(u->lightPosUniform, (GLsizei)world.Marbles.size(), (GLfloat *)lightPos.data());
 	glUniform3fv(u->lightColUniform, (GLsizei)world.Marbles.size(), (GLfloat *)lightCol.data());
 	
@@ -276,7 +276,7 @@ void UpdateWorld(World& world, float time)
 
 	for (int id : collided)
 	{
-		alSourcefv(world.Marbles[id]->Audio, AL_POSITION, -normalize(world.Marbles[id]->Position));
+		alSourcefv(world.Marbles[id]->Audio, AL_POSITION, -world.Marbles[id]->Position);
 		PlayAudio(world.Marbles[id]->Audio);
 		world.Marbles[id]->power = 0.08f;
 	}

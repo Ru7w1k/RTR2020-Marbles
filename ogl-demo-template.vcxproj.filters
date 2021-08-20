@@ -102,6 +102,9 @@
     <ClCompile Include="src\letters.cpp">
       <Filter>Source Files\helper</Filter>
     </ClCompile>
+    <ClCompile Include="src\scene-intro.cpp">
+      <Filter>Source Files\scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="res\main.rc">
@@ -186,6 +189,9 @@
     </ClInclude>
     <ClInclude Include="inc\letters.h">
       <Filter>Header Files\helper</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\scene-intro.h">
+      <Filter>Header Files\scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
