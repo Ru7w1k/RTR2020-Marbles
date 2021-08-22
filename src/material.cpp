@@ -26,6 +26,10 @@ Material* loadMaterial(const char* path)
 	{
 		memcpy(str + l, maps[i], strlen(maps[i])+1);
 		material->maps[i] = loadTexture(str);
+		if (!material->maps[i])
+		{
+			LogE("%s material failed for texture: %s", path, str);
+		}
 	}
 
 	return material;

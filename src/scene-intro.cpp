@@ -32,11 +32,12 @@ namespace intro
 	mat4 projMatrix;
 
 	Material* matPlastic = NULL;
+	Material* matMarble = NULL;
 
 	World world1;
 	Marble marbles[20];
-	Wall walls[10];
 	ALuint audio[8];
+	Wall walls[2];
 
 	Framebuffer* fboMain = NULL;
 	Framebuffer* fboPingpong[2] = { NULL, NULL };
@@ -49,6 +50,7 @@ namespace intro
 		projMatrix = mat4::identity();
 
 		matPlastic = loadMaterial("res\\materials\\plastic");
+		matMarble = loadMaterial("res\\materials\\marble");
 
 		audio[0] = LoadAudio("res\\audio\\01.wav");
 		audio[1] = LoadAudio("res\\audio\\02.wav");
@@ -129,7 +131,7 @@ namespace intro
 		modelMatrix = mat4::identity();
 
 		// transformations
-		modelMatrix = scale(10.0f, 0.5f, 10.0f);
+		modelMatrix = scale(20.0f, 0.5f, 20.0f);
 
 		// send necessary matrices to shader in respective uniforms
 		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMatrix);
@@ -141,6 +143,8 @@ namespace intro
 		useMaterial(matPlastic);
 		DrawCube();
 
+		/*glActiveTexture(GL_TEXTURE5);
+		glBindTexture(GL_TEXTURE_2D, noiseTex);*/
 		DrawWorld(world1); 
 
 		// stop using OpenGL program object
@@ -191,7 +195,7 @@ namespace intro
 
 	bool Update(float delta)
 	{
-		// UpdateWorld(world1, 0.000002f * delta);
+		UpdateWorld(world1, 0.000002f * delta);
 		return false;
 	}
 
@@ -214,28 +218,21 @@ namespace intro
 
 		for (int i = 0; i < 13; i++)
 		{
-			marbles[i].Position = vec3((i - 3) * 2.5f, (i + 1) * 2.50f, 2.0f * (float)rand() / (float)RAND_MAX);
 			marbles[i].Radius = 1.0f;
-			marbles[i].Position = vec3(0.0f, (i + 1) * 2.50f, 0.0f);
-			marbles[i].Velocity = vec3(2.0f * (float)rand() / (float)RAND_MAX, 0.0f, 0.0f);
+			marbles[i].Position = vec3(13.0f - (i*2.2), 2.50f, 0.0f);
+			marbles[i].Velocity = vec3(0.0f, 0.0f, 0.0f);
 			marbles[i].Mass = 10000.0f;
-			marbles[i].mat = matPlastic;
+			marbles[i].mat = matMarble;
 			marbles[i].Audio = audio[i % 7];
 			marbles[i].Angle = 0.0f;
 			marbles[i].Axis = vec3();
 			marbles[i].rotate = mat4::identity();
-			marbles[i].xAngle = 0.0f;
-			marbles[i].yAngle = 0.0f;
+			marbles[i].xAngle = radians(-90.0f);
+			marbles[i].yAngle = 0.0;
 			marbles[i].zAngle = 0.0f;
 
 			marbles[i].Color = vec3(100.0f, 100.0f, 0.0f);
-			marbles[i].power = 0.01f;
-
-			if (i % 4 == 0) marbles[i].Color = vec3(100.0f, 100.0f, 0.0f);
-			if (i % 4 == 1) marbles[i].Color = vec3(0.0f, 0.0f, 100.0f);
-			if (i % 4 == 2) marbles[i].Color = vec3(0.0f, 100.0f, 0.0f);
-			if (i % 4 == 3) marbles[i].Color = vec3(100.0f, 0.0f, 0.0f);
-
+			marbles[i].power = 0.10f;
 		}
 
 		marbles[0].mLetter = GetModel('A');
@@ -271,30 +268,8 @@ namespace intro
 
 		walls[0].Normal = normalize(vec3(0.0f, 1.0f, 0.0f));
 		walls[0].D = -0.5f;
-
-		walls[1].Normal = vec3(1.0f, 0.0f, 0.0f);
-		walls[1].D = -15.0f;
-
-		walls[2].Normal = vec3(-1.0f, 0.0f, 0.0f);
-		walls[2].D = -15.0f;
-
-		walls[3].Normal = vec3(0.0f, 0.0f, 1.0f);
-		walls[3].D = -15.0f;
-
-		walls[4].Normal = vec3(0.0f, 0.0f, -1.0f);
-		walls[4].D = -15.0f;
-
-		walls[5].Normal = vec3(0.0f, 1.0f, 0.0f);
-		walls[5].D = -1.0f;
-		walls[5].MinPoint = vec3(-2.0f, 1.0f, -2.0f);
-		walls[5].MaxPoint = vec3(2.0f, 1.0f, 2.0f);
-
 		AddWall(world1, &walls[0]);
-		AddWall(world1, &walls[1]);
-		AddWall(world1, &walls[2]);
-		AddWall(world1, &walls[3]);
-		AddWall(world1, &walls[4]);
-		//AddWall(world, &walls[5]);
+
 	}
 }
 

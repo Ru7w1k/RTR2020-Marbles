@@ -476,6 +476,7 @@ void initialize(void)
 
 	// add scenes
 	AddScene(GetIntroScene());
+	//AddScene(GetIntroScene());
 	AddScene(GetMarblesScene());
 
 	// set clear color and clear depth

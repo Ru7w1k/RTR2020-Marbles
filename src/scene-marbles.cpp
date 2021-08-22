@@ -73,23 +73,15 @@ namespace marbles
 		// texParticle = loadTexture("res\\textures\\part.png");
 		texParticle = loadTexture("res\\textures\\particle.png");
 		//noiseTex = loadTexture("res\\textures\\noise.png");
-		noiseTex = loadTexture("res\\textures\\noise1.jpg");
+		noiseTex = loadTexture("res\\textures\\noise2.png");
 
 		ps->tex = texParticle;
 		ps->size = 32.0f;
 		ps->color = vec4(1.0f, 0.5f, 0.1f, 1.0f);
 
-		//matPlastic = loadMaterial("res\\materials\\wood");
-		//matWood = loadMaterial("res\\materials\\rusted_iron");
 		matPlastic = loadMaterial("res\\materials\\plastic");
 
-		//mat[0] = loadMaterial("res\\materials\\marble");
-		mat[0] = loadMaterial("res\\materials\\plastic");
-
-		/*mat[1] = loadMaterial("res\\materials\\wood");
-		mat[2] = loadMaterial("res\\materials\\gold");
-		mat[3] = loadMaterial("res\\materials\\rusted_iron");
-		mat[4] = loadMaterial("res\\materials\\grass");*/
+		mat[0] = loadMaterial("res\\materials\\marble");
 
 		audio[0] = LoadAudio("res\\audio\\01.wav");
 		audio[1] = LoadAudio("res\\audio\\02.wav");
@@ -99,20 +91,7 @@ namespace marbles
 		audio[5] = LoadAudio("res\\audio\\06.wav");
 		audio[6] = LoadAudio("res\\audio\\07.wav");
 
-		//R = LoadModel("res\\models\\R.obj", false);
-		//T = LoadModel("res\\models\\T.obj", false);
-		//_2 = LoadModel("res\\models\\2.obj", false);
-		//_0 = LoadModel("res\\models\\0.obj", false);
 		sat = LoadModel("res\\models\\saturn.obj", false);
-		//A = LoadModel("res\\models\\A.obj", false);
-		//S = LoadModel("res\\models\\S.obj", false);
-		//O = LoadModel("res\\models\\O.obj", false);
-		//M = LoadModel("res\\models\\M.obj", false);
-		//E = LoadModel("res\\models\\E.obj", false);
-		//D = LoadModel("res\\models\\D.obj", false);
-		//I = LoadModel("res\\models\\I.obj", false);
-		//C = LoadModel("res\\models\\C.obj", false);
-		//P = LoadModel("res\\models\\P.obj", false);
 
 		FramebufferParams params;
 		params.width = 800;
@@ -132,6 +111,9 @@ namespace marbles
 
 	void Uninit(void)
 	{
+
+		DeleteWorld(world);
+
 		for(int i = 0; i < 5; i++)
 		{
 			deleteMaterial(mat[i]);
@@ -217,8 +199,6 @@ namespace marbles
 		// stop using OpenGL program object
 		glUseProgram(0);
 
-		
-
 		BlurShaderUniforms *u1 = UseBlurShader();
 		glUniform1i(u1->horizontal, 1);
 		glUniform1i(u1->image, 0);
@@ -256,40 +236,40 @@ namespace marbles
 		glUniform1i(u2->tex1, 0);
 
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, fboPingpong[horizontal]->colorTex[0]);
+		glBindTexture(GL_TEXTURE_2D, fboPingpong[!horizontal]->colorTex[0]);
 		glUniform1i(u2->tex2, 1);
 		DrawPlane();
 
 
-		TextureShaderUniforms *u3 = UseTextureShader();
+		//TextureShaderUniforms *u3 = UseTextureShader();
 
-		glViewport(0, 0, gWidth / 4, gHeight / 4);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, fboMain->colorTex[1]);
-		glUniform1i(u3->samplerUniform, 0);
-		glUniformMatrix4fv(u3->mvpMatrixUniform, 1, GL_FALSE, mat4::identity());
-		DrawPlane();
+		//glViewport(0, 0, gWidth / 4, gHeight / 4);
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, fboMain->colorTex[1]);
+		//glUniform1i(u3->samplerUniform, 0);
+		//glUniformMatrix4fv(u3->mvpMatrixUniform, 1, GL_FALSE, mat4::identity());
+		//DrawPlane();
 
-		glViewport(gWidth / 4, 0, gWidth / 4, gHeight / 4);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, fboPingpong[horizontal]->colorTex[0]);
-		glUniform1i(u3->samplerUniform, 0);
-		glUniformMatrix4fv(u3->mvpMatrixUniform, 1, GL_FALSE, mat4::identity());
-		DrawPlane();
+		//glViewport(gWidth / 4, 0, gWidth / 4, gHeight / 4);
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, fboPingpong[horizontal]->colorTex[0]);
+		//glUniform1i(u3->samplerUniform, 0);
+		//glUniformMatrix4fv(u3->mvpMatrixUniform, 1, GL_FALSE, mat4::identity());
+		//DrawPlane();
 
-		glViewport(2 * gWidth / 4, 0, gWidth / 4, gHeight / 4);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, fboPingpong[!horizontal]->colorTex[0]);
-		glUniform1i(u3->samplerUniform, 0);
-		glUniformMatrix4fv(u3->mvpMatrixUniform, 1, GL_FALSE, mat4::identity());
-		DrawPlane();
+		//glViewport(2 * gWidth / 4, 0, gWidth / 4, gHeight / 4);
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, fboPingpong[!horizontal]->colorTex[0]);
+		//glUniform1i(u3->samplerUniform, 0);
+		//glUniformMatrix4fv(u3->mvpMatrixUniform, 1, GL_FALSE, mat4::identity());
+		//DrawPlane();
 
-		glViewport(3 * gWidth / 4, 0, gWidth / 4, gHeight / 4);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, fboMain->colorTex[0]);
-		glUniform1i(u3->samplerUniform, 0);
-		glUniformMatrix4fv(u3->mvpMatrixUniform, 1, GL_FALSE, mat4::identity());
-		DrawPlane();
+		//glViewport(3 * gWidth / 4, 0, gWidth / 4, gHeight / 4);
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, fboMain->colorTex[0]);
+		//glUniform1i(u3->samplerUniform, 0);
+		//glUniformMatrix4fv(u3->mvpMatrixUniform, 1, GL_FALSE, mat4::identity());
+		//DrawPlane();
 
 		// DrawFramebuffer(fboMain, 0);
 
@@ -314,21 +294,6 @@ namespace marbles
 		gWidth = width;
 		gHeight = height;
 
-		if (width < height)
-		{
-			projMatrix = vmath::ortho(
-				-dim, dim,
-				-dim * ((float)height / (float)width), dim * ((float)height / (float)width),
-				-dim, dim);
-		}
-		else
-		{
-			projMatrix = vmath::ortho(
-				-dim * ((float)width / (float)height), dim * ((float)width / (float)height),
-				-dim, dim,
-				-dim, dim);
-		}
-
 		projMatrix = vmath::perspective(45.0f + SceneMarbles->Camera->Zoom, (float)width / (float)height, 0.1f, 100.0f);
 		ResizeFramebuffer(fboMain, width, height);
 		ResizeFramebuffer(fboPingpong[0], width, height);
@@ -339,60 +304,6 @@ namespace marbles
 	void Reset(void)
 	{
 		ResetWorld(world);
-
-		marbles[0].Position = vec3(0.0f, 6.0f, 0.0f);
-		marbles[0].Radius = 1.0f;
-		marbles[0].Mass = 1.0f;
-		marbles[0].Velocity = vec3(0.04f, 0.0f, 0.0f);
-		marbles[0].Color = vec3(200.0f, 200.0f, 200.0f);
-
-		marbles[1].Position = vec3(6.0f, 6.0f, 0.0f);
-		marbles[1].Radius = 1.0f;
-		marbles[1].Mass = 2.0f;
-		marbles[1].Velocity = vec3(0.04f, 0.04f, 0.0f);
-		marbles[1].Color = vec3(200.0f, 0.0f, 200.0f);
-
-		marbles[2].Position = vec3(6.0f, 6.0f, 6.0f);
-		marbles[2].Radius = 1.0f;
-		marbles[2].Mass = 4.0f;
-		marbles[2].Velocity = vec3(0.04f, 0.04f, 0.04f);
-		marbles[2].Color = vec3(0.0f, 200.0f, 200.0f);
-
-		marbles[3].Position = vec3(6.0f, 7.0f, 6.0f);
-		marbles[3].Radius = 1.0f;
-		marbles[3].Mass = 10.0f;
-		marbles[3].Velocity = vec3(0.04f, 0.02f, 0.002f);
-		marbles[3].Color = vec3(200.0f, 200.0f, 0.0f);
-
-		marbles[4].Position = vec3(6.0f, 4.0f, 6.0f);
-		marbles[4].Radius = 1.0f;
-		marbles[4].Mass = 6.0f;
-		marbles[4].Velocity = vec3(0.02f, 0.04f, 0.002f);
-		marbles[4].Color = vec3(200.0f, 0.0f, 0.0f);
-
-		marbles[5].Position = vec3(4.0f, 6.0f, 6.0f);
-		marbles[5].Radius = 1.0f;
-		marbles[5].Mass = 5.0f;
-		marbles[5].Velocity = vec3(0.02f, 0.02f, 0.002f);
-		marbles[5].Color = vec3(0.0f, 200.0f, 0.0f);
-
-		marbles[6].Position = vec3(4.0f, 6.0f, 3.0f);
-		marbles[6].Radius = 1.0f;
-		marbles[6].Mass = 3.0f;
-		marbles[6].Velocity = vec3(0.02f, 0.02f, 0.002f);
-		marbles[6].Color = vec3(0.0f, 200.0f, 200.0f);
-
-		marbles[7].Position = vec3(4.0f, 12.0f, 6.0f);
-		marbles[7].Radius = 1.0f;
-		marbles[7].Mass = 15.0f;
-		marbles[7].Velocity = vec3(0.02f, 0.32f, 0.012f);
-		marbles[7].Color = vec3(100.0f, 200.0f, 0.0f);
-
-		marbles[8].Position = vec3(2.0f, 15.0f, 4.0f);
-		marbles[8].Radius = 1.0f;
-		marbles[8].Mass = 1.0f;
-		marbles[8].Velocity = vec3(0.04f, 0.02f, 0.042f);
-		marbles[8].Color = vec3(0.0f, 200.0f, 100.0f);
 
 		for (int i = 0; i < 13; i++)
 		{
@@ -477,7 +388,6 @@ namespace marbles
 		AddWall(world, &walls[2]);
 		AddWall(world, &walls[3]);
 		AddWall(world, &walls[4]);
-		//AddWall(world, &walls[5]);
 	}
 }
 

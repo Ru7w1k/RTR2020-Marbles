@@ -159,7 +159,7 @@ void UpdateWorld(World& world, float time)
 		for (int i = 0; i < world.Marbles.size(); i++)
 		{
 			// collision check with all infinite large walls
-			for (int j = 0; j < 5; j++)
+			for (int j = 0; j < vmath::min(5,(int)world.Walls.size()); j++)
 			{
 				float d = distance(world.Marbles[i]->Position, world.Walls[j]);
 				if (d <= world.Marbles[i]->Radius)
@@ -283,29 +283,10 @@ void UpdateWorld(World& world, float time)
 
 void DeleteWorld(World& world)
 {
-	for (int i = 0; i < world.Walls.size(); i++)
-	{
-		if (world.Walls[i]) 
-		{
-			free(world.Walls[i]);
-		}
-	}
-
-	for (int i = 0; i < world.Marbles.size(); i++)
-	{
-		if (world.Marbles[i])
-		{
-			free(world.Marbles[i]);
-		}
-	}
-
-	for (int i = 0; i < world.Boxes.size(); i++)
-	{
-		if (world.Boxes[i])
-		{
-			free(world.Boxes[i]);
-		}
-	}
+	world.Marbles.clear();
+	world.Walls.clear();
+	world.Boxes.clear();
+	world.cam = NULL;
 }
 
 void ResetWorld(World& world)
