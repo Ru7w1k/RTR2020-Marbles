@@ -79,7 +79,6 @@ void DrawWorld(World& world)
 	glUniform1i(u->lightCountUniform, (GLint)world.Marbles.size());
 	glUniform3fv(u->lightPosUniform, (GLsizei)world.Marbles.size(), (GLfloat *)lightPos.data());
 	glUniform3fv(u->lightColUniform, (GLsizei)world.Marbles.size(), (GLfloat *)lightCol.data());
-	
 
 	// sort marbles wrt depth for bleding
 	for (int i = 0; i < world.Marbles.size(); i++)
@@ -102,7 +101,7 @@ void DrawWorld(World& world)
 		DrawModel(world.Marbles[it->second]->mLetter);
 
 		glUniform1i(u->bright, 0);
-		glUniform1f(u->alpha, 0.7f);
+		glUniform1f(u->alpha, 0.5f);
 		DrawSphere();
 
 		if (world.Marbles[it->second]->power > 0.01f)
@@ -284,7 +283,29 @@ void UpdateWorld(World& world, float time)
 
 void DeleteWorld(World& world)
 {
+	for (int i = 0; i < world.Walls.size(); i++)
+	{
+		if (world.Walls[i]) 
+		{
+			free(world.Walls[i]);
+		}
+	}
 
+	for (int i = 0; i < world.Marbles.size(); i++)
+	{
+		if (world.Marbles[i])
+		{
+			free(world.Marbles[i]);
+		}
+	}
+
+	for (int i = 0; i < world.Boxes.size(); i++)
+	{
+		if (world.Boxes[i])
+		{
+			free(world.Boxes[i]);
+		}
+	}
 }
 
 void ResetWorld(World& world)

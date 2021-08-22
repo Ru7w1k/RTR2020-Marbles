@@ -11,6 +11,7 @@
 
 // scenes
 #include "scene.h"
+#include "scene-intro.h"
 #include "scene-marbles.h"
 
 #pragma comment(lib, "glew32.lib")
@@ -216,13 +217,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		{
 		case '.':
 		case '>':
-			PrevScene();
+			NextScene();
 			if (GetScene(scene)) scene.ResizeFunc(gWidth, gHeight);
 			break;
 
 		case ',':
 		case '<':
-			NextScene();
+			PrevScene();
 			if (GetScene(scene)) scene.ResizeFunc(gWidth, gHeight);
 			break;
 
@@ -474,6 +475,7 @@ void initialize(void)
 	InitSceneQueue();
 
 	// add scenes
+	AddScene(GetIntroScene());
 	AddScene(GetMarblesScene());
 
 	// set clear color and clear depth

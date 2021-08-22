@@ -49,6 +49,8 @@ namespace marbles
 
 	Framebuffer *fboMain = NULL;
 	Framebuffer *fboPingpong[2] = {NULL, NULL};
+	
+	GLuint noiseTex;
 
 
 	Model* sat = NULL;
@@ -70,6 +72,8 @@ namespace marbles
 		ps = newParticleSystem(&params);
 		// texParticle = loadTexture("res\\textures\\part.png");
 		texParticle = loadTexture("res\\textures\\particle.png");
+		//noiseTex = loadTexture("res\\textures\\noise.png");
+		noiseTex = loadTexture("res\\textures\\noise1.jpg");
 
 		ps->tex = texParticle;
 		ps->size = 32.0f;
@@ -205,14 +209,15 @@ namespace marbles
 		useMaterial(matPlastic);
 		DrawCube();
 
+		glActiveTexture(GL_TEXTURE5);
+		glBindTexture(GL_TEXTURE_2D, noiseTex);
+
 		DrawWorld(world);
 
 		// stop using OpenGL program object
 		glUseProgram(0);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, gWidth, gHeight);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
 
 		BlurShaderUniforms *u1 = UseBlurShader();
 		glUniform1i(u1->horizontal, 1);
@@ -225,6 +230,7 @@ namespace marbles
 		for (unsigned int i = 0; i < amount; i++)
 		{
 			glBindFramebuffer(GL_FRAMEBUFFER, fboPingpong[horizontal]->fbo);
+			glViewport(0, 0, gWidth , gHeight);
 			glClear(GL_COLOR_BUFFER_BIT);
 			glUniform1i(u1->horizontal, horizontal?1:0);
 			glActiveTexture(GL_TEXTURE0);
@@ -235,7 +241,10 @@ namespace marbles
 			horizontal = !horizontal;
 			if (first_iter) first_iter = false;
 		}
+
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, gWidth, gHeight);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -247,7 +256,7 @@ namespace marbles
 		glUniform1i(u2->tex1, 0);
 
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, fboPingpong[!horizontal]->colorTex[0]);
+		glBindTexture(GL_TEXTURE_2D, fboPingpong[horizontal]->colorTex[0]);
 		glUniform1i(u2->tex2, 1);
 		DrawPlane();
 
@@ -405,10 +414,10 @@ namespace marbles
 			marbles[i].Color = vec3(100.0f, 100.0f, 0.0f);
 			marbles[i].power = 0.01f;
 
-			if (i%4 == 0) marbles[i].Color = vec3(100.0f, 100.0f, 0.0f);
-			if (i%4 == 1) marbles[i].Color = vec3(0.0f, 0.0f, 100.0f);
-			if (i%4 == 2) marbles[i].Color = vec3(0.0f, 100.0f, 0.0f);
-			if (i%4 == 3) marbles[i].Color = vec3(100.0f, 0.0f, 0.0f);
+			//if (i%4 == 0) marbles[i].Color = vec3(100.0f, 100.0f, 0.0f);
+			//if (i%4 == 1) marbles[i].Color = vec3(0.0f, 0.0f, 100.0f);
+			//if (i%4 == 2) marbles[i].Color = vec3(0.0f, 100.0f, 0.0f);
+			//if (i%4 == 3) marbles[i].Color = vec3(100.0f, 0.0f, 0.0f);
 
 		}
 

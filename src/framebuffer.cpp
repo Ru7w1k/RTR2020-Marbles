@@ -27,7 +27,7 @@ Framebuffer* CreateFramebuffer(FramebufferParams* params)
 	for (int i = 0; i < f->nColorTex; i++)
 	{
 		glBindTexture(GL_TEXTURE_2D, f->colorTex[i]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, params->width, params->height, 0, GL_RGB, GL_FLOAT, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, params->width, params->height, 0, GL_RGBA, GL_FLOAT, NULL);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

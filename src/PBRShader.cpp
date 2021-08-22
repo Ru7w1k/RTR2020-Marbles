@@ -56,6 +56,7 @@ bool InitPBRShader()
 		"uniform sampler2D metallicMap; \n" \
 		"uniform sampler2D roughnessMap; \n" \
 		"uniform sampler2D aoMap; \n" \
+		"uniform sampler2D noiseMap; \n" \
 
 		"uniform vec3 lightPosition[25]; \n" \
 		"uniform vec3 lightColor[25]; \n" \
@@ -173,10 +174,8 @@ bool InitPBRShader()
 
 		"	vec3 color = ambient + Lo; \n" \
 
-		"	color = color / (color + vec3(1.0)); \n" \
-		"	color = pow(color, vec3(1.0 / 2.2)); \n" \
-
-		"	FragColor = vec4(color, alpha); \n" \
+		"	if (alpha < 1.0) FragColor = vec4(color, max(alpha, texture(noiseMap, out_Texcoord).r)); \n" \
+		"	else FragColor = vec4(color, alpha); \n" \
 
 		"	if (bright == 1) BrightColor = (vec4(color, 1.0) * brightColor); \n" \
 		"	else BrightColor = vec4(0.0, 0.0, 0.0, 0.0); \n" \
@@ -231,6 +230,7 @@ bool InitPBRShader()
 	GLint metallicMapUniform = glGetUniformLocation(PBRShader, "metallicMap");
 	GLint roughnessMapUniform = glGetUniformLocation(PBRShader, "roughnessMap");
 	GLint aoMapUniform = glGetUniformLocation(PBRShader, "aoMap");
+	GLuint noiseMapUniform = glGetUniformLocation(PBRShader, "noiseMap");
 
 	// set constant uniforms
 	glUseProgram(PBRShader);
@@ -239,6 +239,7 @@ bool InitPBRShader()
 	glUniform1i(metallicMapUniform, 2);
 	glUniform1i(roughnessMapUniform, 3);
 	glUniform1i(aoMapUniform, 4);
+	glUniform1i(noiseMapUniform, 5);
 	glUseProgram(0);
 
 	LogD("PBR Shader compiled..");
