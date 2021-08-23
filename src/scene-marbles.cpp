@@ -311,7 +311,7 @@ namespace marbles
 			marbles[i].Radius = 1.0f;
 			marbles[i].Position = vec3(0.0f, (i+1) * 2.50f, 0.0f);
 			//marbles[i].Velocity = vec3(0.0f, 0.0f, 0.0f);
-			//marbles[i].Velocity = vec3(0.1f, 0.0f, 0.0f);
+			marbles[i].Velocity = vec3(0.1f, 0.0f, 0.1f);
 			marbles[i].Mass = 10000.0f;
 			marbles[i].mat = mat[0];
 			marbles[i].Audio = audio[i % 7];
@@ -324,6 +324,7 @@ namespace marbles
 
 			marbles[i].Color = vec3(100.0f, 100.0f, 0.0f);
 			marbles[i].power = 0.01f;
+			marbles[i].Active = true;
 
 			//if (i%4 == 0) marbles[i].Color = vec3(100.0f, 100.0f, 0.0f);
 			//if (i%4 == 1) marbles[i].Color = vec3(0.0f, 0.0f, 100.0f);

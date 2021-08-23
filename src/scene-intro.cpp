@@ -31,10 +31,10 @@ namespace intro
 	int gWidth, gHeight;
 	mat4 projMatrix;
 
-	Material* matPlastic = NULL;
+	Material* matGlass = NULL;
 	Material* matMarble = NULL;
 
-	World world1;
+	World world;
 	Marble marbles[20];
 	ALuint audio[8];
 	Wall walls[2];
@@ -49,7 +49,7 @@ namespace intro
 		// matrix
 		projMatrix = mat4::identity();
 
-		matPlastic = loadMaterial("res\\materials\\plastic");
+		matGlass = loadMaterial("res\\materials\\glass");
 		matMarble = loadMaterial("res\\materials\\marble");
 
 		audio[0] = LoadAudio("res\\audio\\01.wav");
@@ -60,7 +60,7 @@ namespace intro
 		audio[5] = LoadAudio("res\\audio\\06.wav");
 		audio[6] = LoadAudio("res\\audio\\07.wav");
 
-		sat = LoadModel("res\\models\\saturn.obj", false);
+		sat = LoadModel("res\\models\\saturn1.obj", false);
 
 		FramebufferParams params;
 		params.width = 800;
@@ -74,13 +74,13 @@ namespace intro
 		params.bDepth = true;
 		fboMain = CreateFramebuffer(&params);
 
-		world1.cam = SceneIntro->Camera;
+		world.cam = SceneIntro->Camera;
 		return true;
 	}
 
 	void Uninit(void)
 	{
-		deleteMaterial(matPlastic);
+		deleteMaterial(matGlass);
 
 		for (int i = 0; i < 7; i++)
 		{
@@ -124,28 +124,27 @@ namespace intro
 		// start using OpenGL program object
 		PBRShaderUniforms* u = UsePBRShader();
 
-		//declaration of matrices
-		mat4 modelMatrix;
-
-		// intialize above matrices to identity
-		modelMatrix = mat4::identity();
-
-		// transformations
-		modelMatrix = scale(20.0f, 0.5f, 20.0f);
+		/*glActiveTexture(GL_TEXTURE5);
+		glBindTexture(GL_TEXTURE_2D, noiseTex);*/
+		DrawWorld(world); 
 
 		// send necessary matrices to shader in respective uniforms
-		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMatrix);
 		glUniformMatrix4fv(u->vMatrixUniform, 1, GL_FALSE, GetViewMatrix(SceneIntro->Camera));
 		glUniformMatrix4fv(u->pMatrixUniform, 1, GL_FALSE, projMatrix);
 
 		glUniform3fv(u->cameraPosUniform, 1, SceneIntro->Camera->Position);
 		glUniform1f(u->alpha, 1.0f);
-		useMaterial(matPlastic);
+		useMaterial(matGlass);
+
+		mat4 modelMatrix = mat4::identity();
+		modelMatrix = scale(30.0f, 0.5f, 30.0f);
+		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMatrix);
 		DrawCube();
 
-		/*glActiveTexture(GL_TEXTURE5);
-		glBindTexture(GL_TEXTURE_2D, noiseTex);*/
-		DrawWorld(world1); 
+		//modelMatrix = translate(0.0f, 0.0f, 15.0f);
+		//modelMatrix *= scale(20.0f, 20.0f, 0.5f);
+		//glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMatrix);
+		//DrawCube();
 
 		// stop using OpenGL program object
 		glUseProgram(0);
@@ -193,9 +192,38 @@ namespace intro
 		DrawPlane();
 	}
 
-	bool Update(float delta)
+	bool Update(float d)
 	{
-		UpdateWorld(world1, 0.000002f * delta);
+		static int i = 0;
+		static int t = 0;
+		static int delta = 12;
+
+		if (t > delta)
+		{
+			if (i > 12)
+			{
+				i = 0;
+				t = 0;
+			}
+			else
+			{
+				alSourcefv(world.Marbles[i]->Audio, AL_POSITION, -world.Marbles[i]->Position);
+				PlayAudio(world.Marbles[i]->Audio);
+				world.Marbles[i]->power = 0.12f;
+				//world.Marbles[i]->Active = true;
+				t = 0; 
+				i++;
+			}
+
+			if (i == 5 || i == 9 || i == 13) delta = 25;
+			else delta = 10;
+		}
+		
+		marbles[13].power = 0.12f;
+
+		// UpdateWorld(world, 0.000002f * d);
+
+		t++;
 		return false;
 	}
 
@@ -214,12 +242,12 @@ namespace intro
 
 	void Reset(void)
 	{
-		ResetWorld(world1);
+		ResetWorld(world);
 
-		for (int i = 0; i < 13; i++)
+		for (int i = 0; i < 14; i++)
 		{
 			marbles[i].Radius = 1.0f;
-			marbles[i].Position = vec3(13.0f - (i*2.2), 2.50f, 0.0f);
+			marbles[i].Position = vec3(12.0f - (i*2.2), 1.50f, 0.0f);
 			marbles[i].Velocity = vec3(0.0f, 0.0f, 0.0f);
 			marbles[i].Mass = 10000.0f;
 			marbles[i].mat = matMarble;
@@ -230,9 +258,26 @@ namespace intro
 			marbles[i].xAngle = radians(-90.0f);
 			marbles[i].yAngle = 0.0;
 			marbles[i].zAngle = 0.0f;
+			marbles[i].power = 0.01f;
+			marbles[i].Active = false;
 
-			marbles[i].Color = vec3(100.0f, 100.0f, 0.0f);
-			marbles[i].power = 0.10f;
+			if (i > 8) 
+			{
+				marbles[i].Color = vec3(1.0f, 100.0f, 1.0f);
+				marbles[i].Audio = audio[(i-7)];
+
+			}
+			else if (i > 4) 
+			{
+				marbles[i].Color = vec3(100.0f, 1.0f, 1.0f);
+				marbles[i].Audio = audio[(i-4)];
+
+			}
+			else 
+			{
+				marbles[i].Color = vec3(10.0f, 10.0f, 100.0f);
+				marbles[i].Audio = audio[(i-0)];
+			}
 		}
 
 		marbles[0].mLetter = GetModel('A');
@@ -251,25 +296,31 @@ namespace intro
 		marbles[11].mLetter = GetModel('M');
 		marbles[12].mLetter = GetModel('P');
 
-		AddMarble(world1, &marbles[0]);
-		AddMarble(world1, &marbles[1]);
-		AddMarble(world1, &marbles[2]);
-		AddMarble(world1, &marbles[3]);
-		AddMarble(world1, &marbles[4]);
-		AddMarble(world1, &marbles[5]);
-		AddMarble(world1, &marbles[6]);
+		AddMarble(world, &marbles[0]);
+		AddMarble(world, &marbles[1]);
+		AddMarble(world, &marbles[2]);
+		AddMarble(world, &marbles[3]);
+		AddMarble(world, &marbles[4]);
+		AddMarble(world, &marbles[5]);
+		AddMarble(world, &marbles[6]);
 
-		AddMarble(world1, &marbles[7]);
-		AddMarble(world1, &marbles[8]);
-		AddMarble(world1, &marbles[9]);
-		AddMarble(world1, &marbles[10]);
-		AddMarble(world1, &marbles[11]);
-		AddMarble(world1, &marbles[12]);
+		AddMarble(world, &marbles[7]);
+		AddMarble(world, &marbles[8]);
+		AddMarble(world, &marbles[9]);
+		AddMarble(world, &marbles[10]);
+		AddMarble(world, &marbles[11]);
+		AddMarble(world, &marbles[12]);
+
+		marbles[13].mLetter = sat;
+		marbles[13].Color = vec3(150.0f, 100.0f, 0.0f);
+		marbles[13].Position = vec3(8.0f, 1.50f, -20.0f);
+		marbles[13].Radius = 1.5f;
+
+		AddMarble(world, &marbles[13]);
 
 		walls[0].Normal = normalize(vec3(0.0f, 1.0f, 0.0f));
 		walls[0].D = -0.5f;
-		AddWall(world1, &walls[0]);
-
+		AddWall(world, &walls[0]);
 	}
 }
 
@@ -288,12 +339,22 @@ Scene* GetIntroScene()
 		SceneIntro->DisplayFunc = intro::Display;
 		SceneIntro->UpdateFunc = intro::Update;
 		SceneIntro->ResizeFunc = intro::Resize;
+		
+		// Position: 19.085726 6.047958 - 34.788692
+		// Front : -0.477143 - 0.126199 0.869717
+		// Right : -0.876727 0.000000 - 0.480989
+		// Up : -0.060700 0.992005 0.110642
+		// Yaw : 118.750000
+		// Pitch : -7.250000
+		// Zoom : -18.000000
+		// Height : 1.000000 
 
 		SceneIntro->Camera = AddNewCamera(
-			vec3(0.0f, 0.0f, -8.0f),
-			vec3(0.0f, 0.0f, 1.0f),
+			vec3(19.08f, 6.04f, - 34.78f),
+			vec3(-0.47f, - 0.12f, 0.86f),
 			vec3(0.0f, 1.0f, 0.0f),
-			90.0f, 0.0f);
+			118.75f, -7.25f,
+			-18.0f, 1.0f);
 	}
 
 	return SceneIntro;

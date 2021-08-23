@@ -4,11 +4,7 @@
 
 #include "Camera.h"
 
-#define CAMERA_SPEED       1.0f;
-#define CAMERA_SENSITIVITY 0.25f;
-#define CAMERA_ZOOM        10.0f;
-
-Camera* AddNewCamera(vec3 pos, vec3 front, vec3 up, float yaw, float pitch)
+Camera* AddNewCamera(vec3 pos, vec3 front, vec3 up, float yaw, float pitch, float zoom, float height)
 {
 	Camera* cam = (Camera*)malloc(sizeof(Camera));
 
@@ -23,9 +19,9 @@ Camera* AddNewCamera(vec3 pos, vec3 front, vec3 up, float yaw, float pitch)
 
 	cam->MouseSensitivity = CAMERA_SENSITIVITY;
 	cam->MovementSpeed    = CAMERA_SPEED;
-	cam->Zoom             = CAMERA_ZOOM;
+	cam->Zoom             = zoom;
 
-	cam->Height = 0.0f;
+	cam->Height = height;
 
 	UpdateCameraVectors(cam);
 
@@ -128,6 +124,8 @@ void Print(Camera* cam)
 	LogI("Up: %f %f %f", cam->Up[0], cam->Up[1], cam->Up[2]);
 	LogI("Yaw: %f", cam->Yaw);
 	LogI("Pitch: %f", cam->Pitch);
+	LogI("Zoom: %f", cam->Zoom);
+	LogI("Height: %f", cam->Height);
 	LogI("---------------------------------");
 }
 

@@ -32,6 +32,7 @@ typedef struct _Sphere
 	mat4 rotate;
 
 	ALuint Audio;
+	bool Active;
 
 } Marble;
 

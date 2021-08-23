@@ -121,6 +121,8 @@ void UpdateWorld(World& world, float time)
 		// for each marble, move to next position
 		for (int i = 0; i < world.Marbles.size(); i++)
 		{
+			if (!world.Marbles[i]->Active) continue;
+
 			// calculate the next position of marble
 			vec3 F = vec3(0.0f, -1.0f, 0.0f);
 			vec3 a = F / world.Marbles[i]->Mass;

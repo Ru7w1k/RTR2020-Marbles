@@ -6,6 +6,9 @@
 #define CAM_LEFT      3
 #define CAM_RIGHT     4
 
+#define CAMERA_SPEED       1.0f
+#define CAMERA_SENSITIVITY 0.25f
+#define CAMERA_ZOOM        10.0f
 
 typedef struct _camera
 {
@@ -29,7 +32,7 @@ typedef struct _camera
 
 } Camera;
 
-Camera* AddNewCamera(vec3 pos, vec3 front, vec3 up, float yaw, float pitch);
+Camera* AddNewCamera(vec3 pos, vec3 front, vec3 up, float yaw, float pitch, float zoom = CAMERA_ZOOM, float height = 0.0f);
 
 void UpdateCameraVectors(Camera* cam);
 mat4 GetViewMatrix(Camera *cam);

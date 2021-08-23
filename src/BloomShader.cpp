@@ -44,6 +44,7 @@ bool InitBloomShader()
 		"{" \
 		"	const float gamma = 2.2; \n" \
 		"	const float exposure = 1.0; \n" \
+
 		"	vec3 hdrColor =  texture(tex1, out_Texture0).rgb; \n" \
 		"	vec3 bloomColor =  texture(tex2, out_Texture0).rgb; \n" \
 		"	if (bloom) hdrColor += bloomColor; \n" \

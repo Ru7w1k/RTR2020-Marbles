@@ -20,8 +20,8 @@
 #pragma comment(lib, "assimp-vc142-mtd.lib")
 
 // macros
-#define WIN_WIDTH  800
-#define WIN_HEIGHT 600
+#define WIN_WIDTH  1920
+#define WIN_HEIGHT 1080
 
 // global function declarations
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -476,7 +476,6 @@ void initialize(void)
 
 	// add scenes
 	AddScene(GetIntroScene());
-	//AddScene(GetIntroScene());
 	AddScene(GetMarblesScene());
 
 	// set clear color and clear depth
@@ -520,6 +519,12 @@ void initialize(void)
 			LogD("Scene %s Reset() done..", scene.Name);
 		}
 	}
+
+	// WHY !?
+	Scene scene;
+	GetSceneAt(scene, 0);
+	scene.InitFunc();
+
 
 	// clock for syncing animation speed
 	InitClock();
