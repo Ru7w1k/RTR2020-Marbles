@@ -105,6 +105,12 @@
     <ClCompile Include="src\scene-intro.cpp">
       <Filter>Source Files\scenes</Filter>
     </ClCompile>
+    <ClCompile Include="src\FadeShader.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene-domain.cpp">
+      <Filter>Source Files\scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="res\main.rc">
@@ -191,6 +197,12 @@
       <Filter>Header Files\helper</Filter>
     </ClInclude>
     <ClInclude Include="inc\scene-intro.h">
+      <Filter>Header Files\scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\FadeShader.h">
+      <Filter>Header Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\scene-domain.h">
       <Filter>Header Files\scenes</Filter>
     </ClInclude>
   </ItemGroup>

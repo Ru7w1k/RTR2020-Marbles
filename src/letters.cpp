@@ -40,5 +40,8 @@ Model* GetModel(const char ch)
 	else if ('A' <= ch && ch <= 'Z')
 		idx = ch - 'A' + 10;
 
+	if (!letterModels[idx])
+		return letterModels[0];
+
 	return letterModels[idx];
 }

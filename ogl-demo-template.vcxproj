@@ -152,6 +152,7 @@
     <ClCompile Include="src\BlurShader.cpp" />
     <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\ColorShader.cpp" />
+    <ClCompile Include="src\FadeShader.cpp" />
     <ClCompile Include="src\framebuffer.cpp" />
     <ClCompile Include="src\helper.cpp" />
     <ClCompile Include="src\letters.cpp" />
@@ -164,6 +165,7 @@
     <ClCompile Include="src\PBRShader.cpp" />
     <ClCompile Include="src\primitives.cpp" />
     <ClCompile Include="src\rigidBody.cpp" />
+    <ClCompile Include="src\scene-domain.cpp" />
     <ClCompile Include="src\scene-intro.cpp" />
     <ClCompile Include="src\scene-marbles.cpp" />
     <ClCompile Include="src\scene.cpp" />
@@ -179,6 +181,7 @@
     <ClInclude Include="inc\BlurShader.h" />
     <ClInclude Include="inc\camera.h" />
     <ClInclude Include="inc\ColorShader.h" />
+    <ClInclude Include="inc\FadeShader.h" />
     <ClInclude Include="inc\framebuffer.h" />
     <ClInclude Include="inc\helper.h" />
     <ClInclude Include="inc\letters.h" />
@@ -190,6 +193,7 @@
     <ClInclude Include="inc\ParticleSystem.h" />
     <ClInclude Include="inc\primitives.h" />
     <ClInclude Include="inc\rigidBody.h" />
+    <ClInclude Include="inc\scene-domain.h" />
     <ClInclude Include="inc\scene-intro.h" />
     <ClInclude Include="inc\scene-marbles.h" />
     <ClInclude Include="inc\scene.h" />

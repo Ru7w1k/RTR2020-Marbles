@@ -4,7 +4,7 @@
 #include "logger.h"
 #include "audio.h"
 
-#include "scene-intro.h"
+#include "scene-domain.h""
 
 #include "material.h"
 #include "primitives.h"
@@ -24,9 +24,9 @@
 #include "camera.h"
 
 // scene variable
-Scene* SceneIntro = NULL;
+Scene* SceneDomain = NULL;
 
-namespace intro
+namespace domain
 {
 	// scene state
 	int gWidth, gHeight;
@@ -64,7 +64,7 @@ namespace intro
 		audio[5] = LoadAudio("res\\audio\\06.wav");
 		audio[6] = LoadAudio("res\\audio\\07.wav");
 
-		sat = LoadModel("res\\models\\saturn.obj", false);
+		sat = LoadModel("res\\models\\saturn1.obj", false);
 
 		FramebufferParams params;
 		params.width = 800;
@@ -78,7 +78,7 @@ namespace intro
 		params.bDepth = true;
 		fboMain = CreateFramebuffer(&params);
 
-		world.cam = SceneIntro->Camera;
+		world.cam = SceneDomain->Camera;
 		return true;
 	}
 
@@ -107,10 +107,10 @@ namespace intro
 		}
 
 		// free the scene
-		if (SceneIntro)
+		if (SceneDomain)
 		{
-			free(SceneIntro);
-			SceneIntro = NULL;
+			free(SceneDomain);
+			SceneDomain = NULL;
 		}
 	}
 
@@ -121,9 +121,9 @@ namespace intro
 		glViewport(0, 0, gWidth, gHeight);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		alListenerfv(AL_POSITION, normalize(SceneIntro->Camera->Position));
+		alListenerfv(AL_POSITION, normalize(SceneDomain->Camera->Position));
 
-		projMatrix = vmath::perspective(45.0f + SceneIntro->Camera->Zoom, (float)gWidth / (float)gHeight, 0.1f, 100.0f);
+		projMatrix = vmath::perspective(45.0f + SceneDomain->Camera->Zoom, (float)gWidth / (float)gHeight, 0.1f, 100.0f);
 
 		// start using OpenGL program object
 		PBRShaderUniforms* u = UsePBRShader();
@@ -133,10 +133,10 @@ namespace intro
 		DrawWorld(world); 
 
 		// send necessary matrices to shader in respective uniforms
-		glUniformMatrix4fv(u->vMatrixUniform, 1, GL_FALSE, GetViewMatrix(SceneIntro->Camera));
+		glUniformMatrix4fv(u->vMatrixUniform, 1, GL_FALSE, GetViewMatrix(SceneDomain->Camera));
 		glUniformMatrix4fv(u->pMatrixUniform, 1, GL_FALSE, projMatrix);
 
-		glUniform3fv(u->cameraPosUniform, 1, SceneIntro->Camera->Position);
+		glUniform3fv(u->cameraPosUniform, 1, SceneDomain->Camera->Position);
 		glUniform1f(u->alpha, 1.0f);
 		useMaterial(matGlass);
 
@@ -224,7 +224,7 @@ namespace intro
 		{
 			if (t > delta)
 			{
-				if (i > 12)
+				if (i > 10)
 				{
 					i = 0;
 					t = 0;
@@ -240,7 +240,7 @@ namespace intro
 					t = 0;
 					i++;
 
-					if (i == 5 || i == 9 || i == 13) delta = 25;
+					if (i == 6) delta = 25;
 					else delta = 10;
 				}
 			}
@@ -267,7 +267,7 @@ namespace intro
 		gWidth = width;
 		gHeight = height;
 
-		projMatrix = vmath::perspective(45.0f + SceneIntro->Camera->Zoom, (float)width / (float)height, 0.1f, 100.0f);
+		projMatrix = vmath::perspective(45.0f + SceneDomain->Camera->Zoom, (float)width / (float)height, 0.1f, 100.0f);
 		ResizeFramebuffer(fboMain, width, height);
 		ResizeFramebuffer(fboPingpong[0], width, height);
 		ResizeFramebuffer(fboPingpong[1], width, height);
@@ -283,7 +283,6 @@ namespace intro
 		for (int i = 0; i < 14; i++)
 		{
 			marbles[i].Radius = 1.0f;
-			marbles[i].Position = vec3(12.0f - (i*2.2f), 1.50f, 0.0f);
 			marbles[i].Velocity = vec3(0.0f, 0.0f, 0.0f);
 			marbles[i].Mass = 10000.0f;
 			marbles[i].mat = matMarble;
@@ -297,41 +296,35 @@ namespace intro
 			marbles[i].power = 0.01f;
 			marbles[i].Active = false;
 
-			if (i > 8) 
+			if (i > 5) 
 			{
-				// C O M P 
-				marbles[i].Color = vec3(1.0f, 100.0f, 1.0f);
-				marbles[i].Audio = audio[(i-7)];
-			}
-			else if (i > 4) 
-			{
-				// M E D I
-				marbles[i].Color = vec3(100.0f, 1.0f, 1.0f);
+				// G R O U P
+				marbles[i].Color = vec3(100.0f, 100.0f, 1.0f);
+				marbles[i].Position = vec3(15.0f - (i*2.2f), 1.50f, -10.0f);
 				marbles[i].Audio = audio[(i-4)];
 			}
 			else 
 			{
-				// A S T R O 
-				marbles[i].Color = vec3(10.0f, 10.0f, 100.0f);
+				// D O M A I N
+				marbles[i].Color = vec3(1.0f, 100.0f, 1.0f);
+				marbles[i].Position = vec3(12.0f - (i*2.2f), 1.50f, -2.0f);
 				marbles[i].Audio = audio[(i-0)];
 			}
 		}
 
-		marbles[0].mLetter = GetModel('A');
-		marbles[1].mLetter = GetModel('S');
-		marbles[2].mLetter = GetModel('T');
-		marbles[3].mLetter = GetModel('R');
-		marbles[4].mLetter = GetModel('O');
+		marbles[0].mLetter = GetModel('D');
+		marbles[1].mLetter = GetModel('O');
+		marbles[2].mLetter = GetModel('M');
+		marbles[3].mLetter = GetModel('A');
+		marbles[4].mLetter = GetModel('I');
+		marbles[5].mLetter = GetModel('N');
 
-		marbles[5].mLetter = GetModel('M');
-		marbles[6].mLetter = GetModel('E');
-		marbles[7].mLetter = GetModel('D');
-		marbles[8].mLetter = GetModel('I');
+		marbles[6].mLetter = GetModel('G');
+		marbles[7].mLetter = GetModel('R');
+		marbles[8].mLetter = GetModel('O');
+		marbles[9].mLetter = GetModel('U');
+		marbles[10].mLetter = GetModel('P');
 
-		marbles[9].mLetter = GetModel('C');
-		marbles[10].mLetter = GetModel('O');
-		marbles[11].mLetter = GetModel('M');
-		marbles[12].mLetter = GetModel('P');
 
 		AddMarble(world, &marbles[0]);
 		AddMarble(world, &marbles[1]);
@@ -339,14 +332,15 @@ namespace intro
 		AddMarble(world, &marbles[3]);
 		AddMarble(world, &marbles[4]);
 		AddMarble(world, &marbles[5]);
-		AddMarble(world, &marbles[6]);
 
+		AddMarble(world, &marbles[6]);
 		AddMarble(world, &marbles[7]);
 		AddMarble(world, &marbles[8]);
 		AddMarble(world, &marbles[9]);
 		AddMarble(world, &marbles[10]);
-		AddMarble(world, &marbles[11]);
-		AddMarble(world, &marbles[12]);
+
+		//AddMarble(world, &marbles[11]);
+		//AddMarble(world, &marbles[12]);
 
 		marbles[13].mLetter = sat;
 		marbles[13].Color = vec3(150.0f, 100.0f, 0.0f);
@@ -361,21 +355,21 @@ namespace intro
 	}
 }
 
-Scene* GetIntroScene()
+Scene* GetDomainScene()
 {
-	if (!SceneIntro)
+	if (!SceneDomain)
 	{
-		SceneIntro = (Scene*)malloc(sizeof(Scene));
+		SceneDomain = (Scene*)malloc(sizeof(Scene));
 
-		strcpy_s(SceneIntro->Name, "IntroScene");
+		strcpy_s(SceneDomain->Name, "DomainScene");
 
-		SceneIntro->InitFunc = intro::Init;
-		SceneIntro->UninitFunc = intro::Uninit;
-		SceneIntro->ResetFunc = intro::Reset;
+		SceneDomain->InitFunc = domain::Init;
+		SceneDomain->UninitFunc = domain::Uninit;
+		SceneDomain->ResetFunc = domain::Reset;
 
-		SceneIntro->DisplayFunc = intro::Display;
-		SceneIntro->UpdateFunc = intro::Update;
-		SceneIntro->ResizeFunc = intro::Resize;
+		SceneDomain->DisplayFunc = domain::Display;
+		SceneDomain->UpdateFunc = domain::Update;
+		SceneDomain->ResizeFunc = domain::Resize;
 		
 		// Position: 19.085726 6.047958 - 34.788692
 		// Front : -0.477143 - 0.126199 0.869717
@@ -386,7 +380,7 @@ Scene* GetIntroScene()
 		// Zoom : -18.000000
 		// Height : 1.000000 
 
-		SceneIntro->Camera = AddNewCamera(
+		SceneDomain->Camera = AddNewCamera(
 			vec3(19.08f, 6.04f, - 34.78f),
 			vec3(-0.47f, - 0.12f, 0.86f),
 			vec3(0.0f, 1.0f, 0.0f),
@@ -394,5 +388,5 @@ Scene* GetIntroScene()
 			-18.0f, 1.0f);
 	}
 
-	return SceneIntro;
+	return SceneDomain;
 }

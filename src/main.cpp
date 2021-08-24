@@ -12,6 +12,7 @@
 // scenes
 #include "scene.h"
 #include "scene-intro.h"
+#include "scene-domain.h"
 #include "scene-marbles.h"
 
 #pragma comment(lib, "glew32.lib")
@@ -476,6 +477,7 @@ void initialize(void)
 
 	// add scenes
 	AddScene(GetIntroScene());
+	AddScene(GetDomainScene());
 	AddScene(GetMarblesScene());
 
 	// set clear color and clear depth
@@ -520,10 +522,10 @@ void initialize(void)
 		}
 	}
 
-	// WHY !?
-	Scene scene;
-	GetSceneAt(scene, 0);
-	scene.InitFunc();
+	//// WHY !?
+	//Scene scene;
+	//GetSceneAt(scene, 0);
+	//scene.InitFunc();
 
 
 	// clock for syncing animation speed
