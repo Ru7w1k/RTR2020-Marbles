@@ -6,6 +6,7 @@ typedef struct _TextureShaderUniforms
 {
 	GLint mvpMatrixUniform;
 	GLint samplerUniform;
+	GLint scaleUniform;
 
 } TextureShaderUniforms;
 

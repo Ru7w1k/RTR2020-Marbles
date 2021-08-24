@@ -228,9 +228,9 @@ namespace intro
 				{
 					i = 0;
 					t = 0;
-					delta = 60;
+					delta = 75;
 					n++;
-					if (n == 3) state = 2;
+					if (n == 2) state = 2;
 				}
 				else
 				{

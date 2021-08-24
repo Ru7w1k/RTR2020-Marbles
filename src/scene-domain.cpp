@@ -228,9 +228,9 @@ namespace domain
 				{
 					i = 0;
 					t = 0;
-					delta = 60;
+					delta = 75;
 					n++;
-					if (n == 3) state = 2;
+					if (n == 2) state = 2;
 				}
 				else
 				{
@@ -280,7 +280,7 @@ namespace domain
 		fadeV = 1.0f;
 		state = 0;
 
-		for (int i = 0; i < 14; i++)
+		for (int i = 0; i < 11; i++)
 		{
 			marbles[i].Radius = 1.0f;
 			marbles[i].Velocity = vec3(0.0f, 0.0f, 0.0f);
@@ -301,14 +301,14 @@ namespace domain
 				// G R O U P
 				marbles[i].Color = vec3(100.0f, 100.0f, 1.0f);
 				marbles[i].Position = vec3(15.0f - (i*2.2f), 1.50f, -10.0f);
-				marbles[i].Audio = audio[(i-4)];
+				marbles[i].Audio = audio[(10-i)];
 			}
 			else 
 			{
 				// D O M A I N
 				marbles[i].Color = vec3(1.0f, 100.0f, 1.0f);
 				marbles[i].Position = vec3(12.0f - (i*2.2f), 1.50f, -2.0f);
-				marbles[i].Audio = audio[(i-0)];
+				marbles[i].Audio = audio[(6-i)];
 			}
 		}
 

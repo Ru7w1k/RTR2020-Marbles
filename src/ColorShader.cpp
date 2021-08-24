@@ -67,7 +67,7 @@ bool InitColorShader()
 	if (!LinkProgram(ColorShader, "ColorShader")) return false;
 
 	// post-linking retrieving uniform locations
-	ColorUniforms = (ColorShaderUniforms*)malloc(sizeof(ColorUniforms));
+	ColorUniforms = (ColorShaderUniforms*)malloc(sizeof(ColorShaderUniforms));
 	ColorUniforms->mvpMatrixUniform = glGetUniformLocation(ColorShader, "u_mvpMatrix");
 
 	LogD("Color Shader compiled..");

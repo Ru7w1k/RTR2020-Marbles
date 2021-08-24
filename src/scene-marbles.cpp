@@ -17,6 +17,7 @@
 #include "TextureShader.h"
 #include "BlurShader.h"
 #include "BloomShader.h"
+#include "FadeShader.h"
 
 // effects
 #include "rigidBody.h"
@@ -51,8 +52,10 @@ namespace marbles
 	Framebuffer *fboPingpong[2] = {NULL, NULL};
 	
 	GLuint noiseTex;
+	GLuint skyTex;
 
-
+	float fadeV = 1.0f;
+	int state = 0;
 	Model* sat = NULL;
 
 	bool Init(void)
@@ -74,6 +77,7 @@ namespace marbles
 		texParticle = loadTexture("res\\textures\\particle.png");
 		//noiseTex = loadTexture("res\\textures\\noise.png");
 		noiseTex = loadTexture("res\\textures\\noise2.png");
+		skyTex = loadTexture("res\\textures\\sky1.png");
 
 		ps->tex = texParticle;
 		ps->size = 32.0f;
@@ -177,19 +181,30 @@ namespace marbles
 		modelMatrix = mat4::identity();
 
 		// transformations
-		modelMatrix = scale(10.0f, 0.5f, 10.0f);
+		modelMatrix = scale(20.0f, 0.5f, 20.0f);
 
 		// send necessary matrices to shader in respective uniforms
 		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMatrix);
 		glUniformMatrix4fv(u->vMatrixUniform, 1, GL_FALSE, GetViewMatrix(SceneMarbles->Camera));
 		glUniformMatrix4fv(u->pMatrixUniform, 1, GL_FALSE, projMatrix);
 
-		vec3 lightPos = vec3(0.0f, 10.0f, 0.0f);
 		glUniform3fv(u->cameraPosUniform, 1, SceneMarbles->Camera->Position);
 		
 		glUniform1f(u->alpha, 1.0f);
 		useMaterial(matPlastic);
 		DrawCube();
+
+		/*TextureShaderUniforms *ut = UseTextureShader();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, skyTex);
+		glUniform1i(ut->samplerUniform, 0);
+		glUniform1f(ut->scaleUniform, 5.0f);
+
+		glCullFace(GL_FRONT);
+		modelMatrix = scale(80.0f, 80.0f, 80.0f);
+		glUniformMatrix4fv(ut->mvpMatrixUniform, 1, GL_FALSE, projMatrix * GetViewMatrixNoTranslate(SceneMarbles->Camera) * modelMatrix);
+		DrawSphere();
+		glCullFace(GL_BACK);*/
 
 		glActiveTexture(GL_TEXTURE5);
 		glBindTexture(GL_TEXTURE_2D, noiseTex);
@@ -241,49 +256,67 @@ namespace marbles
 		DrawPlane();
 
 
-		//TextureShaderUniforms *u3 = UseTextureShader();
-
-		//glViewport(0, 0, gWidth / 4, gHeight / 4);
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, fboMain->colorTex[1]);
-		//glUniform1i(u3->samplerUniform, 0);
-		//glUniformMatrix4fv(u3->mvpMatrixUniform, 1, GL_FALSE, mat4::identity());
-		//DrawPlane();
-
-		//glViewport(gWidth / 4, 0, gWidth / 4, gHeight / 4);
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, fboPingpong[horizontal]->colorTex[0]);
-		//glUniform1i(u3->samplerUniform, 0);
-		//glUniformMatrix4fv(u3->mvpMatrixUniform, 1, GL_FALSE, mat4::identity());
-		//DrawPlane();
-
-		//glViewport(2 * gWidth / 4, 0, gWidth / 4, gHeight / 4);
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, fboPingpong[!horizontal]->colorTex[0]);
-		//glUniform1i(u3->samplerUniform, 0);
-		//glUniformMatrix4fv(u3->mvpMatrixUniform, 1, GL_FALSE, mat4::identity());
-		//DrawPlane();
-
-		//glViewport(3 * gWidth / 4, 0, gWidth / 4, gHeight / 4);
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, fboMain->colorTex[0]);
-		//glUniform1i(u3->samplerUniform, 0);
-		//glUniformMatrix4fv(u3->mvpMatrixUniform, 1, GL_FALSE, mat4::identity());
-		//DrawPlane();
-
-		// DrawFramebuffer(fboMain, 0);
+		if (state == 0 || state == 3)
+		{
+			FadeShaderUniforms* u3 = UseFadeShader();
+			glUniform1f(u3->fade, fadeV);
+			DrawPlane();
+		}
 
 	}
 
 	bool Update(float delta)
 	{
-		angleTriangle += 0.000002f * delta;
-		//if (angleTriangle > 90.0f) return true;
+		static int i = 0;
+		static int t = 0;
+		static int n = 0;
 
-		//updateParticleSystem(ps);
+		if (state == 0)
+		{
+			fadeV -= 0.01f;
+			if (fadeV <= 0.0f)
+			{
+				fadeV = 0.0f;
+				state = 1;
+			}
+		}
+
+		if (state == 1)
+		{
+			if (t > 4)
+			{
+				if (i > 6)
+				{
+					state = 2;
+				}
+				else
+				{
+					world.Marbles[i]->Active = true;
+					t = 0;
+					i++;
+				}
+			}
+			t++;
+		}
+
+		if (state == 2)
+		{
+			if (t > 500) state = 3;
+			t++;
+		}
+
+		if (state == 3)
+		{
+			fadeV += 0.01f;
+			if (fadeV >= 1.0f)
+			{
+				fadeV = 1.0f;
+				return true;
+			}
+		}
+
 
 		UpdateWorld(world, 0.000002f * delta);
-
 		return false;
 	}
 
@@ -305,49 +338,40 @@ namespace marbles
 	{
 		ResetWorld(world);
 
-		for (int i = 0; i < 13; i++)
+		for (int i = 0; i < 7; i++)
 		{
-			marbles[i].Position = vec3((i-3)*2.5f, (i+1) * 2.50f, 2.0f * (float)rand() / (float)RAND_MAX);
+			marbles[i].Position = vec3(15.0f - (i * 3.2f), 3.50f, 0.0f);
+			marbles[i].Color = vec3(100.0f, 100.0f, 1.0f);
 			marbles[i].Radius = 1.0f;
-			marbles[i].Position = vec3(0.0f, (i+1) * 2.50f, 0.0f);
-			//marbles[i].Velocity = vec3(0.0f, 0.0f, 0.0f);
-			marbles[i].Velocity = vec3(0.1f, 0.0f, 0.1f);
+			marbles[i].Velocity = vec3(0.0f, -0.01f, 0.0f);
 			marbles[i].Mass = 10000.0f;
 			marbles[i].mat = mat[0];
 			marbles[i].Audio = audio[i % 7];
 			marbles[i].Angle = 0.0f;
 			marbles[i].Axis = vec3();
 			marbles[i].rotate = mat4::identity();
-			marbles[i].xAngle = 0.0f;
+			marbles[i].xAngle = radians(-90.0f);
 			marbles[i].yAngle = 0.0f;
 			marbles[i].zAngle = 0.0f;
-
-			marbles[i].Color = vec3(100.0f, 100.0f, 0.0f);
 			marbles[i].power = 0.01f;
-			marbles[i].Active = true;
-
-			//if (i%4 == 0) marbles[i].Color = vec3(100.0f, 100.0f, 0.0f);
-			//if (i%4 == 1) marbles[i].Color = vec3(0.0f, 0.0f, 100.0f);
-			//if (i%4 == 2) marbles[i].Color = vec3(0.0f, 100.0f, 0.0f);
-			//if (i%4 == 3) marbles[i].Color = vec3(100.0f, 0.0f, 0.0f);
-
+			marbles[i].Active = false;
 		}
 
-		marbles[0].mLetter = GetModel('A');
-		marbles[1].mLetter = GetModel('S');
-		marbles[2].mLetter = GetModel('T');
-		marbles[3].mLetter = GetModel('R');
-		marbles[4].mLetter = GetModel('O');
-		
-		marbles[5].mLetter = GetModel('M');
-		marbles[6].mLetter = GetModel('E');
-		marbles[7].mLetter  = GetModel('D');
-		marbles[8].mLetter  = GetModel('I');
-		
-		marbles[9].mLetter  = GetModel('C');
-		marbles[10].mLetter = GetModel('O');
-		marbles[11].mLetter = GetModel('M');
-		marbles[12].mLetter = GetModel('P');
+		marbles[0].mLetter = GetModel('M');
+		marbles[1].mLetter = GetModel('A');
+		marbles[2].mLetter = GetModel('R');
+		marbles[3].mLetter = GetModel('B');
+		marbles[4].mLetter = GetModel('L');
+		marbles[5].mLetter = GetModel('E');
+		marbles[6].mLetter = GetModel('S');
+
+		/*marbles[0].Color = vec3(100.0f, 1.0f, 1.0f);
+		marbles[1].Color = vec3(100.0f, 50.0f, 1.0f);
+		marbles[2].Color = vec3(100.0f, 100.0f, 1.0f);
+		marbles[3].Color = vec3(1.0f, 100.0f, 1.0f);
+		marbles[4].Color = vec3(1.0f, 1.0f, 100.0f);
+		marbles[5].Color = vec3(60.0f, 34.0f, 100.0f);
+		marbles[6].Color = vec3(50.0f, 1.0f, 100.0f);*/
 
 		AddMarble(world, &marbles[0]);
 		AddMarble(world, &marbles[1]);
@@ -357,13 +381,6 @@ namespace marbles
 		AddMarble(world, &marbles[5]);
 		AddMarble(world, &marbles[6]);
 		
-		AddMarble(world, &marbles[7]);
-		AddMarble(world, &marbles[8]);
-		AddMarble(world, &marbles[9]);
-		AddMarble(world, &marbles[10]);
-		AddMarble(world, &marbles[11]);
-		AddMarble(world, &marbles[12]);
-
 		walls[0].Normal = normalize(vec3(0.0f, 1.0f, 0.0f));
 		walls[0].D = -0.5f;
 
@@ -408,11 +425,21 @@ Scene *GetMarblesScene()
 		SceneMarbles->UpdateFunc  = marbles::Update;
 		SceneMarbles->ResizeFunc  = marbles::Resize;
 
+		// Position: 21.585135 12.360615 - 31.702024
+		// Front : -0.539628 - 0.284015 0.792551
+		// Right : -0.826590 0.000000 - 0.562805
+		// Up : -0.159845 0.958820 0.234764
+		// Yaw : 124.250000
+		// Pitch : -16.500000
+		// Zoom : -30.000000
+		// Height : 1.000000
+
 		SceneMarbles->Camera = AddNewCamera(
-			vec3(0.0f, 0.0f, -8.0f), 
-			vec3(0.0f, 0.0f, 1.0f), 
-			vec3(0.0f, 1.0f, 0.0f), 
-			90.0f, 0.0f);
+			vec3(21.58f, 12.36f, -31.70f),
+			vec3(-0.53f, -0.28f, 0.79f),
+			vec3(0.0f, 1.0f, 0.0f),
+			124.25f, -16.50f,
+			-30.0f, 1.0f);
 	}
 
 	return SceneMarbles;

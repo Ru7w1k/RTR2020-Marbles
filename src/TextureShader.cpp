@@ -38,10 +38,11 @@ bool InitTextureShader()
 		"out vec4 FragColor; \n" \
 
 		"uniform sampler2D u_Sampler; \n" \
+		"uniform float u_Scale = 1.0; \n" \
 
 		"void main (void) \n" \
 		"{ \n" \
-		"	FragColor = texture(u_Sampler, out_Texture0); \n" \
+		"	FragColor = texture(u_Sampler, out_Texture0 * u_Scale); \n" \
 		"} \n";
 
 	// compile shaders
@@ -69,9 +70,10 @@ bool InitTextureShader()
 	if (!LinkProgram(TextureShader, "TextureShader")) return false;
 
 	// post-linking retrieving uniform locations
-	TextureUniforms = (TextureShaderUniforms*)malloc(sizeof(TextureUniforms));
+	TextureUniforms = (TextureShaderUniforms*)malloc(sizeof(TextureShaderUniforms));
 	TextureUniforms->mvpMatrixUniform = glGetUniformLocation(TextureShader, "u_mvpMatrix");
 	TextureUniforms->samplerUniform = glGetUniformLocation(TextureShader, "u_Sampler");
+	TextureUniforms->scaleUniform = glGetUniformLocation(TextureShader, "u_Scale");
 
 	LogD("Color Shader compiled..");
 	return true;
