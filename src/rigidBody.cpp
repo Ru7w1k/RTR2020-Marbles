@@ -160,6 +160,8 @@ void UpdateWorld(World& world, float time)
 		// for each marble resolve collisions
 		for (int i = 0; i < world.Marbles.size(); i++)
 		{
+			if (!world.Marbles[i]->Active) continue;
+
 			// collision check with all infinite large walls
 			for (int j = 0; j < vmath::min(5,(int)world.Walls.size()); j++)
 			{

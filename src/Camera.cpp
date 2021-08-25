@@ -118,14 +118,14 @@ void Zoom(Camera *cam, float z)
 void Print(Camera* cam)
 {
 	LogI("----- camera --------------------");
-	LogI("Position: %f %f %f", cam->Position[0], cam->Position[1], cam->Position[2]);
-	LogI("Front: %f %f %f", cam->Front[0], cam->Front[1], cam->Front[2]);
-	LogI("Right: %f %f %f", cam->Right[0], cam->Right[1], cam->Right[2]);
-	LogI("Up: %f %f %f", cam->Up[0], cam->Up[1], cam->Up[2]);
-	LogI("Yaw: %f", cam->Yaw);
-	LogI("Pitch: %f", cam->Pitch);
-	LogI("Zoom: %f", cam->Zoom);
-	LogI("Height: %f", cam->Height);
+	LogI("Position: vec3(%7.3ff, %7.3ff, %7.3ff)", cam->Position[0], cam->Position[1], cam->Position[2]);
+	LogI("Front: vec3(%7.3ff, %7.3ff, %7.3ff)", cam->Front[0], cam->Front[1], cam->Front[2]);
+	LogI("Right: vec3(%7.3ff, %7.3ff, %7.3ff)", cam->Right[0], cam->Right[1], cam->Right[2]);
+	LogI("Up: vec3(%7.3ff, %7.3ff, %7.3ff)", cam->Up[0], cam->Up[1], cam->Up[2]);
+	LogI("Yaw: %7.3ff", cam->Yaw);
+	LogI("Pitch: %7.3ff", cam->Pitch);
+	LogI("Zoom: %7.3ff", cam->Zoom);
+	LogI("Height: %7.3ff", cam->Height);
 	LogI("---------------------------------");
 }
 

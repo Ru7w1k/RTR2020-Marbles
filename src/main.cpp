@@ -368,6 +368,19 @@ void ToggleFullscreen(void)
 	}
 }
 
+void GLAPIENTRY
+MessageCallback(GLenum source,
+	GLenum type,
+	GLuint id,
+	GLenum severity,
+	GLsizei length,
+	const GLchar* message,
+	const void* userParam)
+{
+	LogE("GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s",
+		(type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
+		type, severity, message);
+}
 
 void initialize(void)
 {
@@ -433,8 +446,15 @@ void initialize(void)
 		return;
 	}
 
+	// clock for syncing animation speed
+	InitClock();
+
 	// init logger
 	InitLogger();
+
+	// During init, enable debug output
+	glEnable(GL_DEBUG_OUTPUT);
+	glDebugMessageCallback(MessageCallback, 0);
 	
 	// init audio
 	if (!InitOpenAL())
@@ -476,8 +496,8 @@ void initialize(void)
 	InitSceneQueue();
 
 	// add scenes
-	AddScene(GetIntroScene());
-	AddScene(GetDomainScene());
+	//AddScene(GetIntroScene());
+	//AddScene(GetDomainScene());
 	AddScene(GetMarblesScene());
 
 	// set clear color and clear depth
@@ -526,10 +546,6 @@ void initialize(void)
 	//Scene scene;
 	//GetSceneAt(scene, 0);
 	//scene.InitFunc();
-
-
-	// clock for syncing animation speed
-	InitClock();
 
 	// warm-up resize call
 	resize(WIN_WIDTH, WIN_HEIGHT);
