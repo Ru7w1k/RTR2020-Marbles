@@ -387,6 +387,7 @@ void initialize(void)
 	// function declarations
 	void resize(int, int);
 	void uninitialize(void);
+	void ToggleFullscreen(void);
 
 	// variable declarations
 	PIXELFORMATDESCRIPTOR pfd;
@@ -496,8 +497,8 @@ void initialize(void)
 	InitSceneQueue();
 
 	// add scenes
-	//AddScene(GetIntroScene());
-	//AddScene(GetDomainScene());
+	AddScene(GetIntroScene());
+	AddScene(GetDomainScene());
 	AddScene(GetMarblesScene());
 
 	// set clear color and clear depth
@@ -549,6 +550,8 @@ void initialize(void)
 
 	// warm-up resize call
 	resize(WIN_WIDTH, WIN_HEIGHT);
+	
+	ToggleFullscreen();
 }
 
 void resize(int width, int height)
