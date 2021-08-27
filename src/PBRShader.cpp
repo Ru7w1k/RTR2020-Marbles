@@ -65,8 +65,8 @@ bool InitPBRShader()
 		"uniform sampler2D aoMap; \n" \
 		"uniform sampler2D noiseMap; \n" \
 
-		"uniform vec3 lightPosition[25]; \n" \
-		"uniform vec3 lightColor[25]; \n" \
+		"uniform vec3 lightPosition[100]; \n" \
+		"uniform vec3 lightColor[100]; \n" \
 		"uniform int lightCount; \n" \
 
 		"uniform vec3 cameraPos; \n" \

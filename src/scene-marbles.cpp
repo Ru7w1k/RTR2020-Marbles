@@ -96,8 +96,14 @@ namespace marbles
 		DeleteWorld(world);
 
 		deleteMaterial(matPlastic);
+		matPlastic = NULL;
+		
 		deleteMaterial(matGround);
+		matGround = NULL;
+		
 		deleteMaterial(matMarble);
+		matMarble = NULL;
+		
 
 		for(int i = 0; i < 7; i++)
 		{
@@ -279,13 +285,13 @@ namespace marbles
 			}
 			t++;
 
-			SceneMarbles->Camera->Position += -0.001f * (vec3(37.515f, 24.477f, 0.115f) - vec3(0.063611f, 42.330196f, -7.289144f));
-			SceneMarbles->Camera->Front += -0.001f * (vec3(-0.938f, -0.347f, -0.003f) - vec3(-0.001590f, -0.983255f, 0.182229f));
-			SceneMarbles->Camera->Up += -0.001f * (vec3(-0.347f, 0.938f, -0.001f) - vec3(-0.008580f, 0.182236f, 0.983218f));
-			SceneMarbles->Camera->Yaw += -0.001f * (180.175f - 90.50f);
-			SceneMarbles->Camera->Pitch += -0.001f * (-20.0f - -79.50f);
-			SceneMarbles->Camera->Zoom += -0.001f * (-5.6f - -20.0f);
-			SceneMarbles->Camera->Height += -0.001f * (10.6f - 3.0f);
+			SceneMarbles->Camera->Position += -0.0012f * (vec3(37.515f, 24.477f, 0.115f) - vec3(0.063611f, 42.330196f, -7.289144f));
+			SceneMarbles->Camera->Front += -0.0012f * (vec3(-0.938f, -0.347f, -0.003f) - vec3(-0.001590f, -0.983255f, 0.182229f));
+			SceneMarbles->Camera->Up += -0.0012f * (vec3(-0.347f, 0.938f, -0.001f) - vec3(-0.008580f, 0.182236f, 0.983218f));
+			SceneMarbles->Camera->Yaw += -0.0012f * (180.175f - 90.50f);
+			SceneMarbles->Camera->Pitch += -0.0012f * (-20.0f - -79.50f);
+			SceneMarbles->Camera->Zoom += -0.0012f * (-5.6f - -20.0f);
+			SceneMarbles->Camera->Height += -0.0012f * (10.6f - 3.0f);
 
 		}
 
@@ -307,15 +313,15 @@ namespace marbles
 				90.50f, -79.50f,
 				-20.0f, 3.0f);*/
 
-			SceneMarbles->Camera->Position += -0.001f * (vec3(37.515f, 24.477f, 0.115f) - vec3(0.063611f, 42.330196f, -7.289144f));
-			SceneMarbles->Camera->Front += -0.001f * (vec3(-0.938f, -0.347f, -0.003f) - vec3(-0.001590f, -0.983255f, 0.182229f));
-			SceneMarbles->Camera->Up += -0.001f * (vec3(-0.347f, 0.938f, -0.001f) - vec3(-0.008580f, 0.182236f, 0.983218f));
-			SceneMarbles->Camera->Yaw += -0.001f * (180.175f - 90.50f);
-			SceneMarbles->Camera->Pitch += -0.001f * (-20.0f - -79.50f);
-			SceneMarbles->Camera->Zoom += -0.001f * (-5.6f - -20.0f);
-			SceneMarbles->Camera->Height += -0.001f * (10.6f - 3.0f);
+			SceneMarbles->Camera->Position += -0.0012f * (vec3(37.515f, 24.477f, 0.115f) - vec3(0.063611f, 42.330196f, -7.289144f));
+			SceneMarbles->Camera->Front += -0.0012f * (vec3(-0.938f, -0.347f, -0.003f) - vec3(-0.001590f, -0.983255f, 0.182229f));
+			SceneMarbles->Camera->Up += -0.0012f * (vec3(-0.347f, 0.938f, -0.001f) - vec3(-0.008580f, 0.182236f, 0.983218f));
+			SceneMarbles->Camera->Yaw += -0.0012f * (180.175f - 90.50f);
+			SceneMarbles->Camera->Pitch += -0.0012f * (-20.0f - -79.50f);
+			SceneMarbles->Camera->Zoom += -0.0012f * (-5.6f - -20.0f);
+			SceneMarbles->Camera->Height += -0.0012f * (10.6f - 3.0f);
 
-			if (SceneMarbles->Camera->Zoom <= -20.0f) state++;
+			if (SceneMarbles->Camera->Zoom <= -20.5f) state++;
 		}
 
 		if (state == 3)

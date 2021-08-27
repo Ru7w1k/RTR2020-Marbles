@@ -85,6 +85,7 @@ namespace intro
 	void Uninit(void)
 	{
 		deleteMaterial(matGlass);
+		matGlass = NULL;
 
 		for (int i = 0; i < 7; i++)
 		{
@@ -122,6 +123,8 @@ namespace intro
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		alListenerfv(AL_POSITION, normalize(SceneIntro->Camera->Position));
+		alListenerfv(AL_ORIENTATION, new ALfloat[]{ SceneIntro->Camera->Position[0], SceneIntro->Camera->Position[1], SceneIntro->Camera->Position[2], 0.0f, 1.0f, 0.0f });
+
 
 		projMatrix = vmath::perspective(45.0f + SceneIntro->Camera->Zoom, (float)gWidth / (float)gHeight, 0.1f, 100.0f);
 

@@ -85,6 +85,7 @@ namespace domain
 	void Uninit(void)
 	{
 		deleteMaterial(matGlass);
+		matGlass = NULL;
 
 		for (int i = 0; i < 7; i++)
 		{
@@ -122,6 +123,8 @@ namespace domain
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		alListenerfv(AL_POSITION, normalize(SceneDomain->Camera->Position));
+		alListenerfv(AL_ORIENTATION, new ALfloat[]{ SceneDomain->Camera->Position[0], SceneDomain->Camera->Position[1], SceneDomain->Camera->Position[2], 0.0f, 1.0f, 0.0f });
+
 
 		projMatrix = vmath::perspective(45.0f + SceneDomain->Camera->Zoom, (float)gWidth / (float)gHeight, 0.1f, 100.0f);
 

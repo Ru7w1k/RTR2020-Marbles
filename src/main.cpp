@@ -514,10 +514,10 @@ void initialize(void)
 	InitSceneQueue();
 
 	// add scenes
-	AddScene(GetIntroScene());
-	AddScene(GetIntroScene());
-	AddScene(GetDomainScene());
-	AddScene(GetMarblesScene());
+	//AddScene(GetIntroScene());
+	//AddScene(GetIntroScene());
+	//AddScene(GetDomainScene());
+	//AddScene(GetMarblesScene());
 	AddScene(GetRTRScene());
 
 	// set clear color and clear depth
@@ -568,7 +568,7 @@ void initialize(void)
 	// warm-up resize call
 	resize(WIN_WIDTH, WIN_HEIGHT);
 	
-	ToggleFullscreen();
+	//ToggleFullscreen();
 }
 
 void resize(int width, int height)

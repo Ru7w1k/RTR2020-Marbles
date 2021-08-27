@@ -38,7 +38,7 @@ namespace rtr
 	Material *matGround = NULL;
 
 	World world;
-	Marble marbles[7];
+	Marble marbles[100];
 	Wall walls[10];
 	ALuint audio[8];
 
@@ -96,8 +96,14 @@ namespace rtr
 		DeleteWorld(world);
 
 		deleteMaterial(matPlastic);
+		matPlastic = NULL;
+		
 		deleteMaterial(matGround);
+		matGround = NULL;
+		
 		deleteMaterial(matMarble);
+		matMarble = NULL;
+		
 
 		for(int i = 0; i < 7; i++)
 		{
@@ -175,7 +181,7 @@ namespace rtr
 		//useMaterial(matGround);
 		//DrawCube();
 
-		modelMatrix = scale(20.0f, 0.5f, 20.0f);
+		modelMatrix = scale(15.0f, 0.5f, 15.0f);
 		useMaterial(matPlastic);
 		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMatrix);
 		DrawCube();
@@ -261,14 +267,15 @@ namespace rtr
 
 		if (state == 1)
 		{
-			if (t > 4)
+			if (t > 50)
 			{
-				if (i > 6)
+				if (i > 19)
 				{
 					state = 2;
 				}
 				else
 				{
+					AddMarble(world, &marbles[i]);
 					world.Marbles[i]->Active = true;
 					t = 0;
 					i++;
@@ -276,43 +283,37 @@ namespace rtr
 			}
 			t++;
 
-			SceneRTR->Camera->Position += -0.001f * (vec3(37.515f, 24.477f, 0.115f) - vec3(0.063611f, 42.330196f, -7.289144f));
-			SceneRTR->Camera->Front += -0.001f * (vec3(-0.938f, -0.347f, -0.003f) - vec3(-0.001590f, -0.983255f, 0.182229f));
-			SceneRTR->Camera->Up += -0.001f * (vec3(-0.347f, 0.938f, -0.001f) - vec3(-0.008580f, 0.182236f, 0.983218f));
-			SceneRTR->Camera->Yaw += -0.001f * (180.175f - 90.50f);
-			SceneRTR->Camera->Pitch += -0.001f * (-20.0f - -79.50f);
-			SceneRTR->Camera->Zoom += -0.001f * (-5.6f - -20.0f);
-			SceneRTR->Camera->Height += -0.001f * (10.6f - 3.0f);
-
+			SceneRTR->Camera->Yaw += 0.06f;
+			SceneRTR->Camera->Zoom -= 0.0005f;
+			UpdateCameraVectors(SceneRTR->Camera);
+			UpdateWorld(world, 0.000002f * delta);
 		}
 
 
 
 		if (state == 2)
 		{
-			/*SceneRTR->Camera = AddNewCamera(
-				vec3(37.515f, 24.477f, 0.115f),
-				vec3(-0.938f, -0.347f, -0.003f),
-				vec3(-0.347f, 0.938f, -0.001f),
-				180.175f, -20.0f,
-				-5.6f, 10.6f);
+			if (t > 50)
+			{
+				if (i > 89)
+				{
+					state = 2;
+				}
+				else
+				{
+					AddMarble(world, &marbles[i]);
+					world.Marbles[i]->Active = true;
+					t = 0;
+					i++;
+				}
+			}
+			t++;
 
-			SceneRTR->Camera = AddNewCamera(
-				vec3(0.063611f, 42.330196f, -7.289144f),
-				vec3(-0.001590f, -0.983255f, 0.182229f),
-				vec3(-0.008580f, 0.182236f, 0.983218f),
-				90.50f, -79.50f,
-				-20.0f, 3.0f);*/
-
-			SceneRTR->Camera->Position += -0.001f * (vec3(37.515f, 24.477f, 0.115f) - vec3(0.063611f, 42.330196f, -7.289144f));
-			SceneRTR->Camera->Front += -0.001f * (vec3(-0.938f, -0.347f, -0.003f) - vec3(-0.001590f, -0.983255f, 0.182229f));
-			SceneRTR->Camera->Up += -0.001f * (vec3(-0.347f, 0.938f, -0.001f) - vec3(-0.008580f, 0.182236f, 0.983218f));
-			SceneRTR->Camera->Yaw += -0.001f * (180.175f - 90.50f);
-			SceneRTR->Camera->Pitch += -0.001f * (-20.0f - -79.50f);
-			SceneRTR->Camera->Zoom += -0.001f * (-5.6f - -20.0f);
-			SceneRTR->Camera->Height += -0.001f * (10.6f - 3.0f);
-
-			if (SceneRTR->Camera->Zoom <= -20.0f) state++;
+			SceneRTR->Camera->Yaw += 0.06f;
+			SceneRTR->Camera->Zoom -= 0.0005f;
+			UpdateCameraVectors(SceneRTR->Camera);
+			//if (SceneRTR->Camera->Zoom <= -20.0f) state++;
+			UpdateWorld(world, 0.000002f * delta);
 		}
 
 		if (state == 3)
@@ -325,7 +326,6 @@ namespace rtr
 			}
 		}
 
-		UpdateWorld(world, 0.000002f * delta);
 		return false;
 	}
 
@@ -349,53 +349,66 @@ namespace rtr
 		fadeV = 1.0f;
 		state = 0;
 
-		for (int i = 0; i < 7; i++)
+		const char letters[] = { 'R', 'T', 'R', '2', '0', '2', '0', 'A', 'S', 'T', 'R', 'O', 'M', 'E', 'D', 'I', 'C', 'O', 'M', 'P' };
+		const vec3 colors[] = {
+			vec3(100.0f, 1.0f, 1.0f),
+			vec3(1.0f, 100.0f, 1.0f),
+			vec3(100.0f, 100.0f, 1.0f),
+			vec3(10.0f, 10.0f, 100.0f),
+			vec3(100.0f, 50.0f, 1.0f),
+		};
+
+		for (int i = 0; i < 90; i++)
 		{
-			marbles[i].Position = vec3(12.0f - (i * 3.5f), 17.50f, 0.0f);
-			marbles[i].Color = vec3(100.0f, 100.0f, 1.0f);
+
+			marbles[i].Position = vec3(genRand(-8.0f, 8.0f), genRand(20.0f, 25.0f), genRand(-8.0f, 8.0f));
 			marbles[i].Radius = 1.0f;
-			marbles[i].Velocity = vec3(0.0f, 0.001f, 0.05f);
+			marbles[i].Velocity = genVec3(-0.095f, 0.095f, -0.05f, -0.01f, -0.095f, 0.095f);
 			marbles[i].Mass = 10000.0f;
 			marbles[i].mat = matMarble;
 			marbles[i].Audio = audio[i % 7];
 			marbles[i].Angle = 0.0f;
 			marbles[i].Axis = vec3();
 			marbles[i].rotate = mat4::identity();
-			marbles[i].xAngle = radians(-90.0f);
-			marbles[i].yAngle = 0.0f;
-			marbles[i].zAngle = 0.0f;
-			marbles[i].power = 0.01f;
+			marbles[i].xAngle = genRand(-3.14f, 3.14f);
+			marbles[i].yAngle = genRand(-3.14f, 3.14f);
+			marbles[i].zAngle = genRand(-3.14f, 3.14f);
+			marbles[i].power = 0.001f;
 			marbles[i].Active = false;
+
+			marbles[i].Color = colors[i % _ARRAYSIZE(colors)];;
+			marbles[i].mLetter = GetModel(letters[i % _ARRAYSIZE(letters)]);
+
+			if (i < 100)
+			{
+				marbles[i].Position = vec3(genRand(6.0f, 7.0f)*cosf(i/5.0f), 5.0f+(i*2.0f), genRand(6.0f, 7.0f) * sinf(i/5.0f));
+				marbles[i].Position = vec3(0.0f, 12.0f, -9.5f);
+				marbles[i].Velocity = vec3(0.01f, -0.02f, 0.07f);
+				marbles[i].Active = false;
+				/*AddMarble(world, &marbles[i]);*/
+			}
 		}
-
-		marbles[0].mLetter = GetModel('M');
-		marbles[1].mLetter = GetModel('A');
-		marbles[2].mLetter = GetModel('R');
-		marbles[3].mLetter = GetModel('B');
-		marbles[4].mLetter = GetModel('L');
-		marbles[5].mLetter = GetModel('E');
-		marbles[6].mLetter = GetModel('S');
-
-		AddMarble(world, &marbles[0]);
-		AddMarble(world, &marbles[1]);
-		AddMarble(world, &marbles[2]);
-		AddMarble(world, &marbles[3]);
-		AddMarble(world, &marbles[4]);
-		AddMarble(world, &marbles[5]);
-		AddMarble(world, &marbles[6]);
 		
 		walls[0].Normal = normalize(vec3(0.0f, 1.0f, 0.0f));
 		walls[0].D = -0.5f;
 
-		walls[1].Normal = normalize(vec3(0.0f, 1.0f, 1.0f));
-		walls[1].D = -0.5f;
+		walls[1].Normal = normalize(vec3(1.0f, 0.0f, 0.0f));
+		walls[1].D = -15.5f;
 
-		walls[2].Normal = normalize(vec3(0.0f, 1.0f, -1.0f));
-		walls[2].D = -0.5f;
+		walls[2].Normal = normalize(vec3(-1.0f, 0.0f, 0.0f));
+		walls[2].D = -15.5f;
+
+		walls[3].Normal = normalize(vec3(0.0f, 0.0f, 1.0f));
+		walls[3].D = -15.5f;
+
+		walls[4].Normal = normalize(vec3(0.0f, 0.0f, -1.0f));
+		walls[4].D = -15.5f;
 
 		AddWall(world, &walls[0]);
-		//AddWall(world, &walls[1]);
-		//AddWall(world, &walls[2]);
+		AddWall(world, &walls[1]);
+		AddWall(world, &walls[2]);
+		AddWall(world, &walls[3]);
+		AddWall(world, &walls[4]);
 	}
 }
 
@@ -415,53 +428,21 @@ Scene *GetRTRScene()
 		SceneRTR->UpdateFunc  = rtr::Update;
 		SceneRTR->ResizeFunc  = rtr::Resize;
 
-		// [2963365429248.000000] ---- - camera--------------------
-		// [2963365429248.000000] Position: 0.063611 42.330196 - 7.289144
-		// [2963365429248.000000] Front : -0.001590 - 0.983255 0.182229
-		// [2963365429248.000000] Right : -0.999962 0.000000 - 0.008727
-		// [2963365429248.000000] Up : -0.008580 0.182236 0.983218
-		// [2963365429248.000000] Yaw : 90.500000
-		// [2963365429248.000000] Pitch : -79.500000
-		// [2963365429248.000000] Zoom : -20.000000
-		// [2963365429248.000000] Height : 3.000000
-		// [2963365429248.000000] -------------------------------- -
-		// [2965107376128.000000] ---- - camera--------------------
-		// [2965107376128.000000] Position : 28.342886 32.172813 - 12.767541
-		// [2965107376128.000000] Front : -0.708572 - 0.629320 0.319189
-		// [2965107376128.000000] Right : -0.410719 0.000000 - 0.911762
-		// [2965107376128.000000] Up : -0.573790 0.777146 0.258474
-		// [2965107376128.000000] Yaw : -204.250000
-		// [2965107376128.000000] Pitch : -39.000000
-		// [2965107376128.000000] Zoom : -4.000000
-		// [2965107376128.000000] Height : 7.000000
-		// [2965107376128.000000] -------------------------------- -
-		// [3010305458176.000000] ---- - camera--------------------
-		// [3010305458176.000000] Position: vec3(37.515f, 24.477f, 0.115f)
-		// [3010305458176.000000] Front : vec3(-0.938f, -0.347f, -0.003f)
-		// [3010305458176.000000] Right : vec3(0.003f, 0.000f, -1.000f)
-		// [3010305458176.000000] Up : vec3(-0.347f, 0.938f, -0.001f)
-		// [3010305458176.000000] Yaw : 180.175f
-		// [3010305458176.000000] Pitch : -20.300f
-		// [3010305458176.000000] Zoom : -5.600f
-		// [3010305458176.000000] Height : 10.600f
-		// [3010305458176.000000] -------------------------------- -
-
-
-
-		/*SceneRTR->Camera = AddNewCamera(
-			vec3(28.342886f, 32.172813f, -12.767541f),
-			vec3(-0.708572f, -0.629320f, 0.319189f),
-			vec3(-0.573790f, 0.777146f, 0.258474f),
-			156.25f, -39.0f,
-			-4.0f, 7.0f);*/
+		// Position: vec3(24.915f, 22.933f, -24.915f)
+		// Front : vec3(-0.623f, -0.473f, 0.623f)
+		// Right : vec3(-0.707f, 0.000f, -0.707f)
+		// Up : vec3(-0.335f, 0.881f, 0.335f)
+		// Yaw : 135.000f
+		// Pitch : -17.500f
+		// Zoom :  -6.659f
+		// Height : 4.000f
 
 		SceneRTR->Camera = AddNewCamera(
-			vec3(37.515f, 24.477f, 0.115f),
-			vec3(-0.938f, -0.347f, -0.003f),
-			vec3(-0.347f, 0.938f, -0.001f),
-			180.175f, -20.0f,
-			-5.6f, 10.6f);
-
+			vec3(-0.623f, -0.473f, 0.623f),
+			vec3(-0.623f, -0.473f, 0.623f),
+			vec3(0.0f, 1.0f, 0.0f),
+			135.0f, -17.50f,
+			-6.65f, 4.0f);
 	}
 
 	return SceneRTR;

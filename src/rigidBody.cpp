@@ -85,13 +85,18 @@ void DrawWorld(World& world)
 		sortedMarbles[d] = i;
 	}
 
+	if (world.Marbles.size() > 0)
+	{
+		useMaterial(world.Marbles[0]->mat);
+	}
+
 	// draw
 	for (map<float, int>::reverse_iterator it = sortedMarbles.rbegin(); it != sortedMarbles.rend(); it++)
 	{
 		mat4 modelMat = translate(world.Marbles[it->second]->Position);
 		modelMat *= vmath::rotateR(world.Marbles[it->second]->xAngle, world.Marbles[it->second]->yAngle, world.Marbles[it->second]->zAngle);
 		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMat);
-		useMaterial(world.Marbles[it->second]->mat);
+		//useMaterial(world.Marbles[it->second]->mat);
 		
 		glUniform1f(u->alpha, 1.0f);
 		glUniform1i(u->bright, 1);
@@ -99,7 +104,7 @@ void DrawWorld(World& world)
 		DrawModel(world.Marbles[it->second]->mLetter);
 
 		glUniform1i(u->bright, 0);
-		glUniform1f(u->alpha, 0.5f);
+		glUniform1f(u->alpha, 0.75f);
 		DrawSphere();
 
 		if (world.Marbles[it->second]->power > 0.01f)
@@ -130,6 +135,13 @@ void UpdateWorld(World& world, float time)
 
 			world.Marbles[i]->Velocity = v;
 			world.Marbles[i]->Position = world.Marbles[i]->Position + s;
+
+			//if (isnan(world.Marbles[i]->Position[0]) || isinf(world.Marbles[i]->Position[0])
+			//	|| isnan(world.Marbles[i]->Position[1]) || isinf(world.Marbles[i]->Position[1])
+			//	|| isnan(world.Marbles[i]->Position[2]) || isinf(world.Marbles[i]->Position[2]))
+			//{
+			//	DebugBreak();
+			//}
 
 			if (world.Marbles[i]->Roll)
 			{
@@ -170,6 +182,13 @@ void UpdateWorld(World& world, float time)
 					world.Marbles[i]->Position -= (world.Marbles[i]->Radius - d) * normalize(world.Marbles[i]->Velocity);
 					world.Marbles[i]->Velocity = 0.8f * reflect(world.Marbles[i]->Velocity, world.Walls[j]->Normal);
 
+					//if (isnan(world.Marbles[i]->Position[0]) || isinf(world.Marbles[i]->Position[0])
+					//	|| isnan(world.Marbles[i]->Position[1]) || isinf(world.Marbles[i]->Position[1])
+					//	|| isnan(world.Marbles[i]->Position[2]) || isinf(world.Marbles[i]->Position[2]))
+					//{
+					//	DebugBreak();
+					//}
+
 					if (length(world.Marbles[i]->Velocity) > 0.001f)
 					{
 						//world.Marbles[i]->rotate = rotate(world.Marbles[i]->Angle * 57.2957f, world.Marbles[i]->Axis);
@@ -188,7 +207,7 @@ void UpdateWorld(World& world, float time)
 					}
 					else
 					{
-						world.Marbles[i]->Velocity = vec3(0.0f);
+						// world.Marbles[i]->Velocity = vec3(0.0f);
 					}
 				}
 			}
@@ -202,13 +221,21 @@ void UpdateWorld(World& world, float time)
 					world.Marbles[i]->Position -= (world.Marbles[i]->Radius - d) * normalize(world.Marbles[i]->Velocity);
 					world.Marbles[i]->Velocity = 0.8f * reflect(world.Marbles[i]->Velocity, world.Walls[j]->Normal);
 
+					//if (isnan(world.Marbles[i]->Position[0]) || isinf(world.Marbles[i]->Position[0])
+					//	|| isnan(world.Marbles[i]->Position[1]) || isinf(world.Marbles[i]->Position[1])
+					//	|| isnan(world.Marbles[i]->Position[2]) || isinf(world.Marbles[i]->Position[2]))
+					//{
+					//	DebugBreak();
+					//}
+
+
 					if (length(world.Marbles[i]->Velocity) > 0.001f)
 					{
 						collided.insert(i);
 					}
 					else
 					{
-						world.Marbles[i]->Velocity = vec3(0.0f);
+						// world.Marbles[i]->Velocity = vec3(0.0f);
 					}
 				}
 			}
@@ -233,7 +260,7 @@ void UpdateWorld(World& world, float time)
 					}
 					else
 					{
-						world.Marbles[i]->Velocity = vec3(0.0f);
+						// world.Marbles[i]->Velocity = vec3(0.0f);
 					}
 
 					if (length(world.Marbles[j]->Velocity) > 0.001f)
@@ -242,7 +269,7 @@ void UpdateWorld(World& world, float time)
 					}
 					else
 					{
-						world.Marbles[j]->Velocity = vec3(0.0f);
+						// world.Marbles[j]->Velocity = vec3(0.0f);
 					}
 
 
@@ -254,6 +281,13 @@ void UpdateWorld(World& world, float time)
 
 					world.Marbles[i]->Position += 0.5f * (world.Marbles[i]->Radius + world.Marbles[j]->Radius - d) * -N;
 					world.Marbles[j]->Position += 0.5f * (world.Marbles[i]->Radius + world.Marbles[j]->Radius - d) * N;
+
+					/*if (isnan(world.Marbles[i]->Position[0]) || isinf(world.Marbles[i]->Position[0])
+						|| isnan(world.Marbles[i]->Position[1]) || isinf(world.Marbles[i]->Position[1])
+						|| isnan(world.Marbles[i]->Position[2]) || isinf(world.Marbles[i]->Position[2]))
+					{
+						DebugBreak();
+					}*/
 
 					vec3 c = cross(N, normalize(world.Marbles[i]->Velocity));
 					if (length2(c) == 0.0f)
