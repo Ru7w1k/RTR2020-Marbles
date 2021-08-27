@@ -130,7 +130,6 @@ namespace intro
 
 		/*glActiveTexture(GL_TEXTURE5);
 		glBindTexture(GL_TEXTURE_2D, noiseTex);*/
-		DrawWorld(world); 
 
 		// send necessary matrices to shader in respective uniforms
 		glUniformMatrix4fv(u->vMatrixUniform, 1, GL_FALSE, GetViewMatrix(SceneIntro->Camera));
@@ -151,6 +150,10 @@ namespace intro
 		//DrawCube();
 
 		// stop using OpenGL program object
+		glUseProgram(0);
+
+		DrawWorld(world); 
+
 		glUseProgram(0);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);

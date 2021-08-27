@@ -168,6 +168,7 @@
     <ClCompile Include="src\scene-domain.cpp" />
     <ClCompile Include="src\scene-intro.cpp" />
     <ClCompile Include="src\scene-marbles.cpp" />
+    <ClCompile Include="src\scene-rtr.cpp" />
     <ClCompile Include="src\scene.cpp" />
     <ClCompile Include="src\shader.cpp" />
     <ClCompile Include="src\TextureShader.cpp" />
@@ -196,6 +197,7 @@
     <ClInclude Include="inc\scene-domain.h" />
     <ClInclude Include="inc\scene-intro.h" />
     <ClInclude Include="inc\scene-marbles.h" />
+    <ClInclude Include="inc\scene-rtr.h" />
     <ClInclude Include="inc\scene.h" />
     <ClInclude Include="inc\shader.h" />
     <ClInclude Include="inc\PBRShader.h" />

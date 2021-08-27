@@ -63,8 +63,6 @@ void AddBox(World& world, Box* box)
 void DrawWorld(World& world)
 {
 	map<float, int> sortedMarbles;
-	static float t = 0.0f;
-	t += 1.0f;
 
 	vector<vec3> lightPos;
 	vector<vec3> lightCol;
@@ -109,6 +107,7 @@ void DrawWorld(World& world)
 			world.Marbles[it->second]->power -= 0.0025f;
 		}
 	}
+
 }
 
 void UpdateWorld(World& world, float time)
@@ -212,6 +211,12 @@ void UpdateWorld(World& world, float time)
 						world.Marbles[i]->Velocity = vec3(0.0f);
 					}
 				}
+			}
+
+			// collision check with all boxes
+			for (int j = 5; j < world.Boxes.size(); j++)
+			{
+
 			}
 
 			// collision with other marbles

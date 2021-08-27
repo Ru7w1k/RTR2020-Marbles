@@ -130,7 +130,6 @@ namespace domain
 
 		/*glActiveTexture(GL_TEXTURE5);
 		glBindTexture(GL_TEXTURE_2D, noiseTex);*/
-		DrawWorld(world); 
 
 		// send necessary matrices to shader in respective uniforms
 		glUniformMatrix4fv(u->vMatrixUniform, 1, GL_FALSE, GetViewMatrix(SceneDomain->Camera));
@@ -152,6 +151,11 @@ namespace domain
 
 		// stop using OpenGL program object
 		glUseProgram(0);
+		
+		DrawWorld(world); 
+
+		glUseProgram(0);
+
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, gWidth, gHeight);

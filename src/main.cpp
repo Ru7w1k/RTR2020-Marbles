@@ -14,6 +14,7 @@
 #include "scene-intro.h"
 #include "scene-domain.h"
 #include "scene-marbles.h"
+#include "scene-rtr.h"
 
 #pragma comment(lib, "glew32.lib")
 #pragma comment(lib, "opengl32.lib")
@@ -500,6 +501,7 @@ void initialize(void)
 	AddScene(GetIntroScene());
 	AddScene(GetDomainScene());
 	AddScene(GetMarblesScene());
+	AddScene(GetRTRScene());
 
 	// set clear color and clear depth
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -544,9 +546,9 @@ void initialize(void)
 	}
 
 	//// WHY !?
-	//Scene scene;
-	//GetSceneAt(scene, 0);
-	//scene.InitFunc();
+	Scene scene;
+	GetSceneAt(scene, 2);
+	scene.InitFunc();
 
 	// warm-up resize call
 	resize(WIN_WIDTH, WIN_HEIGHT);

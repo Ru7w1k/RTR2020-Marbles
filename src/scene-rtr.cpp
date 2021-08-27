@@ -4,7 +4,7 @@
 #include "logger.h"
 #include "audio.h"
 
-#include "scene-marbles.h"
+#include "scene-rtr.h"
 
 #include "material.h"
 #include "primitives.h"
@@ -25,9 +25,9 @@
 #include "camera.h"
 
 // scene variable
-Scene *SceneMarbles = NULL;
+Scene *SceneRTR = NULL;
 
-namespace marbles
+namespace rtr
 {
 	// scene state
 	int gWidth, gHeight;
@@ -86,7 +86,7 @@ namespace marbles
 		params.bDepth = true;
 		fboMain = CreateFramebuffer(&params);
 
-		world.cam = SceneMarbles->Camera;
+		world.cam = SceneRTR->Camera;
 		return true;
 	}
 
@@ -120,10 +120,10 @@ namespace marbles
 		}
 
 		// free the scene
-		if (SceneMarbles)
+		if (SceneRTR)
 		{
-			free(SceneMarbles);
-			SceneMarbles = NULL;
+			free(SceneRTR);
+			SceneRTR = NULL;
 		}
 	}
 
@@ -134,10 +134,10 @@ namespace marbles
 		glViewport(0, 0, gWidth, gHeight);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		alListenerfv(AL_POSITION, SceneMarbles->Camera->Position);
-		alListenerfv(AL_ORIENTATION, new ALfloat[]{ SceneMarbles->Camera->Position[0], SceneMarbles->Camera->Position[1], SceneMarbles->Camera->Position[2], 0.0f, 1.0f, 0.0f });
+		alListenerfv(AL_POSITION, SceneRTR->Camera->Position);
+		alListenerfv(AL_ORIENTATION, new ALfloat[]{ SceneRTR->Camera->Position[0], SceneRTR->Camera->Position[1], SceneRTR->Camera->Position[2], 0.0f, 1.0f, 0.0f });
 
-		projMatrix = vmath::perspective(45.0f + SceneMarbles->Camera->Zoom, (float)gWidth / (float)gHeight, 0.1f, 100.0f);
+		projMatrix = vmath::perspective(45.0f + SceneRTR->Camera->Zoom, (float)gWidth / (float)gHeight, 0.1f, 100.0f);
 
 		//TextureShaderUniforms *ut = UseTextureShader();
 		//glActiveTexture(GL_TEXTURE0);
@@ -146,7 +146,7 @@ namespace marbles
 		//glUniform1f(ut->scaleUniform, 5.0f);
 
 		//glCullFace(GL_FRONT);
-		//glUniformMatrix4fv(ut->mvpMatrixUniform, 1, GL_FALSE, projMatrix * GetViewMatrixNoTranslate(SceneMarbles->Camera) * scale(80.0f, 80.0f, 80.0f));
+		//glUniformMatrix4fv(ut->mvpMatrixUniform, 1, GL_FALSE, projMatrix * GetViewMatrixNoTranslate(SceneRTR->Camera) * scale(80.0f, 80.0f, 80.0f));
 		//DrawSphere();
 		//glUseProgram(0);
 		//glCullFace(GL_BACK);
@@ -163,10 +163,10 @@ namespace marbles
 
 
 		// send necessary matrices to shader in respective uniforms
-		glUniformMatrix4fv(u->vMatrixUniform, 1, GL_FALSE, GetViewMatrix(SceneMarbles->Camera));
+		glUniformMatrix4fv(u->vMatrixUniform, 1, GL_FALSE, GetViewMatrix(SceneRTR->Camera));
 		glUniformMatrix4fv(u->pMatrixUniform, 1, GL_FALSE, projMatrix);
 
-		glUniform3fv(u->cameraPosUniform, 1, SceneMarbles->Camera->Position);
+		glUniform3fv(u->cameraPosUniform, 1, SceneRTR->Camera->Position);
 		
 		glUniform1f(u->alpha, 1.0f);
 
@@ -177,10 +177,7 @@ namespace marbles
 
 		modelMatrix = scale(20.0f, 0.5f, 20.0f);
 		useMaterial(matPlastic);
-		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, rotate(45.0f, 1.0f, 0.0f, 0.0f) * modelMatrix);
-		DrawCube();
-
-		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, rotate(-45.0f, 1.0f, 0.0f, 0.0f) * modelMatrix);
+		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMatrix);
 		DrawCube();
 
 		glUseProgram(0);
@@ -279,13 +276,13 @@ namespace marbles
 			}
 			t++;
 
-			SceneMarbles->Camera->Position += -0.001f * (vec3(37.515f, 24.477f, 0.115f) - vec3(0.063611f, 42.330196f, -7.289144f));
-			SceneMarbles->Camera->Front += -0.001f * (vec3(-0.938f, -0.347f, -0.003f) - vec3(-0.001590f, -0.983255f, 0.182229f));
-			SceneMarbles->Camera->Up += -0.001f * (vec3(-0.347f, 0.938f, -0.001f) - vec3(-0.008580f, 0.182236f, 0.983218f));
-			SceneMarbles->Camera->Yaw += -0.001f * (180.175f - 90.50f);
-			SceneMarbles->Camera->Pitch += -0.001f * (-20.0f - -79.50f);
-			SceneMarbles->Camera->Zoom += -0.001f * (-5.6f - -20.0f);
-			SceneMarbles->Camera->Height += -0.001f * (10.6f - 3.0f);
+			SceneRTR->Camera->Position += -0.001f * (vec3(37.515f, 24.477f, 0.115f) - vec3(0.063611f, 42.330196f, -7.289144f));
+			SceneRTR->Camera->Front += -0.001f * (vec3(-0.938f, -0.347f, -0.003f) - vec3(-0.001590f, -0.983255f, 0.182229f));
+			SceneRTR->Camera->Up += -0.001f * (vec3(-0.347f, 0.938f, -0.001f) - vec3(-0.008580f, 0.182236f, 0.983218f));
+			SceneRTR->Camera->Yaw += -0.001f * (180.175f - 90.50f);
+			SceneRTR->Camera->Pitch += -0.001f * (-20.0f - -79.50f);
+			SceneRTR->Camera->Zoom += -0.001f * (-5.6f - -20.0f);
+			SceneRTR->Camera->Height += -0.001f * (10.6f - 3.0f);
 
 		}
 
@@ -293,29 +290,29 @@ namespace marbles
 
 		if (state == 2)
 		{
-			/*SceneMarbles->Camera = AddNewCamera(
+			/*SceneRTR->Camera = AddNewCamera(
 				vec3(37.515f, 24.477f, 0.115f),
 				vec3(-0.938f, -0.347f, -0.003f),
 				vec3(-0.347f, 0.938f, -0.001f),
 				180.175f, -20.0f,
 				-5.6f, 10.6f);
 
-			SceneMarbles->Camera = AddNewCamera(
+			SceneRTR->Camera = AddNewCamera(
 				vec3(0.063611f, 42.330196f, -7.289144f),
 				vec3(-0.001590f, -0.983255f, 0.182229f),
 				vec3(-0.008580f, 0.182236f, 0.983218f),
 				90.50f, -79.50f,
 				-20.0f, 3.0f);*/
 
-			SceneMarbles->Camera->Position += -0.001f * (vec3(37.515f, 24.477f, 0.115f) - vec3(0.063611f, 42.330196f, -7.289144f));
-			SceneMarbles->Camera->Front += -0.001f * (vec3(-0.938f, -0.347f, -0.003f) - vec3(-0.001590f, -0.983255f, 0.182229f));
-			SceneMarbles->Camera->Up += -0.001f * (vec3(-0.347f, 0.938f, -0.001f) - vec3(-0.008580f, 0.182236f, 0.983218f));
-			SceneMarbles->Camera->Yaw += -0.001f * (180.175f - 90.50f);
-			SceneMarbles->Camera->Pitch += -0.001f * (-20.0f - -79.50f);
-			SceneMarbles->Camera->Zoom += -0.001f * (-5.6f - -20.0f);
-			SceneMarbles->Camera->Height += -0.001f * (10.6f - 3.0f);
+			SceneRTR->Camera->Position += -0.001f * (vec3(37.515f, 24.477f, 0.115f) - vec3(0.063611f, 42.330196f, -7.289144f));
+			SceneRTR->Camera->Front += -0.001f * (vec3(-0.938f, -0.347f, -0.003f) - vec3(-0.001590f, -0.983255f, 0.182229f));
+			SceneRTR->Camera->Up += -0.001f * (vec3(-0.347f, 0.938f, -0.001f) - vec3(-0.008580f, 0.182236f, 0.983218f));
+			SceneRTR->Camera->Yaw += -0.001f * (180.175f - 90.50f);
+			SceneRTR->Camera->Pitch += -0.001f * (-20.0f - -79.50f);
+			SceneRTR->Camera->Zoom += -0.001f * (-5.6f - -20.0f);
+			SceneRTR->Camera->Height += -0.001f * (10.6f - 3.0f);
 
-			if (SceneMarbles->Camera->Zoom <= -20.0f) state++;
+			if (SceneRTR->Camera->Zoom <= -20.0f) state++;
 		}
 
 		if (state == 3)
@@ -339,7 +336,7 @@ namespace marbles
 		gWidth = width;
 		gHeight = height;
 
-		projMatrix = vmath::perspective(45.0f + SceneMarbles->Camera->Zoom, (float)width / (float)height, 0.1f, 100.0f);
+		projMatrix = vmath::perspective(45.0f + SceneRTR->Camera->Zoom, (float)width / (float)height, 0.1f, 100.0f);
 		ResizeFramebuffer(fboMain, width, height);
 		ResizeFramebuffer(fboPingpong[0], width, height);
 		ResizeFramebuffer(fboPingpong[1], width, height);
@@ -397,26 +394,26 @@ namespace marbles
 		walls[2].D = -0.5f;
 
 		AddWall(world, &walls[0]);
-		AddWall(world, &walls[1]);
-		AddWall(world, &walls[2]);
+		//AddWall(world, &walls[1]);
+		//AddWall(world, &walls[2]);
 	}
 }
 
-Scene *GetMarblesScene()
+Scene *GetRTRScene()
 {
-	if (!SceneMarbles)
+	if (!SceneRTR)
 	{
-		SceneMarbles = (Scene*)malloc(sizeof(Scene));
+		SceneRTR = (Scene*)malloc(sizeof(Scene));
 
-		strcpy_s(SceneMarbles->Name, "MarblesScene");
+		strcpy_s(SceneRTR->Name, "RTRScene");
 
-		SceneMarbles->InitFunc   = marbles::Init;
-		SceneMarbles->UninitFunc = marbles::Uninit;
-		SceneMarbles->ResetFunc  = marbles::Reset;
+		SceneRTR->InitFunc   = rtr::Init;
+		SceneRTR->UninitFunc = rtr::Uninit;
+		SceneRTR->ResetFunc  = rtr::Reset;
 
-		SceneMarbles->DisplayFunc = marbles::Display;
-		SceneMarbles->UpdateFunc  = marbles::Update;
-		SceneMarbles->ResizeFunc  = marbles::Resize;
+		SceneRTR->DisplayFunc = rtr::Display;
+		SceneRTR->UpdateFunc  = rtr::Update;
+		SceneRTR->ResizeFunc  = rtr::Resize;
 
 		// [2963365429248.000000] ---- - camera--------------------
 		// [2963365429248.000000] Position: 0.063611 42.330196 - 7.289144
@@ -451,14 +448,14 @@ Scene *GetMarblesScene()
 
 
 
-		/*SceneMarbles->Camera = AddNewCamera(
+		/*SceneRTR->Camera = AddNewCamera(
 			vec3(28.342886f, 32.172813f, -12.767541f),
 			vec3(-0.708572f, -0.629320f, 0.319189f),
 			vec3(-0.573790f, 0.777146f, 0.258474f),
 			156.25f, -39.0f,
 			-4.0f, 7.0f);*/
 
-		SceneMarbles->Camera = AddNewCamera(
+		SceneRTR->Camera = AddNewCamera(
 			vec3(37.515f, 24.477f, 0.115f),
 			vec3(-0.938f, -0.347f, -0.003f),
 			vec3(-0.347f, 0.938f, -0.001f),
@@ -467,5 +464,5 @@ Scene *GetMarblesScene()
 
 	}
 
-	return SceneMarbles;
+	return SceneRTR;
 }

@@ -23,6 +23,7 @@ Framebuffer* CreateFramebuffer(FramebufferParams* params)
 	// color textures
 	f->nColorTex = params->nColors;
 	glGenTextures(f->nColorTex, f->colorTex);
+	glActiveTexture(GL_TEXTURE0);
 
 	for (int i = 0; i < f->nColorTex; i++)
 	{

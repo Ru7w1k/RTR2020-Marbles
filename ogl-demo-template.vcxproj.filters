@@ -111,6 +111,9 @@
     <ClCompile Include="src\scene-domain.cpp">
       <Filter>Source Files\scenes</Filter>
     </ClCompile>
+    <ClCompile Include="src\scene-rtr.cpp">
+      <Filter>Source Files\scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="res\main.rc">
@@ -203,6 +206,9 @@
       <Filter>Header Files\shaders</Filter>
     </ClInclude>
     <ClInclude Include="inc\scene-domain.h">
+      <Filter>Header Files\scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\scene-rtr.h">
       <Filter>Header Files\scenes</Filter>
     </ClInclude>
   </ItemGroup>

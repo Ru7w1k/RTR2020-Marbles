@@ -37,7 +37,11 @@ Material* loadMaterial(const char* path)
 
 void useMaterial(Material* material)
 {
-	if (!material) return;
+	if (!material)
+	{
+		LogE("null Material!");
+		return;
+	}
 
 	for (int i = 0; i < 5; i++)
 	{

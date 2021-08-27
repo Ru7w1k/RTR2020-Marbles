@@ -48,6 +48,8 @@ typedef struct _Plane
 
 typedef struct _Cube
 {
+	vec3 MinPoint;
+	vec3 MaxPoint;
 
 } Box;
 

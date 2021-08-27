@@ -192,6 +192,7 @@ GLuint loadTexture(const char* filename)
 		else if (nrComponents == 4)
 			format = GL_RGBA;
 
+		glActiveTexture(GL_TEXTURE0);
 		glGenTextures(1, &textureID);
 		glBindTexture(GL_TEXTURE_2D, textureID);
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, image);
@@ -202,6 +203,7 @@ GLuint loadTexture(const char* filename)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+		glBindTexture(GL_TEXTURE_2D, 0);
 		stbi_image_free(image);
 		LogD("texture loaded at %s..", filename);
 	}
