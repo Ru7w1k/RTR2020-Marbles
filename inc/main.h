@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "gl/glew.h"
+#include "gl/wglew.h"
 #include <gl/GL.h>
 
 #include "AL/al.h"

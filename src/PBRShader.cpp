@@ -7,6 +7,13 @@
 static GLuint PBRShader;
 static PBRShaderUniforms *PBRUniforms;
 
+static GLint albedoMapUniform;
+static GLint normalMapUniform;
+static GLint metallicMapUniform;
+static GLint roughnessMapUniform;
+static GLint aoMapUniform;
+static GLint noiseMapUniform;
+
 bool InitPBRShader()
 {
 	// create shader
@@ -254,12 +261,12 @@ bool InitPBRShader()
 	PBRUniforms->bright = glGetUniformLocation(PBRShader, "bright");
 	PBRUniforms->brightColor = glGetUniformLocation(PBRShader, "brightColor");
 
-	GLint albedoMapUniform = glGetUniformLocation(PBRShader, "albedoMap");
-	GLint normalMapUniform = glGetUniformLocation(PBRShader, "normalMap");
-	GLint metallicMapUniform = glGetUniformLocation(PBRShader, "metallicMap");
-	GLint roughnessMapUniform = glGetUniformLocation(PBRShader, "roughnessMap");
-	GLint aoMapUniform = glGetUniformLocation(PBRShader, "aoMap");
-	GLuint noiseMapUniform = glGetUniformLocation(PBRShader, "noiseMap");
+	albedoMapUniform = glGetUniformLocation(PBRShader, "albedoMap");
+	normalMapUniform = glGetUniformLocation(PBRShader, "normalMap");
+	metallicMapUniform = glGetUniformLocation(PBRShader, "metallicMap");
+	roughnessMapUniform = glGetUniformLocation(PBRShader, "roughnessMap");
+	aoMapUniform = glGetUniformLocation(PBRShader, "aoMap");
+	noiseMapUniform = glGetUniformLocation(PBRShader, "noiseMap");
 
 	// set constant uniforms
 	glUseProgram(PBRShader);
@@ -288,6 +295,12 @@ void UninitPBRShader()
 PBRShaderUniforms *UsePBRShader()
 {
 	glUseProgram(PBRShader);
+	glUniform1i(albedoMapUniform, 0);
+	glUniform1i(normalMapUniform, 1);
+	glUniform1i(metallicMapUniform, 2);
+	glUniform1i(roughnessMapUniform, 3);
+	glUniform1i(aoMapUniform, 4);
+	glUniform1i(noiseMapUniform, 5);
 	return PBRUniforms;
 }
 

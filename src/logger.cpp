@@ -18,6 +18,8 @@ void InitLogger(void)
 #else
 	fprintf(logFile, "==== Application Started [release build] ====\n");
 #endif
+	fclose(logFile);
+	logFile = NULL;
 }
 
 void UninitLogger(void)

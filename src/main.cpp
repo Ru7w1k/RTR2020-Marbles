@@ -395,6 +395,13 @@ void initialize(void)
 	int iPixelFormatIndex;
 
 	// code
+	
+	// clock for syncing animation speed
+	InitClock();
+
+	// init logger
+	InitLogger();
+
 	ghdc = GetDC(ghwnd);
 
 	ZeroMemory((void*)&pfd, sizeof(PIXELFORMATDESCRIPTOR));
@@ -443,16 +450,25 @@ void initialize(void)
 	GLenum glew_error = glewInit();
 	if (glew_error != GLEW_OK)
 	{
-		LogE("glewInit() failed..");
+		LogE("glewInit() failed with %s..", glewGetErrorString(glew_error));
 		DestroyWindow(ghwnd);
 		return;
 	}
 
-	// clock for syncing animation speed
-	InitClock();
+	ghrc = wglCreateContextAttribsARB(ghdc, NULL, NULL);
+	if (ghrc == NULL)
+	{
+		LogE("wglCreateContext() failed..");
+		DestroyWindow(ghwnd);
+		return;
+	}
 
-	// init logger
-	InitLogger();
+	if (wglMakeCurrent(ghdc, ghrc) == FALSE)
+	{
+		LogE("wglMakeCurrent() failed..");
+		DestroyWindow(ghwnd);
+		return;
+	}
 
 	// During init, enable debug output
 	glEnable(GL_DEBUG_OUTPUT);
@@ -499,6 +515,7 @@ void initialize(void)
 
 	// add scenes
 	AddScene(GetIntroScene());
+	AddScene(GetIntroScene());
 	AddScene(GetDomainScene());
 	AddScene(GetMarblesScene());
 	AddScene(GetRTRScene());
@@ -519,13 +536,11 @@ void initialize(void)
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
-	// textures
-	glEnable(GL_TEXTURE_2D);
-
 	// initialize all scenes
 	for (int i = 0; i < GetSceneCount(); i++)
 	{
 		Scene scene;
+		ZeroMemory((void*)&scene, sizeof(Scene));
 		if (GetSceneAt(scene, i))
 		{
 			if (!scene.InitFunc())
@@ -546,9 +561,9 @@ void initialize(void)
 	}
 
 	//// WHY !?
-	Scene scene;
+	/*Scene scene;
 	GetSceneAt(scene, 2);
-	scene.InitFunc();
+	scene.InitFunc();*/
 
 	// warm-up resize call
 	resize(WIN_WIDTH, WIN_HEIGHT);
