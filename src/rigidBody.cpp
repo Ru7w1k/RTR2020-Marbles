@@ -96,15 +96,25 @@ void DrawWorld(World& world)
 		mat4 modelMat = translate(world.Marbles[it->second]->Position);
 		modelMat *= vmath::rotateR(world.Marbles[it->second]->xAngle, world.Marbles[it->second]->yAngle, world.Marbles[it->second]->zAngle);
 		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMat);
-		//useMaterial(world.Marbles[it->second]->mat);
 		
-		glUniform1f(u->alpha, 1.0f);
-		glUniform1i(u->bright, 1);
 		glUniform4fv(u->brightColor, 1, vec4(world.Marbles[it->second]->power * world.Marbles[it->second]->Color, 1.0f));
-		DrawModel(world.Marbles[it->second]->mLetter);
 
-		glUniform1i(u->bright, 0);
+		if (world.Marbles[it->second]->mLetter)
+		{
+			glUniform1f(u->alpha, 1.0f);
+			glUniform1i(u->bright, 1);
+			DrawModel(world.Marbles[it->second]->mLetter);
+		}
+
+		glUniform1i(u->bright, 2);
 		glUniform1f(u->alpha, 0.75f);
+
+		if (!world.Marbles[it->second]->mLetter)
+		{
+			glUniform1i(u->bright, 0);
+			glUniform1f(u->alpha, 1.0f);
+		}
+
 		DrawSphere();
 
 		if (world.Marbles[it->second]->power > 0.01f)
@@ -179,8 +189,20 @@ void UpdateWorld(World& world, float time)
 				float d = distance(world.Marbles[i]->Position, world.Walls[j]);
 				if (d <= world.Marbles[i]->Radius)
 				{
-					world.Marbles[i]->Position -= (world.Marbles[i]->Radius - d) * normalize(world.Marbles[i]->Velocity);
-					world.Marbles[i]->Velocity = 0.8f * reflect(world.Marbles[i]->Velocity, world.Walls[j]->Normal);
+					vec3 nVelocity = normalize(world.Marbles[i]->Velocity);
+					world.Marbles[i]->Position -= (world.Marbles[i]->Radius - d) * nVelocity;
+
+					float angle = acosf(dot(nVelocity, world.Walls[j]->Normal));
+					if (angle < M_PI_2 + 0.1f && angle > M_PI_2 - 0.1f && j != 0)
+					{
+						world.Marbles[i]->Velocity = world.ground * world.Marbles[i]->Velocity;
+					}
+					else
+					{
+						world.Marbles[i]->Velocity = world.ground * reflect(world.Marbles[i]->Velocity, world.Walls[j]->Normal);
+					}
+
+					//world.Marbles[i]->Position += (world.Marbles[i]->Radius - d) * -world.Walls[j]->Normal;
 
 					//if (isnan(world.Marbles[i]->Position[0]) || isinf(world.Marbles[i]->Position[0])
 					//	|| isnan(world.Marbles[i]->Position[1]) || isinf(world.Marbles[i]->Position[1])
@@ -221,14 +243,6 @@ void UpdateWorld(World& world, float time)
 					world.Marbles[i]->Position -= (world.Marbles[i]->Radius - d) * normalize(world.Marbles[i]->Velocity);
 					world.Marbles[i]->Velocity = 0.8f * reflect(world.Marbles[i]->Velocity, world.Walls[j]->Normal);
 
-					//if (isnan(world.Marbles[i]->Position[0]) || isinf(world.Marbles[i]->Position[0])
-					//	|| isnan(world.Marbles[i]->Position[1]) || isinf(world.Marbles[i]->Position[1])
-					//	|| isnan(world.Marbles[i]->Position[2]) || isinf(world.Marbles[i]->Position[2]))
-					//{
-					//	DebugBreak();
-					//}
-
-
 					if (length(world.Marbles[i]->Velocity) > 0.001f)
 					{
 						collided.insert(i);
@@ -241,7 +255,7 @@ void UpdateWorld(World& world, float time)
 			}
 
 			// collision check with all boxes
-			for (int j = 5; j < world.Boxes.size(); j++)
+			for (int j = 0; j < world.Boxes.size(); j++)
 			{
 
 			}
@@ -310,17 +324,21 @@ void UpdateWorld(World& world, float time)
 						world.Marbles[j]->Roll = true;
 						world.Marbles[j]->Axis = normalize(c);
 					}
-					
 				}
 			}
 		}
 	}
 
+	int c = 0;
 	for (int id : collided)
 	{
+		world.Marbles[id]->power = 0.10f;
+		//if (c > 8) continue;
+		
 		alSourcefv(world.Marbles[id]->Audio, AL_POSITION, -world.Marbles[id]->Position);
 		PlayAudio(world.Marbles[id]->Audio);
-		world.Marbles[id]->power = 0.08f;
+
+		c++;
 	}
 }
 

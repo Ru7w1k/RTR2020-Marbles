@@ -26,7 +26,7 @@ bool InitTextureShader()
 
 		"void main (void) \n" \
 		"{ \n" \
-		"	gl_Position = u_mvpMatrix * vPosition; \n" \
+		"	gl_Position =  vPosition; \n" \
 		"	out_Texture0 = vTexture0; \n" \
 		"} \n";
 

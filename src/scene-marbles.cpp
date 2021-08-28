@@ -357,6 +357,7 @@ namespace marbles
 
 		fadeV = 1.0f;
 		state = 0;
+		world.ground = 0.8f;
 
 		for (int i = 0; i < 7; i++)
 		{

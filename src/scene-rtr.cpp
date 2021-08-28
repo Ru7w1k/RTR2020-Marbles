@@ -41,9 +41,11 @@ namespace rtr
 	Marble marbles[200];
 	Wall walls[10];
 	ALuint audio[8];
+	ALuint shoot;
 
 	Framebuffer *fboMain = NULL;
 	Framebuffer *fboPingpong[2] = {NULL, NULL};
+	Framebuffer* fboPrevFrame = NULL;
 	
 	GLuint noiseTex;
 	GLuint skyTex;
@@ -72,6 +74,8 @@ namespace rtr
 		audio[5] = LoadAudio("res\\audio\\06.wav");
 		audio[6] = LoadAudio("res\\audio\\07.wav");
 
+		shoot = LoadAudio("res\\audio\\shoot.wav");
+
 		sat = LoadModel("res\\models\\saturn.obj", false);
 
 		FramebufferParams params;
@@ -85,6 +89,10 @@ namespace rtr
 
 		params.bDepth = true;
 		fboMain = CreateFramebuffer(&params);
+
+		params.bDepth = false;
+		params.nColors = 1;
+		fboPrevFrame = CreateFramebuffer(&params);
 
 		world.cam = SceneRTR->Camera;
 		return true;
@@ -225,6 +233,7 @@ namespace rtr
 		}
 		glUseProgram(0);
 
+		// FINAL RENDER
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, gWidth, gHeight);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -232,7 +241,6 @@ namespace rtr
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		
-
 		BloomShaderUniforms* u2 = UseBloomShader();
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, fboMain->colorTex[0]);
@@ -241,6 +249,7 @@ namespace rtr
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, fboPingpong[!horizontal]->colorTex[0]);
 		glUniform1i(u2->tex2, 1);
+
 		DrawPlane();
 		glUseProgram(0);
 
@@ -256,7 +265,7 @@ namespace rtr
 
 	bool Update(float delta)
 	{
-		static int i = 0;
+		static int i = 2;
 		static int t = 0;
 		static int n = 0;
 
@@ -272,57 +281,84 @@ namespace rtr
 
 		if (state == 1)
 		{
-			if (t > 4)
+			if (t > 10)
 			{
-				if (i > 19)
+				if (i > 15)
 				{
 					state = 2;
 				}
 				else
 				{
 					AddMarble(world, &marbles[i]);
+					marbles[i].power = 0.03f;
 					world.Marbles[i]->Active = true;
+
+					if (i % 2 == 0)
+					{
+						alSourcefv(shoot, AL_POSITION, -world.Marbles[0]->Position);
+						PlayAudio(shoot);
+					}
+					else
+					{
+						alSourcefv(shoot, AL_POSITION, -world.Marbles[1]->Position);
+						PlayAudio(shoot);
+					}
+
 					t = 0;
 					i++;
 				}
 			}
 			t++;
-
-			SceneRTR->Camera->Yaw += 0.06f;
-			SceneRTR->Camera->Zoom -= 0.0005f;
-			UpdateCameraVectors(SceneRTR->Camera);
+			
 			UpdateWorld(world, 0.000002f * delta);
 		}
-
-
 
 		if (state == 2)
 		{
-			if (t > 4)
+			if (t > 40)
 			{
-				if (i > 89)
+				if (i > 99)
 				{
 					state = 2;
 				}
 				else
 				{
 					AddMarble(world, &marbles[i]);
+					marbles[i].power = 0.03f;
 					world.Marbles[i]->Active = true;
+
+					if (i % 2 == 0)
+					{
+						alSourcefv(shoot, AL_POSITION, -world.Marbles[0]->Position);
+						PlayAudio(shoot);
+					}
+					else
+					{
+						alSourcefv(shoot, AL_POSITION, -world.Marbles[1]->Position);
+						PlayAudio(shoot);
+					}
+
 					t = 0;
 					i++;
 				}
 			}
 			t++;
 
-			SceneRTR->Camera->Yaw += 0.06f;
-			SceneRTR->Camera->Zoom -= 0.0005f;
-			UpdateCameraVectors(SceneRTR->Camera);
-			//if (SceneRTR->Camera->Zoom <= -20.0f) state++;
+			
 			UpdateWorld(world, 0.000002f * delta);
+
+			if (SceneRTR->Camera->Zoom <= -25.0f) state++;
 		}
+
+		SceneRTR->Camera->Yaw += 0.06f;
+		SceneRTR->Camera->Pitch += 0.001f;
+		SceneRTR->Camera->Zoom -= 0.003f;
+		UpdateCameraVectors(SceneRTR->Camera);
 
 		if (state == 3)
 		{
+			UpdateWorld(world, 0.000002f * delta);
+
 			fadeV += 0.01f;
 			if (fadeV >= 1.0f)
 			{
@@ -345,6 +381,7 @@ namespace rtr
 		ResizeFramebuffer(fboMain, width, height);
 		ResizeFramebuffer(fboPingpong[0], width, height);
 		ResizeFramebuffer(fboPingpong[1], width, height);
+		ResizeFramebuffer(fboPrevFrame, width, height);
 	}
 
 	void Reset(void)
@@ -353,17 +390,20 @@ namespace rtr
 
 		fadeV = 1.0f;
 		state = 0;
+		world.ground = 0.62f;
 
 		const char letters[] = { 'R', 'T', 'R', '2', '0', '2', '0', 'A', 'S', 'T', 'R', 'O', 'M', 'E', 'D', 'I', 'C', 'O', 'M', 'P' };
 		const vec3 colors[] = {
 			vec3(100.0f, 1.0f, 1.0f),
 			vec3(1.0f, 100.0f, 1.0f),
+			vec3(1.0f, 1.0f, 100.0f),
 			vec3(100.0f, 100.0f, 1.0f),
+			vec3(1.0f, 100.0f, 100.0f),
 			vec3(10.0f, 10.0f, 100.0f),
-			vec3(100.0f, 50.0f, 1.0f),
+			vec3(100.0f, 10.0f, 1.0f),
 		};
 
-		for (int i = 0; i < 200; i++)
+		for (int i = 0; i < 100; i++)
 		{
 			marbles[i].Position = vec3(genRand(-8.0f, 8.0f), genRand(20.0f, 25.0f), genRand(-8.0f, 8.0f));
 			marbles[i].Radius = 1.0f;
@@ -380,20 +420,30 @@ namespace rtr
 			marbles[i].power = 0.001f;
 			marbles[i].Active = false;
 
-			marbles[i].Color = colors[i % _ARRAYSIZE(colors)];;
-			marbles[i].Color = 20.0f*GetRGBFromHSL(1.0f+(i*2.0f), 1.0f, 0.5f);
+			marbles[i].Color = 0.2f * colors[i % _ARRAYSIZE(colors)];;
+			//marbles[i].Color = 20.0f*GetRGBFromHSL(1.0f + ((i*4) % 360), 1.0f, 0.5f);
+			//marbles[i].Color = 20.0f*GetRGBFromHSL(genRand(1.0f, 359.0f), 1.0f, 0.5f);
 			marbles[i].mLetter = GetModel(letters[i % _ARRAYSIZE(letters)]);
 
-			if (i < 200)
+			if (i < 100)
 			{
-				marbles[i].Position = vec3(genRand(6.0f, 7.0f)*cosf(i/5.0f), 5.0f+(i*2.0f), genRand(6.0f, 7.0f) * sinf(i/5.0f));
-				marbles[i].Position = vec3(9.0f, 10.0f, -9.0f);
-				marbles[i].Velocity = vec3(0.03f, 0.13f, 0.12f);
+				if (i % 2 == 0) marbles[i].Position = vec3(9.0f, 8.0f, -9.0f);
+				else marbles[i].Position = vec3(-9.0f, 8.0f, 9.0f);
+
 				marbles[i].Velocity = genVec3(0.010f, 0.015f, 0.20f, 0.25f, 0.010f, 0.015f);
 				marbles[i].Active = false;
-				/*AddMarble(world, &marbles[i]);*/
 			}
 		}
+
+		marbles[0].Position = vec3(9.0f, 8.0f, -9.0f);
+		marbles[0].Active = false;
+		marbles[0].mLetter = NULL;
+		AddMarble(world, &marbles[0]);
+
+		marbles[1].Position = vec3(-9.0f, 8.0f, 9.0f);
+		marbles[1].Active = false;
+		marbles[1].mLetter = NULL;
+		AddMarble(world, &marbles[1]);
 		
 		walls[0].Normal = normalize(vec3(0.0f, 1.0f, 0.0f));
 		walls[0].D = -0.5f;
@@ -448,7 +498,7 @@ Scene *GetRTRScene()
 			vec3(-0.623f, -0.473f, 0.623f),
 			vec3(0.0f, 1.0f, 0.0f),
 			135.0f, -17.50f,
-			-6.65f, 4.0f);
+			-8.65f, 5.0f);
 	}
 
 	return SceneRTR;

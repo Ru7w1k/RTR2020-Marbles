@@ -111,6 +111,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 
 	ghwnd = hwnd;
 
+	// seed random
+	srand(2021);
 	initialize();
 
 	ShowWindow(hwnd, iCmdShow);
@@ -561,15 +563,10 @@ void initialize(void)
 		}
 	}
 
-	//// WHY !?
-	/*Scene scene;
-	GetSceneAt(scene, 2);
-	scene.InitFunc();*/
-
 	// warm-up resize call
 	resize(WIN_WIDTH, WIN_HEIGHT);
 	
-	//ToggleFullscreen();
+	ToggleFullscreen();
 }
 
 void resize(int width, int height)
@@ -660,7 +657,7 @@ void uninitialize(void)
 	UninitPrimitives();
 
 	// uninit all scenes
-	for (int i = 0; i < GetSceneCount(); i++)
+	for (int i = 1; i < GetSceneCount(); i++)
 	{
 		Scene scene;
 		if (GetSceneAt(scene, i))

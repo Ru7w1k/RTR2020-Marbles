@@ -185,8 +185,8 @@ bool InitPBRShader()
 		"	else FragColor = vec4(color, alpha); \n" \
 
 		"	if (bright == 1) BrightColor = (vec4(color, 1.0) * brightColor); \n" \
-		"	else if (alpha < 1.0) BrightColor = 0.1*FragColor; \n" \
-		"	else BrightColor = vec4(0.0, 0.0, 0.0, 0.0); \n" \
+		"	else if (bright == 2) BrightColor = vec4(0.0, 0.0, 0.0, 0.8); \n" \
+		"	else BrightColor = vec4(0.0, 0.0, 0.0, 1.0); \n" \
 		"} \n";
 
 	// compile shaders

@@ -47,6 +47,7 @@ bool InitBloomShader()
 
 		"	vec3 hdrColor =  texture(tex1, out_Texture0).rgb; \n" \
 		"	vec3 bloomColor =  texture(tex2, out_Texture0).rgb; \n" \
+
 		"	if (bloom) hdrColor += bloomColor; \n" \
 	
 		"	vec3 res = vec3(1.0) - exp(-hdrColor * 1.0); \n" \

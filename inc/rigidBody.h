@@ -62,6 +62,8 @@ typedef struct _World
 
 	Camera* cam;
 
+	float ground;
+
 } World;
 
 void AddMarble(World& world, Marble* marble);
