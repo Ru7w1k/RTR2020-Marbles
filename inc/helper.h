@@ -19,3 +19,7 @@ vec3  genVec3(float[6]);
 // texture helpers
 GLuint loadTexture(const char* filename);
 
+//color space
+vec3 GetRGBFromHSL(float H, float S, float L);
+
+

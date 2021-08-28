@@ -95,6 +95,7 @@ bool GetSceneAt(Scene& scene, int idx)
     // error conditions
     if (isEmpty()) return false;
     if (idx >= SceneQueue->count) return false;
+    if (!SceneQueue->data[idx]) return false;
 
     scene = *SceneQueue->data[idx];
     return true;

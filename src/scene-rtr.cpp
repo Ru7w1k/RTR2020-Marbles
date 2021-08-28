@@ -38,7 +38,7 @@ namespace rtr
 	Material *matGround = NULL;
 
 	World world;
-	Marble marbles[100];
+	Marble marbles[200];
 	Wall walls[10];
 	ALuint audio[8];
 
@@ -60,7 +60,7 @@ namespace rtr
 		noiseTex = loadTexture("res\\textures\\noise2.png");
 		skyTex = loadTexture("res\\textures\\sky.png");
 
-		matPlastic = loadMaterial("res\\materials\\plastic");
+		matPlastic = loadMaterial("res\\materials\\glass");
 		matMarble = loadMaterial("res\\materials\\marble");
 		matGround= loadMaterial("res\\materials\\wood");
 
@@ -186,6 +186,11 @@ namespace rtr
 		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMatrix);
 		DrawCube();
 
+		modelMatrix = translate(0.0f, 15.0f, 0.0f);
+		modelMatrix *= scale(15.0f, 15.0f, 15.0f);
+		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMatrix);
+		DrawBox();
+
 		glUseProgram(0);
 
 		/*glActiveTexture(GL_TEXTURE5);
@@ -267,7 +272,7 @@ namespace rtr
 
 		if (state == 1)
 		{
-			if (t > 50)
+			if (t > 4)
 			{
 				if (i > 19)
 				{
@@ -293,7 +298,7 @@ namespace rtr
 
 		if (state == 2)
 		{
-			if (t > 50)
+			if (t > 4)
 			{
 				if (i > 89)
 				{
@@ -358,9 +363,8 @@ namespace rtr
 			vec3(100.0f, 50.0f, 1.0f),
 		};
 
-		for (int i = 0; i < 90; i++)
+		for (int i = 0; i < 200; i++)
 		{
-
 			marbles[i].Position = vec3(genRand(-8.0f, 8.0f), genRand(20.0f, 25.0f), genRand(-8.0f, 8.0f));
 			marbles[i].Radius = 1.0f;
 			marbles[i].Velocity = genVec3(-0.095f, 0.095f, -0.05f, -0.01f, -0.095f, 0.095f);
@@ -377,13 +381,15 @@ namespace rtr
 			marbles[i].Active = false;
 
 			marbles[i].Color = colors[i % _ARRAYSIZE(colors)];;
+			marbles[i].Color = 20.0f*GetRGBFromHSL(1.0f+(i*2.0f), 1.0f, 0.5f);
 			marbles[i].mLetter = GetModel(letters[i % _ARRAYSIZE(letters)]);
 
-			if (i < 100)
+			if (i < 200)
 			{
 				marbles[i].Position = vec3(genRand(6.0f, 7.0f)*cosf(i/5.0f), 5.0f+(i*2.0f), genRand(6.0f, 7.0f) * sinf(i/5.0f));
-				marbles[i].Position = vec3(0.0f, 12.0f, -9.5f);
-				marbles[i].Velocity = vec3(0.01f, -0.02f, 0.07f);
+				marbles[i].Position = vec3(9.0f, 10.0f, -9.0f);
+				marbles[i].Velocity = vec3(0.03f, 0.13f, 0.12f);
+				marbles[i].Velocity = genVec3(0.010f, 0.015f, 0.20f, 0.25f, 0.010f, 0.015f);
 				marbles[i].Active = false;
 				/*AddMarble(world, &marbles[i]);*/
 			}
@@ -393,16 +399,16 @@ namespace rtr
 		walls[0].D = -0.5f;
 
 		walls[1].Normal = normalize(vec3(1.0f, 0.0f, 0.0f));
-		walls[1].D = -15.5f;
+		walls[1].D = -15.0f;
 
 		walls[2].Normal = normalize(vec3(-1.0f, 0.0f, 0.0f));
-		walls[2].D = -15.5f;
+		walls[2].D = -15.0f;
 
 		walls[3].Normal = normalize(vec3(0.0f, 0.0f, 1.0f));
-		walls[3].D = -15.5f;
+		walls[3].D = -15.0f;
 
 		walls[4].Normal = normalize(vec3(0.0f, 0.0f, -1.0f));
-		walls[4].D = -15.5f;
+		walls[4].D = -15.0f;
 
 		AddWall(world, &walls[0]);
 		AddWall(world, &walls[1]);

@@ -8,6 +8,7 @@
 #include "shader.h"
 
 #include "letters.h"
+#include "primitives.h"
 
 // scenes
 #include "scene.h"
@@ -514,10 +515,10 @@ void initialize(void)
 	InitSceneQueue();
 
 	// add scenes
-	//AddScene(GetIntroScene());
-	//AddScene(GetIntroScene());
-	//AddScene(GetDomainScene());
-	//AddScene(GetMarblesScene());
+	AddScene(GetIntroScene());
+	AddScene(GetIntroScene());
+	AddScene(GetDomainScene());
+	AddScene(GetMarblesScene());
 	AddScene(GetRTRScene());
 
 	// set clear color and clear depth
@@ -655,6 +656,9 @@ void uninitialize(void)
 	// unload all letters
 	UnloadLetters();
 
+	// uninit all primitive shapes
+	UninitPrimitives();
+
 	// uninit all scenes
 	for (int i = 0; i < GetSceneCount(); i++)
 	{
@@ -662,7 +666,7 @@ void uninitialize(void)
 		if (GetSceneAt(scene, i))
 		{
 			LogD("Scene %s Uninit() calling..", scene.Name);
-			scene.UninitFunc();
+			if (scene.UninitFunc) scene.UninitFunc();
 		}
 	}
 

@@ -216,4 +216,70 @@ GLuint loadTexture(const char* filename)
 }
 
 //////////////////////////////////////////////////////////////////////
+// Convert color from HSL format to RGB format
+vec3 GetRGBFromHSL(float H, float S, float L)
+{
+	float R, G, B;
 
+	// chroma
+	float C = (1.0f - fabsf(2.0f * L - 1.0f)) * S;
+	float _H = H / 60.0f;
+	float X = C * (1.0f - fabsf(fmodf(_H, 2.0f) - 1.0f));
+
+	INT Hdash = (INT)ceilf(_H);
+	switch (Hdash)
+	{
+	case 1:
+		R = C;
+		G = X;
+		B = 0.0f;
+		break;
+
+	case 2:
+		R = X;
+		G = C;
+		B = 0.0f;
+		break;
+
+	case 3:
+		R = 0;
+		G = C;
+		B = X;
+		break;
+
+	case 4:
+		R = 0;
+		G = X;
+		B = C;
+		break;
+
+	case 5:
+		R = X;
+		G = 0;
+		B = C;
+		break;
+
+	case 6:
+		R = C;
+		G = 0;
+		B = X;
+		break;
+
+	default:
+		R = 0.0f;
+		G = 0.0f;
+		B = 0.0f;
+		break;
+	}
+
+	float m = L - (C / 2.0f);
+	R += m;
+	G += m;
+	B += m;
+
+	LogD("%5.2f %5.2f %5.2f -> %5.2f %5.2f %5.2f", H, S, L, R, G, B);
+
+	return vec3(R, G, B);
+}
+
+//////////////////////////////////////////////////////////////////////

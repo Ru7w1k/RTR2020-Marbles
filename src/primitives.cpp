@@ -8,7 +8,7 @@ using namespace std;
 #define M_PI_F (float)M_PI
 
 // code
-void DrawSphere(void)
+void DrawSphere(bool cleanup)
 {
 	// static variables
 	static GLuint vao = 0;
@@ -23,6 +23,26 @@ void DrawSphere(void)
 	int i, j;
 
 	// code
+	if (cleanup)
+	{
+		if (vbo)
+		{
+			glDeleteBuffers(1, &vbo);
+			vbo = 0;
+		}
+		if (ebo)
+		{
+			glDeleteBuffers(1, &ebo);
+			ebo = 0;
+		}
+		if (vao)
+		{
+			glDeleteVertexArrays(1, &vao);
+			vao = 0;
+		}
+		return;
+	}
+
 	if (!vao)
 	{
 		vector<vec3> positions;
@@ -114,12 +134,11 @@ void DrawSphere(void)
 	}
 
 	glBindVertexArray(vao);
-
 	glDrawElements(GL_TRIANGLE_STRIP, iNoOfElements, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
 
-void DrawCube(void)
+void DrawCube(bool cleanup)
 {
 	static GLuint vao = 0;
 	static GLuint vbo = 0;
@@ -163,6 +182,21 @@ void DrawCube(void)
 		-1.0f, -1.0f,  1.0f,	-1.0f, 0.0f, 0.0f,	0.0f, 1.0f
 	};
 
+	if (cleanup)
+	{
+		if (vbo)
+		{
+			glDeleteBuffers(1, &vbo);
+			vbo = 0;
+		}
+		if (vao)
+		{
+			glDeleteVertexArrays(1, &vao);
+			vao = 0;
+		}
+		return;
+	}
+
 	if (!vao || !vbo)
 	{
 		// create vao
@@ -200,18 +234,33 @@ void DrawCube(void)
 	glBindVertexArray(0);
 }
 
-void DrawPlane(void)
+void DrawPlane(bool cleanup)
 {
 	static GLuint vao = 0;
 	static GLuint vbo = 0;
 
 	// vertex array
 	const GLfloat cubeData[] = {
-		 1.0f,  1.0f, 0.0f,	0.0f, 1.0f, 0.0f,	1.0f, 1.0f,
-		-1.0f,  1.0f, 0.0f,	0.0f, 1.0f, 0.0f,	0.0f, 1.0f,
-		-1.0f, -1.0f, 0.0f,	0.0f, 1.0f, 0.0f,	0.0f, 0.0f,
-		 1.0f, -1.0f, 0.0f,	0.0f, 1.0f, 0.0f,	1.0f, 0.0f,
+		 1.0f,  1.0f, 0.0f,	0.0f, 0.0f, 1.0f,	1.0f, 1.0f,
+		-1.0f,  1.0f, 0.0f,	0.0f, 0.0f, 1.0f,	0.0f, 1.0f,
+		-1.0f, -1.0f, 0.0f,	0.0f, 0.0f, 1.0f,	0.0f, 0.0f,
+		 1.0f, -1.0f, 0.0f,	0.0f, 0.0f, 1.0f,	1.0f, 0.0f,
 	};
+
+	if (cleanup)
+	{
+		if (vbo)
+		{
+			glDeleteBuffers(1, &vbo);
+			vbo = 0;
+		}
+		if (vao)
+		{
+			glDeleteVertexArrays(1, &vao);
+			vao = 0;
+		}
+		return;
+	}
 
 	if (!vao || !vbo)
 	{
@@ -243,4 +292,94 @@ void DrawPlane(void)
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 	glBindVertexArray(0);
+}
+
+void DrawBox(bool cleanup)
+{
+	static GLuint vao = 0;
+	static GLuint vbo = 0;
+
+	// vertex array
+	const GLfloat cubeData[] = {
+		/* Front */
+		-1.0f,  1.0f,  1.0f,	0.0f, 0.0f, -1.0f,	0.0f, 1.0f,
+		 1.0f,  1.0f,  1.0f,	0.0f, 0.0f, -1.0f,	1.0f, 1.0f,
+		 1.0f, -1.0f,  1.0f,	0.0f, 0.0f, -1.0f,	1.0f, 0.0f,
+		-1.0f, -1.0f,  1.0f,	0.0f, 0.0f, -1.0f,	0.0f, 0.0f,
+
+		/* Back */
+		-1.0f, -1.0f, -1.0f,	0.0f, 0.0f, 1.0f,	0.0f, 0.0f,
+		 1.0f, -1.0f, -1.0f,	0.0f, 0.0f, 1.0f,	1.0f, 0.0f,
+		 1.0f,  1.0f, -1.0f,	0.0f, 0.0f, 1.0f,	1.0f, 1.0f,
+		-1.0f,  1.0f, -1.0f,	0.0f, 0.0f, 1.0f,	0.0f, 1.0f,
+
+		/* Right */
+		 1.0f,  1.0f,  1.0f,	-1.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+		 1.0f,  1.0f, -1.0f,	-1.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+		 1.0f, -1.0f, -1.0f,	-1.0f, 0.0f, 0.0f,	0.0f, 0.0f,
+		 1.0f, -1.0f,  1.0f,	-1.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+
+		/* Left */
+		-1.0f,  1.0f, -1.0f,	1.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+		-1.0f,  1.0f,  1.0f,	1.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+		-1.0f, -1.0f,  1.0f,	1.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+		-1.0f, -1.0f, -1.0f,	1.0f, 0.0f, 0.0f,	0.0f, 0.0f,
+	};
+
+	if (cleanup)
+	{
+		if (vbo)
+		{
+			glDeleteBuffers(1, &vbo);
+			vbo = 0;
+		}
+		if (vao)
+		{
+			glDeleteVertexArrays(1, &vao);
+			vao = 0;
+		}
+		return;
+	}
+
+	if (!vao || !vbo)
+	{
+		// create vao
+		glGenVertexArrays(1, &vao);
+		glBindVertexArray(vao);
+
+		// create vbo
+		glGenBuffers(1, &vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(cubeData), cubeData, GL_STATIC_DRAW);
+
+		// vertex position
+		glVertexAttribPointer(RMC_ATTRIBUTE_POSITION, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(0 * sizeof(float)));
+		glEnableVertexAttribArray(RMC_ATTRIBUTE_POSITION);
+
+		// vertex normals
+		glVertexAttribPointer(RMC_ATTRIBUTE_NORMAL, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(RMC_ATTRIBUTE_NORMAL);
+
+		// vertex texcoords
+		glVertexAttribPointer(RMC_ATTRIBUTE_TEXTURE0, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+		glEnableVertexAttribArray(RMC_ATTRIBUTE_TEXTURE0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+	}
+
+	glBindVertexArray(vao);
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+	glDrawArrays(GL_TRIANGLE_FAN, 4, 4);
+	glDrawArrays(GL_TRIANGLE_FAN, 8, 4);
+	glDrawArrays(GL_TRIANGLE_FAN, 12, 4);
+	glBindVertexArray(0);
+}
+
+void UninitPrimitives(void)
+{
+	DrawPlane(true);
+	DrawCube(true);
+	DrawBox(true);
+	DrawSphere(true);
 }
