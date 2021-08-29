@@ -289,7 +289,7 @@ namespace rtr
 		{
 			if (t > 10)
 			{
-				if (i > 15)
+				if (i > 25)
 				{
 					state = 2;
 				}
@@ -353,7 +353,7 @@ namespace rtr
 			
 			UpdateWorld(world, 0.000002f * delta);
 
-			if (SceneRTR->Camera->Zoom <= -18.0f) state++;
+			if (SceneRTR->Camera->Zoom <= -12.0f) state++;
 		}
 
 		SceneRTR->Camera->Yaw += 0.06f;
@@ -427,18 +427,13 @@ namespace rtr
 			marbles[i].Active = false;
 
 			marbles[i].Color = 0.2f * colors[i % _ARRAYSIZE(colors)];;
-			//marbles[i].Color = 20.0f*GetRGBFromHSL(1.0f + ((i*4) % 360), 1.0f, 0.5f);
-			//marbles[i].Color = 20.0f*GetRGBFromHSL(genRand(1.0f, 359.0f), 1.0f, 0.5f);
 			marbles[i].mLetter = GetModel(letters[i % _ARRAYSIZE(letters)]);
 
-			if (i < 100)
-			{
-				if (i % 2 == 0) marbles[i].Position = vec3(9.0f, 8.0f, -9.0f);
-				else marbles[i].Position = vec3(-9.0f, 8.0f, 9.0f);
+			if (i % 2 == 0) marbles[i].Position = vec3(9.0f, 8.0f, -9.0f);
+			else marbles[i].Position = vec3(-9.0f, 8.0f, 9.0f);
 
-				marbles[i].Velocity = genVec3(0.010f, 0.015f, 0.20f, 0.25f, 0.010f, 0.015f);
-				marbles[i].Active = false;
-			}
+			marbles[i].Velocity = genVec3(0.010f, 0.015f, 0.20f, 0.25f, 0.010f, 0.015f);
+			marbles[i].Active = false;
 		}
 
 		marbles[0].Position = vec3(9.0f, 8.0f, -9.0f);

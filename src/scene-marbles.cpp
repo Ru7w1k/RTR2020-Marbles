@@ -329,6 +329,11 @@ namespace marbles
 
 		if (state == 3)
 		{
+			for (int i = 0; i < 7; i++)
+			{
+				alSourcef(audio[i], AL_GAIN, 6.0f - (5.0f * fadeV));
+			}
+
 			fadeV += 0.01f;
 			if (fadeV >= 1.0f)
 			{
