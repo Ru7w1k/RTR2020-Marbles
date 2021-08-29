@@ -72,6 +72,11 @@ namespace marbles
 		audio[5] = LoadAudio("res\\audio\\06.wav");
 		audio[6] = LoadAudio("res\\audio\\07.wav");
 
+		for (int i = 0; i < 7; i++)
+		{
+			alSourcef(audio[i], AL_GAIN, 6.0f);
+		}
+
 		sat = LoadModel("res\\models\\saturn.obj", false);
 
 		FramebufferParams params;
