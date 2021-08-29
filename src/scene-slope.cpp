@@ -263,6 +263,33 @@ namespace slope
 		static int t = 0;
 		static int n = 10;
 
+		//  ---- - camera--------------------
+		//  Position: vec3(27.899f, 18.257f, -27.450f)
+		//  Front : vec3(-0.697f, -0.206f, 0.686f)
+		//  Right : vec3(-0.701f, 0.000f, -0.713f)
+		//  Up : vec3(-0.147f, 0.978f, 0.145f)
+		//  Yaw : 135.465f
+		//  Pitch : -11.914f
+		//  Zoom : -2.911f
+		//  Height : 10.000f
+		//  -------------------------------- -
+		//  ---- - camera--------------------
+		//  Position : vec3(32.899f, 18.428f, 21.133f)
+		//  Front : vec3(-0.822f, -0.211f, -0.528f)
+		//  Right : vec3(0.540f, 0.000f, -0.841f)
+		//  Up : vec3(-0.177f, 0.978f, -0.114f)
+		//  Yaw : 212.715f
+		//  Pitch : -12.164f
+		//  Zoom : -2.911f
+		//  Height : 10.000f
+		//  -------------------------------- -
+
+		SceneSlope->Camera->Position += 0.00051f * (vec3(32.899f, 18.428f, 21.133f) - vec3(27.899f, 18.257f, -27.450f));
+		SceneSlope->Camera->Front += 0.00051f * (vec3(-0.822f, -0.211f, -0.528f) - vec3(-0.697f, -0.206f, 0.686f));
+		SceneSlope->Camera->Yaw += 0.00051f * (212.715f - 135.465f);
+		SceneSlope->Camera->Pitch += 0.00051f * (-12.164f - -11.914f);
+		UpdateCameraVectors(SceneSlope->Camera);
+
 		if (state == 0)
 		{
 			fadeV -= 0.01f;
@@ -295,33 +322,6 @@ namespace slope
 				}
 			}
 			t++;
-			
-			//  ---- - camera--------------------
-			//  Position: vec3(27.899f, 18.257f, -27.450f)
-			//  Front : vec3(-0.697f, -0.206f, 0.686f)
-			//  Right : vec3(-0.701f, 0.000f, -0.713f)
-			//  Up : vec3(-0.147f, 0.978f, 0.145f)
-			//  Yaw : 135.465f
-			//  Pitch : -11.914f
-			//  Zoom : -2.911f
-			//  Height : 10.000f
-			//  -------------------------------- -
-			//  ---- - camera--------------------
-			//  Position : vec3(32.899f, 18.428f, 21.133f)
-			//  Front : vec3(-0.822f, -0.211f, -0.528f)
-			//  Right : vec3(0.540f, 0.000f, -0.841f)
-			//  Up : vec3(-0.177f, 0.978f, -0.114f)
-			//  Yaw : 212.715f
-			//  Pitch : -12.164f
-			//  Zoom : -2.911f
-			//  Height : 10.000f
-			//  -------------------------------- -
-
-			SceneSlope->Camera->Position += 0.00051f * (vec3(32.899f, 18.428f, 21.133f) - vec3(27.899f, 18.257f, -27.450f));
-			SceneSlope->Camera->Front += 0.00051f * (vec3(-0.822f, -0.211f, -0.528f) - vec3(-0.697f, -0.206f, 0.686f));
-			SceneSlope->Camera->Yaw += 0.00051f * (212.715f - 135.465f);
-			SceneSlope->Camera->Pitch += 0.00051f * (-12.164f - -11.914f);
-			UpdateCameraVectors(SceneSlope->Camera);
 
 			UpdateWorld(world, 0.000002f * delta);
 		}
@@ -338,12 +338,6 @@ namespace slope
 		{
 			UpdateWorld(world, 0.000002f * delta);
 
-			SceneSlope->Camera->Position += 0.00051f * (vec3(32.899f, 18.428f, 21.133f) - vec3(27.899f, 18.257f, -27.450f));
-			SceneSlope->Camera->Front += 0.00051f * (vec3(-0.822f, -0.211f, -0.528f) - vec3(-0.697f, -0.206f, 0.686f));
-			SceneSlope->Camera->Yaw += 0.00051f * (212.715f - 135.465f);
-			SceneSlope->Camera->Pitch += 0.00051f * (-12.164f - -11.914f);
-			UpdateCameraVectors(SceneSlope->Camera);
-
 			t++;
 			if (t > n) state++;
 
@@ -352,12 +346,6 @@ namespace slope
 		if (state == 3)
 		{
 			UpdateWorld(world, 0.000002f * delta);
-
-			SceneSlope->Camera->Position += 0.00051f * (vec3(32.899f, 18.428f, 21.133f) - vec3(27.899f, 18.257f, -27.450f));
-			SceneSlope->Camera->Front += 0.00051f * (vec3(-0.822f, -0.211f, -0.528f) - vec3(-0.697f, -0.206f, 0.686f));
-			SceneSlope->Camera->Yaw += 0.00051f * (212.715f - 135.465f);
-			SceneSlope->Camera->Pitch += 0.00051f * (-12.164f - -11.914f);
-			UpdateCameraVectors(SceneSlope->Camera);
 
 			fadeV += 0.01f;
 			if (fadeV >= 1.0f)
@@ -440,7 +428,7 @@ namespace slope
 			20, 7, 7,  15, 7, 7,  15, 7, 7,  15, 7, 7,  15, 7, 7,
 
 			/* Turkish March (Mozart) */
-			60, 8, 8, 8, 8,
+			80, 8, 8, 8, 8,
 			35, 8, 8, 8, 8,
 			35, 8, 8, 8,
 			8, 8, 8, 8, 8, 8, 8, 8, 8,
@@ -453,7 +441,7 @@ namespace slope
 			30, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
 
 			/* closing */
-			60,3,3,3,3,3,3,
+			80,3,3,3,3,3,3,
 			20,6,6,6,6,6,6,
 			20,12,12,12,12,12,12,
 

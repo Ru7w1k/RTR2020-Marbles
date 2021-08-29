@@ -76,6 +76,12 @@ namespace rtr
 
 		shoot = LoadAudio("res\\audio\\shoot.wav");
 
+		for (int i = 0; i < 7; i++)
+		{
+			alSourcef(audio[i], AL_GAIN, 6.0f);
+		}
+		alSourcef(shoot, AL_GAIN, 6.0f);
+
 		sat = LoadModel("res\\models\\saturn.obj", false);
 
 		FramebufferParams params;
@@ -347,7 +353,7 @@ namespace rtr
 			
 			UpdateWorld(world, 0.000002f * delta);
 
-			if (SceneRTR->Camera->Zoom <= -25.0f) state++;
+			if (SceneRTR->Camera->Zoom <= -18.0f) state++;
 		}
 
 		SceneRTR->Camera->Yaw += 0.06f;
