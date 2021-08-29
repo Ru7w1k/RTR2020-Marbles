@@ -44,6 +44,8 @@ typedef struct _Plane
 	vec3 MinPoint;
 	vec3 MaxPoint;
 
+	vec3 force;
+
 } Wall;
 
 typedef struct _Cube

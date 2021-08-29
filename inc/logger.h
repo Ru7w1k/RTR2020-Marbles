@@ -2,7 +2,7 @@
 
 #include "helper.h"
 
-#define _LOG_FILE_
+// #define _LOG_FILE_
 extern FILE* logFile;
 
 #ifdef _LOG_FILE_

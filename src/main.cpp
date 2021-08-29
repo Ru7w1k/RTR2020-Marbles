@@ -16,6 +16,7 @@
 #include "scene-domain.h"
 #include "scene-marbles.h"
 #include "scene-rtr.h"
+#include "scene-slope.h"
 
 #pragma comment(lib, "glew32.lib")
 #pragma comment(lib, "opengl32.lib")
@@ -522,6 +523,7 @@ void initialize(void)
 	AddScene(GetDomainScene());
 	AddScene(GetMarblesScene());
 	AddScene(GetRTRScene());
+	AddScene(GetSlopeScene());
 
 	// set clear color and clear depth
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);

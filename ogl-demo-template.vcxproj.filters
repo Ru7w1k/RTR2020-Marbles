@@ -114,6 +114,9 @@
     <ClCompile Include="src\scene-rtr.cpp">
       <Filter>Source Files\scenes</Filter>
     </ClCompile>
+    <ClCompile Include="src\scene-slope.cpp">
+      <Filter>Source Files\scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="res\main.rc">
@@ -209,6 +212,9 @@
       <Filter>Header Files\scenes</Filter>
     </ClInclude>
     <ClInclude Include="inc\scene-rtr.h">
+      <Filter>Header Files\scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\scene-slope.h">
       <Filter>Header Files\scenes</Filter>
     </ClInclude>
   </ItemGroup>

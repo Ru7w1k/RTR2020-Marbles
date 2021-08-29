@@ -139,6 +139,13 @@ void UpdateWorld(World& world, float time)
 
 			// calculate the next position of marble
 			vec3 F = vec3(0.0f, -1.0f, 0.0f);
+
+			// collision check the ground
+			float d = distance(world.Marbles[i]->Position, world.Walls[0]);
+			if (d <= world.Marbles[i]->Radius)
+			{
+				F += world.Walls[0]->force;
+			}
 			vec3 a = F / world.Marbles[i]->Mass;
 			vec3 s = world.Marbles[i]->Velocity * time + 0.5f * a * time * time;
 			vec3 v = world.Marbles[i]->Velocity + a * time;
@@ -191,8 +198,9 @@ void UpdateWorld(World& world, float time)
 				{
 					vec3 nVelocity = normalize(world.Marbles[i]->Velocity);
 					world.Marbles[i]->Position -= (world.Marbles[i]->Radius - d) * nVelocity;
+					world.Marbles[i]->Velocity = world.ground * reflect(world.Marbles[i]->Velocity, world.Walls[j]->Normal);
 
-					float angle = acosf(dot(nVelocity, world.Walls[j]->Normal));
+					/*float angle = acosf(dot(nVelocity, world.Walls[j]->Normal));
 					if (angle < M_PI_2 + 0.1f && angle > M_PI_2 - 0.1f && j != 0)
 					{
 						world.Marbles[i]->Velocity = world.ground * world.Marbles[i]->Velocity;
@@ -200,7 +208,7 @@ void UpdateWorld(World& world, float time)
 					else
 					{
 						world.Marbles[i]->Velocity = world.ground * reflect(world.Marbles[i]->Velocity, world.Walls[j]->Normal);
-					}
+					}*/
 
 					//world.Marbles[i]->Position += (world.Marbles[i]->Radius - d) * -world.Walls[j]->Normal;
 

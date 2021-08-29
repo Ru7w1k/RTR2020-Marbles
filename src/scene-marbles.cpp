@@ -295,8 +295,6 @@ namespace marbles
 
 		}
 
-
-
 		if (state == 2)
 		{
 			/*SceneMarbles->Camera = AddNewCamera(
@@ -321,7 +319,7 @@ namespace marbles
 			SceneMarbles->Camera->Zoom += -0.0012f * (-5.6f - -20.0f);
 			SceneMarbles->Camera->Height += -0.0012f * (10.6f - 3.0f);
 
-			if (SceneMarbles->Camera->Zoom <= -20.5f) state++;
+			if (SceneMarbles->Camera->Zoom <= -22.5f) state++;
 		}
 
 		if (state == 3)

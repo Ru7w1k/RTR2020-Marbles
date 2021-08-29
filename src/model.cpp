@@ -177,10 +177,13 @@ void loadModel(Model* pModel, const aiScene* scene, aiMesh* mesh)
 		vertex.normal = vec;
 
 		// process uv
-		vec2 v;
-		v[0] = mesh->mTextureCoords[0][i][0];
-		v[1] = mesh->mTextureCoords[0][i][1];
-		vertex.uv = v;
+		if (mesh->HasTextureCoords(0))
+		{
+			vec2 v;
+			v[0] = mesh->mTextureCoords[0][i][0];
+			v[1] = mesh->mTextureCoords[0][i][1];
+			vertex.uv = v;
+		}
 
 		vertex.boneIDs = ivec4(0, 0, 0, 0);
 		vertex.boneWeights = vec4(0.0f, 0.0f, 0.0f, 0.0f);
