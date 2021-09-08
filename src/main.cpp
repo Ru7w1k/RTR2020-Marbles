@@ -7,6 +7,8 @@
 // shaders
 #include "shader.h"
 
+#include "loading.h"
+
 #include "letters.h"
 #include "primitives.h"
 
@@ -55,6 +57,10 @@ float prevMouseY = 0.0f;
 
 bool firstMouse   = false;
 bool mousePressed = false;
+
+// loading
+bool   bLoadingDone = false;
+HANDLE hLoading = NULL;
 
 
 // WinMain()
@@ -373,19 +379,69 @@ void ToggleFullscreen(void)
 	}
 }
 
-void GLAPIENTRY
-MessageCallback(GLenum source,
-	GLenum type,
-	GLuint id,
-	GLenum severity,
-	GLsizei length,
-	const GLchar* message,
-	const void* userParam)
+void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
 {
 	LogE("GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s",
 		(type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
 		type, severity, message);
 }
+
+void LoadingThread(LPVOID hRC)
+{
+	if (wglMakeCurrent(ghdc, (HGLRC)hRC) == FALSE)
+	{
+		LogE("wglMakeCurrent() failed in thread..");
+		DestroyWindow(ghwnd);
+		return;
+	}
+
+	// init audio
+	if (!InitOpenAL())
+	{
+		LogE("InitOpenAL() failed..");
+		DestroyWindow(ghwnd);
+		return;
+	}
+
+	// Compile all shaders
+	if (!InitAllShaders())
+	{
+		LogE("InitAllShaders() failed..");
+		DestroyWindow(ghwnd);
+		return;
+	}
+
+	// load all letters
+	LoadLetters();
+
+	// initialize all scenes
+	for (int i = 0; i < GetSceneCount(); i++)
+	{
+		Scene scene;
+		ZeroMemory((void*)&scene, sizeof(Scene));
+		if (GetSceneAt(scene, i))
+		{
+			if (!scene.InitFunc())
+			{
+				LogE("Scene %s Init() failed..", scene.Name);
+				DestroyWindow(ghwnd);
+				return;
+			}
+			LogD("Scene %s Init() done..", scene.Name);
+
+			// warm-up resize
+			scene.ResizeFunc(WIN_WIDTH, WIN_HEIGHT);
+			LogD("Scene %s Resize() done..", scene.Name);
+
+			scene.ResetFunc();
+			LogD("Scene %s Reset() done..", scene.Name);
+		}
+	}
+
+	bLoadingDone = true;
+}
+
+
 
 void initialize(void)
 {
@@ -467,6 +523,21 @@ void initialize(void)
 		return;
 	}
 
+	HGLRC ghrc1 = wglCreateContextAttribsARB(ghdc, NULL, NULL);
+	if (ghrc1 == NULL)
+	{
+		LogE("wglCreateContext() failed..");
+		DestroyWindow(ghwnd);
+		return;
+	}
+
+	if (wglShareLists(ghrc, ghrc1) == FALSE)
+	{
+		LogE("wglShareLists() failed..");
+		DestroyWindow(ghwnd);
+		return;
+	}
+
 	if (wglMakeCurrent(ghdc, ghrc) == FALSE)
 	{
 		LogE("wglMakeCurrent() failed..");
@@ -478,14 +549,6 @@ void initialize(void)
 	glEnable(GL_DEBUG_OUTPUT);
 	glDebugMessageCallback(MessageCallback, 0);
 	
-	// init audio
-	if (!InitOpenAL())
-	{
-		LogE("InitOpenAL() failed..");
-		DestroyWindow(ghwnd);
-		return;
-	}
-
 	// fetch OpenGL related details
 	LogI("OpenGL Vendor:   %s", glGetString(GL_VENDOR));
 	LogI("OpenGL Renderer: %s", glGetString(GL_RENDERER));
@@ -502,17 +565,6 @@ void initialize(void)
 		LogD("  %s", glGetStringi(GL_EXTENSIONS, i));
 	}
 	LogD("===========================\n");
-
-	// Compile all shaders
-	if (!InitAllShaders())
-	{
-		LogE("InitAllShaders() failed..");
-		DestroyWindow(ghwnd);
-		return;
-	}
-
-	// load all letters
-	LoadLetters();
 
 	// initialize scene queue
 	InitSceneQueue();
@@ -541,34 +593,21 @@ void initialize(void)
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
-	// initialize all scenes
-	for (int i = 0; i < GetSceneCount(); i++)
+	// create thread for loading
+	hLoading = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)LoadingThread, (LPVOID)ghrc1, 0, NULL);
+
+	// init loading scene
+	if (!initLoadingScene())
 	{
-		Scene scene;
-		ZeroMemory((void*)&scene, sizeof(Scene));
-		if (GetSceneAt(scene, i))
-		{
-			if (!scene.InitFunc())
-			{
-				LogE("Scene %s Init() failed..", scene.Name);
-				DestroyWindow(ghwnd);
-				return;
-			}
-			LogD("Scene %s Init() done..", scene.Name);
-
-			// warm-up resize
-			scene.ResizeFunc(WIN_WIDTH, WIN_HEIGHT);
-			LogD("Scene %s Resize() done..", scene.Name);
-
-			scene.ResetFunc();
-			LogD("Scene %s Reset() done..", scene.Name);
-		}
+		LogE("initLoadingScene() failed..");
+		DestroyWindow(ghwnd);
+		return;
 	}
 
 	// warm-up resize call
 	resize(WIN_WIDTH, WIN_HEIGHT);
 	
-	ToggleFullscreen();
+	// ToggleFullscreen();
 }
 
 void resize(int width, int height)
@@ -582,25 +621,44 @@ void resize(int width, int height)
 
 	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 
-	// resize active scene
-	Scene scene;
-	if (GetScene(scene)) scene.ResizeFunc(width, height);
+	if (!bLoadingDone)
+	{
+		resizeLoadingScene(width, height);
+	}
+	else
+	{
+		// resize active scene
+		Scene scene;
+		if (GetScene(scene)) scene.ResizeFunc(width, height);
+	}
 }
 
 void display(void)
 {
 	// code
 
-	// draw active scene
-	Scene scene;
-	if (GetScene(scene)) scene.DisplayFunc();
+	if (!bLoadingDone)
+	{
+		displayLoadingScene();
+	}
+	else
+	{
+		// draw active scene
+		Scene scene;
+		if (GetScene(scene)) scene.DisplayFunc();
+	}
 
 	SwapBuffers(ghdc);
 }
 
 void update(float delta)
 {
-	// code	
+	// code
+	if (!bLoadingDone)
+	{
+		updateLoadingScene(delta);
+		return;
+	}
 
 	// update active scene
 	Scene scene;
@@ -668,6 +726,9 @@ void uninitialize(void)
 			if (scene.UninitFunc) scene.UninitFunc();
 		}
 	}
+
+	// uninit loading scene
+	uninitLoadingScene();
 
 	if (wglGetCurrentContext() == ghrc)
 	{

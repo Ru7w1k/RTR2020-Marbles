@@ -131,9 +131,6 @@ namespace domain
 		// start using OpenGL program object
 		PBRShaderUniforms* u = UsePBRShader();
 
-		/*glActiveTexture(GL_TEXTURE5);
-		glBindTexture(GL_TEXTURE_2D, noiseTex);*/
-
 		// send necessary matrices to shader in respective uniforms
 		glUniformMatrix4fv(u->vMatrixUniform, 1, GL_FALSE, GetViewMatrix(SceneDomain->Camera));
 		glUniformMatrix4fv(u->pMatrixUniform, 1, GL_FALSE, projMatrix);
@@ -146,11 +143,6 @@ namespace domain
 		modelMatrix = scale(30.0f, 0.5f, 30.0f);
 		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMatrix);
 		DrawCube();
-
-		//modelMatrix = translate(0.0f, 0.0f, 15.0f);
-		//modelMatrix *= scale(20.0f, 20.0f, 0.5f);
-		//glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMatrix);
-		//DrawCube();
 
 		// stop using OpenGL program object
 		glUseProgram(0);
@@ -346,16 +338,6 @@ namespace domain
 		AddMarble(world, &marbles[8]);
 		AddMarble(world, &marbles[9]);
 		AddMarble(world, &marbles[10]);
-
-		//AddMarble(world, &marbles[11]);
-		//AddMarble(world, &marbles[12]);
-
-		marbles[13].mLetter = sat;
-		marbles[13].Color = vec3(150.0f, 100.0f, 0.0f);
-		marbles[13].Position = vec3(8.0f, 1.50f, -20.0f);
-		marbles[13].Radius = 1.5f;
-
-		//AddMarble(world, &marbles[13]);
 
 		walls[0].Normal = normalize(vec3(0.0f, 1.0f, 0.0f));
 		walls[0].D = -0.5f;

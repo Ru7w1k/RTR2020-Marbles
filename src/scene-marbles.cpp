@@ -35,7 +35,6 @@ namespace marbles
 
 	Material *matPlastic = NULL;
 	Material *matMarble = NULL;
-	Material *matGround = NULL;
 
 	World world;
 	Marble marbles[7];
@@ -45,9 +44,6 @@ namespace marbles
 	Framebuffer *fboMain = NULL;
 	Framebuffer *fboPingpong[2] = {NULL, NULL};
 	
-	GLuint noiseTex;
-	GLuint skyTex;
-
 	float fadeV = 1.0f;
 	int state = 0;
 	Model* sat = NULL;
@@ -57,12 +53,8 @@ namespace marbles
 		// matrix
 		projMatrix = mat4::identity();
 
-		noiseTex = loadTexture("res\\textures\\noise2.png");
-		skyTex = loadTexture("res\\textures\\sky.png");
-
 		matPlastic = loadMaterial("res\\materials\\plastic");
 		matMarble = loadMaterial("res\\materials\\marble");
-		matGround= loadMaterial("res\\materials\\wood");
 
 		audio[0] = LoadAudio("res\\audio\\01.wav");
 		audio[1] = LoadAudio("res\\audio\\02.wav");
@@ -102,9 +94,6 @@ namespace marbles
 
 		deleteMaterial(matPlastic);
 		matPlastic = NULL;
-		
-		deleteMaterial(matGround);
-		matGround = NULL;
 		
 		deleteMaterial(matMarble);
 		matMarble = NULL;
@@ -150,19 +139,6 @@ namespace marbles
 
 		projMatrix = vmath::perspective(45.0f + SceneMarbles->Camera->Zoom, (float)gWidth / (float)gHeight, 0.1f, 100.0f);
 
-		//TextureShaderUniforms *ut = UseTextureShader();
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, skyTex);
-		//glUniform1i(ut->samplerUniform, 0);
-		//glUniform1f(ut->scaleUniform, 5.0f);
-
-		//glCullFace(GL_FRONT);
-		//glUniformMatrix4fv(ut->mvpMatrixUniform, 1, GL_FALSE, projMatrix * GetViewMatrixNoTranslate(SceneMarbles->Camera) * scale(80.0f, 80.0f, 80.0f));
-		//DrawSphere();
-		//glUseProgram(0);
-		//glCullFace(GL_BACK);
-
-
 		// start using OpenGL program object
 		PBRShaderUniforms* u = UsePBRShader();
 
@@ -181,11 +157,6 @@ namespace marbles
 		
 		glUniform1f(u->alpha, 1.0f);
 
-		//modelMatrix = scale(100.0f, 0.5f, 100.0f);
-		//glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMatrix);
-		//useMaterial(matGround);
-		//DrawCube();
-
 		modelMatrix = scale(20.0f, 0.5f, 20.0f);
 		useMaterial(matPlastic);
 		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, rotate(45.0f, 1.0f, 0.0f, 0.0f) * modelMatrix);
@@ -195,9 +166,6 @@ namespace marbles
 		DrawCube();
 
 		glUseProgram(0);
-
-		/*glActiveTexture(GL_TEXTURE5);
-		glBindTexture(GL_TEXTURE_2D, noiseTex);*/
 
 		DrawWorld(world);
 

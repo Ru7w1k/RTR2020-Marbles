@@ -20,29 +20,6 @@ float distance(vec3& point, Wall* wall)
 		+ wall->D);
 }
 
-bool withinRange(Marble* marble, Wall* wall)
-{
-	return marble->Position[0] >= wall->MinPoint[0] + marble->Radius
-		//&& marble->Position[1] >= wall->MinPoint[1] + marble->Radius
-		&& marble->Position[2] >= wall->MinPoint[2] + marble->Radius
-		&& marble->Position[0] <= wall->MaxPoint[0] + marble->Radius
-		//&& marble->Position[1] <= wall->MaxPoint[1] + marble->Radius
-		&& marble->Position[2] <= wall->MaxPoint[2] + marble->Radius;
-}
-
-
-// constructor functions
-Marble* NewMarble()
-{
-	return NULL;
-}
-
-Wall* NewWall(vec3 minPoint, vec3 maxPoint)
-{
-	return NULL;
-}
-
-
 
 // rigid body functions
 void AddMarble(World& world, Marble* marble)
@@ -153,13 +130,6 @@ void UpdateWorld(World& world, float time)
 			world.Marbles[i]->Velocity = v;
 			world.Marbles[i]->Position = world.Marbles[i]->Position + s;
 
-			//if (isnan(world.Marbles[i]->Position[0]) || isinf(world.Marbles[i]->Position[0])
-			//	|| isnan(world.Marbles[i]->Position[1]) || isinf(world.Marbles[i]->Position[1])
-			//	|| isnan(world.Marbles[i]->Position[2]) || isinf(world.Marbles[i]->Position[2]))
-			//{
-			//	DebugBreak();
-			//}
-
 			if (world.Marbles[i]->Roll)
 			{
 				world.Marbles[i]->Angle = length(s);
@@ -200,28 +170,8 @@ void UpdateWorld(World& world, float time)
 					world.Marbles[i]->Position -= (world.Marbles[i]->Radius - d) * nVelocity;
 					world.Marbles[i]->Velocity = world.ground * reflect(world.Marbles[i]->Velocity, world.Walls[j]->Normal);
 
-					/*float angle = acosf(dot(nVelocity, world.Walls[j]->Normal));
-					if (angle < M_PI_2 + 0.1f && angle > M_PI_2 - 0.1f && j != 0)
-					{
-						world.Marbles[i]->Velocity = world.ground * world.Marbles[i]->Velocity;
-					}
-					else
-					{
-						world.Marbles[i]->Velocity = world.ground * reflect(world.Marbles[i]->Velocity, world.Walls[j]->Normal);
-					}*/
-
-					//world.Marbles[i]->Position += (world.Marbles[i]->Radius - d) * -world.Walls[j]->Normal;
-
-					//if (isnan(world.Marbles[i]->Position[0]) || isinf(world.Marbles[i]->Position[0])
-					//	|| isnan(world.Marbles[i]->Position[1]) || isinf(world.Marbles[i]->Position[1])
-					//	|| isnan(world.Marbles[i]->Position[2]) || isinf(world.Marbles[i]->Position[2]))
-					//{
-					//	DebugBreak();
-					//}
-
 					if (length(world.Marbles[i]->Velocity) > 0.001f)
 					{
-						//world.Marbles[i]->rotate = rotate(world.Marbles[i]->Angle * 57.2957f, world.Marbles[i]->Axis);
 						vec3 c = cross(world.Walls[j]->Normal, normalize(world.Marbles[i]->Velocity));
 						if (length2(c) == 0.0f)
 						{
@@ -233,26 +183,6 @@ void UpdateWorld(World& world, float time)
 							world.Marbles[i]->Axis = normalize(c);
 						}
 						
-						collided.insert(i);
-					}
-					else
-					{
-						// world.Marbles[i]->Velocity = vec3(0.0f);
-					}
-				}
-			}
-
-			// collision check with all finite walls
-			for (int j = 5; j < world.Walls.size(); j++)
-			{
-				float d = distance(world.Marbles[i]->Position, world.Walls[j]);
-				if (d <= world.Marbles[i]->Radius && withinRange(world.Marbles[i], world.Walls[j]))
-				{
-					world.Marbles[i]->Position -= (world.Marbles[i]->Radius - d) * normalize(world.Marbles[i]->Velocity);
-					world.Marbles[i]->Velocity = 0.8f * reflect(world.Marbles[i]->Velocity, world.Walls[j]->Normal);
-
-					if (length(world.Marbles[i]->Velocity) > 0.001f)
-					{
 						collided.insert(i);
 					}
 					else
@@ -303,13 +233,6 @@ void UpdateWorld(World& world, float time)
 
 					world.Marbles[i]->Position += 0.5f * (world.Marbles[i]->Radius + world.Marbles[j]->Radius - d) * -N;
 					world.Marbles[j]->Position += 0.5f * (world.Marbles[i]->Radius + world.Marbles[j]->Radius - d) * N;
-
-					/*if (isnan(world.Marbles[i]->Position[0]) || isinf(world.Marbles[i]->Position[0])
-						|| isnan(world.Marbles[i]->Position[1]) || isinf(world.Marbles[i]->Position[1])
-						|| isnan(world.Marbles[i]->Position[2]) || isinf(world.Marbles[i]->Position[2]))
-					{
-						DebugBreak();
-					}*/
 
 					vec3 c = cross(N, normalize(world.Marbles[i]->Velocity));
 					if (length2(c) == 0.0f)

@@ -46,9 +46,6 @@ namespace rtr
 	Framebuffer *fboMain = NULL;
 	Framebuffer *fboPingpong[2] = {NULL, NULL};
 	Framebuffer* fboPrevFrame = NULL;
-	
-	GLuint noiseTex;
-	GLuint skyTex;
 
 	float fadeV = 1.0f;
 	int state = 0;
@@ -58,9 +55,6 @@ namespace rtr
 	{
 		// matrix
 		projMatrix = mat4::identity();
-
-		noiseTex = loadTexture("res\\textures\\noise2.png");
-		skyTex = loadTexture("res\\textures\\sky.png");
 
 		matPlastic = loadMaterial("res\\materials\\glass");
 		matMarble = loadMaterial("res\\materials\\marble");
@@ -159,19 +153,6 @@ namespace rtr
 
 		projMatrix = vmath::perspective(45.0f + SceneRTR->Camera->Zoom, (float)gWidth / (float)gHeight, 0.1f, 100.0f);
 
-		//TextureShaderUniforms *ut = UseTextureShader();
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, skyTex);
-		//glUniform1i(ut->samplerUniform, 0);
-		//glUniform1f(ut->scaleUniform, 5.0f);
-
-		//glCullFace(GL_FRONT);
-		//glUniformMatrix4fv(ut->mvpMatrixUniform, 1, GL_FALSE, projMatrix * GetViewMatrixNoTranslate(SceneRTR->Camera) * scale(80.0f, 80.0f, 80.0f));
-		//DrawSphere();
-		//glUseProgram(0);
-		//glCullFace(GL_BACK);
-
-
 		// start using OpenGL program object
 		PBRShaderUniforms* u = UsePBRShader();
 
@@ -181,7 +162,6 @@ namespace rtr
 		// intialize above matrices to identity
 		modelMatrix = mat4::identity();
 
-
 		// send necessary matrices to shader in respective uniforms
 		glUniformMatrix4fv(u->vMatrixUniform, 1, GL_FALSE, GetViewMatrix(SceneRTR->Camera));
 		glUniformMatrix4fv(u->pMatrixUniform, 1, GL_FALSE, projMatrix);
@@ -189,11 +169,6 @@ namespace rtr
 		glUniform3fv(u->cameraPosUniform, 1, SceneRTR->Camera->Position);
 		
 		glUniform1f(u->alpha, 1.0f);
-
-		//modelMatrix = scale(100.0f, 0.5f, 100.0f);
-		//glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMatrix);
-		//useMaterial(matGround);
-		//DrawCube();
 
 		modelMatrix = scale(15.0f, 0.5f, 15.0f);
 		useMaterial(matPlastic);
@@ -206,9 +181,6 @@ namespace rtr
 		DrawBox();
 
 		glUseProgram(0);
-
-		/*glActiveTexture(GL_TEXTURE5);
-		glBindTexture(GL_TEXTURE_2D, noiseTex);*/
 
 		DrawWorld(world);
 

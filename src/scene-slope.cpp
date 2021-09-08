@@ -48,9 +48,6 @@ namespace slope
 	Framebuffer *fboPingpong[2] = {NULL, NULL};
 	Framebuffer* fboPrevFrame = NULL;
 	
-	GLuint noiseTex;
-	GLuint skyTex;
-
 	float fadeV = 1.0f;
 	int state = 0;
 	Model* n1 = NULL;
@@ -61,9 +58,6 @@ namespace slope
 	{
 		// matrix
 		projMatrix = mat4::identity();
-
-		noiseTex = loadTexture("res\\textures\\noise2.png");
-		skyTex = loadTexture("res\\textures\\sky.png");
 
 		matMarble = loadMaterial("res\\materials\\marble");
 		matGround= loadMaterial("res\\materials\\piano");
@@ -177,26 +171,13 @@ namespace slope
 		
 		glUniform1f(u->alpha, 1.0f);
 
-		//modelMatrix = scale(100.0f, 0.5f, 100.0f);
-		//glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMatrix);
-		//useMaterial(matGround);
-		//DrawCube();
-
 		modelMatrix = rotate(-28.0f, 0.0f, 0.0f, 1.0f);
 		modelMatrix *= scale(25.0f, 0.5f, 25.0f);
 		useMaterial(matGround);
 		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMatrix);
 		DrawCube();
-
-		/*modelMatrix = translate(0.0f, 15.0f, 0.0f);
-		modelMatrix *= scale(15.0f, 25.0f, 15.0f);
-		glUniformMatrix4fv(u->mMatrixUniform, 1, GL_FALSE, modelMatrix);
-		DrawBox();*/
-
+		
 		glUseProgram(0);
-
-		/*glActiveTexture(GL_TEXTURE5);
-		glBindTexture(GL_TEXTURE_2D, noiseTex);*/
 
 		DrawWorld(world);
 
