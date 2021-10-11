@@ -36,6 +36,8 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 HDC   ghdc = NULL;
 HGLRC ghrc = NULL;
 
+HGLRC ghrc1 = NULL;
+
 bool gbFullscreen = false;
 bool gbActiveWindow = false;
 
@@ -403,6 +405,26 @@ void LoadingThread(LPVOID hRC)
 		return;
 	}
 
+	// During init, enable debug output
+	glEnable(GL_DEBUG_OUTPUT);
+	glDebugMessageCallback(MessageCallback, 0);
+
+	// set clear color and clear depth
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearDepth(1.0f);
+
+	// depth test 
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+
+	// blend test
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// cull back face
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+
 	// Compile all shaders
 	if (!InitAllShaders())
 	{
@@ -410,6 +432,17 @@ void LoadingThread(LPVOID hRC)
 		DestroyWindow(ghwnd);
 		return;
 	}
+
+	// initialize scene queue
+	InitSceneQueue();
+
+	// add scenes
+	AddScene(GetIntroScene());
+	AddScene(GetIntroScene());
+	AddScene(GetDomainScene());
+	AddScene(GetMarblesScene());
+	AddScene(GetRTRScene());
+	AddScene(GetSlopeScene());
 
 	// load all letters
 	LoadLetters();
@@ -438,10 +471,9 @@ void LoadingThread(LPVOID hRC)
 		}
 	}
 
+	wglMakeCurrent(ghdc, NULL);
 	bLoadingDone = true;
 }
-
-
 
 void initialize(void)
 {
@@ -523,7 +555,7 @@ void initialize(void)
 		return;
 	}
 
-	HGLRC ghrc1 = wglCreateContextAttribsARB(ghdc, NULL, NULL);
+	ghrc1 = wglCreateContextAttribsARB(ghdc, NULL, NULL);
 	if (ghrc1 == NULL)
 	{
 		LogE("wglCreateContext() failed..");
@@ -531,12 +563,12 @@ void initialize(void)
 		return;
 	}
 
-	if (wglShareLists(ghrc, ghrc1) == FALSE)
-	{
-		LogE("wglShareLists() failed..");
-		DestroyWindow(ghwnd);
-		return;
-	}
+	//if (wglShareLists(ghrc, ghrc1) == FALSE)
+	//{
+	//	LogE("wglShareLists() failed..");
+	//	DestroyWindow(ghwnd);
+	//	return;
+	//}
 
 	if (wglMakeCurrent(ghdc, ghrc) == FALSE)
 	{
@@ -565,17 +597,6 @@ void initialize(void)
 		LogD("  %s", glGetStringi(GL_EXTENSIONS, i));
 	}
 	LogD("===========================\n");
-
-	// initialize scene queue
-	InitSceneQueue();
-
-	// add scenes
-	AddScene(GetIntroScene());
-	AddScene(GetIntroScene());
-	AddScene(GetDomainScene());
-	AddScene(GetMarblesScene());
-	AddScene(GetRTRScene());
-	AddScene(GetSlopeScene());
 
 	// set clear color and clear depth
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -636,6 +657,7 @@ void resize(int width, int height)
 void display(void)
 {
 	// code
+	static bool bContext = false;
 
 	if (!bLoadingDone)
 	{
@@ -643,9 +665,25 @@ void display(void)
 	}
 	else
 	{
+		if (!bContext)
+		{
+			UninitPrimitives();
+
+			if (wglMakeCurrent(ghdc, ghrc1) == FALSE)
+			{
+				LogE("wglMakeCurrent() failed in draw..");
+				DestroyWindow(ghwnd);
+				return;
+			}
+			LogI("Switched to main context..");
+			bContext = true;
+		}
+
+
 		// draw active scene
 		Scene scene;
-		if (GetScene(scene)) scene.DisplayFunc();
+		if (GetScene(scene)) 
+			scene.DisplayFunc();
 	}
 
 	SwapBuffers(ghdc);
